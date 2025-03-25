@@ -60,5 +60,4 @@ subprojects {
             resources.srcDirs("src/main/resources")
         }
     }
-
 }
