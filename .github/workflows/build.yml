@@ -28,13 +28,6 @@ jobs:
           java-version: '23'
           distribution: 'temurin'
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -43,11 +36,6 @@ jobs:
 
       - name: Test Project
         run: ./gradlew test
-
-      - name: SonarQube Scan
-        run: ./gradlew sonar
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Assemble Project
         run: ./gradlew assemble

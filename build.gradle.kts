@@ -1,6 +1,5 @@
 plugins {
     id("java")
-    id("org.sonarqube") version "6.1.0.5360"
 }
 
 allprojects {
@@ -60,14 +59,5 @@ subprojects {
         main {
             resources.srcDirs("src/main/resources")
         }
-    }
-}
-
-sonar {
-    properties {
-        property("sonar.projectKey", "pieker")
-        property("sonar.organization", "pieker")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.login", System.getenv("SONAR_TOKEN"))
     }
 }
