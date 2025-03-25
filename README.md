@@ -6,15 +6,22 @@
 </p>
 <h3 align="center">Automated Testing Platform for Multi-Service Software Systems</h3>
 
+<p align="center">
+  <a href="https://github.com/PIEKER/Pieker/actions/workflows/build.yml">
+    <img src="https://github.com/PIEKER/Pieker/actions/workflows/build.yml/badge.svg" alt="Build Status"/>
+  </a>
+  <a href="https://sonarcloud.io/summary/new_code?id=pieker">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=pieker&metric=alert_status" alt="Quality Gate Status"/>
+  </a>
+</p>
+
 <hr/>
 
 PIEKER (from _piken_ [german]: to poke, to prick; and _kieken_ [northern german]: (curiously) look for something) is a
 testing and validation platform for distributed software systems that aims to provide a comprehensive solution for
 integration and end-to-end testing in multi-service and cloud environments.
 
-### Project Status
-
-🚧 Under development (Proof of Concept)
+**Project Status:** 🚧 Under development (Proof of Concept)
 
 For an overview of the development progress, see the [Roadmap](#roadmap).
 
@@ -118,7 +125,7 @@ definition, parsing, and generating test code from Gherkin feature files.
 - [x] Initial concept and project setup
 - [x] Define and implement architecture meta-model
 - [x] Define and implement DSL for test specification
-- [ ] _Automatic generation of test code from DSL_
+- [x] Automatic generation of test code from DSL
 - [ ] _Automatic injection of test code into test containers and architectures_
 - [ ] Automatic deployment of a test environment
 - [ ] Automatic test execution and evaluation
