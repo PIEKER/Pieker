@@ -1,0 +1,74 @@
+Thread.ofVirtual().start(() -> {
+            try {
+                #if ($after)
+                // --after
+                Thread.sleep($after);
+                #end
+
+                log("Thread " + trafficIdent + " started!");
+
+                #if ($timeout)
+                long endTime = System.currentTimeMillis() + $timeout;
+                #end
+
+                // TRAFFIC BODY
+                #if ($times)
+                // -- times
+                for (int i = 0; i < $times; i++) {
+                #elseif ($retry)
+                // -- retry for x seconds
+                long trafficUntil = System.currentTimeMillis() + $retry;
+                long timer = System.currentTimeMillis();
+                while (timer < trafficUntil){
+                #else
+                for (int i = 0; i < 1; i++) {
+                #end
+                    #if ($timeout)
+                    // TIMEOUT
+                    if (System.currentTimeMillis() >= endTime) break;
+                    #end
+
+                    // -- TRAFFIC CONDITIONS
+                    #if($delay)
+                    // --delay
+                    delay($delay)
+                    #end
+
+                    #if($dropout)
+                    // --dropout
+                    dropout($dropout)
+                    #end
+
+                    // TRAFFIC HERE
+                    ResponseTuple r = new ResponseTuple("EMPTY", 0);
+                    #if ($query)
+                    r = executeSQL(url, user, pass, $query);
+                    #end
+
+                    #if ($requestUrl)
+                    r = sendHttpRequest("$requestUrl",
+                                        "$requestMethod",
+                                        $requestConnTimeout, $requestReadTimeout,
+                                        jsonToMap("$requestHeaders"),
+                                        "$requestBody");
+                    #end
+
+                    #if($enableLogging == true)
+                    log(r.toString());
+                    #end
+
+                    #if ($retry)
+                    timer = System.currentTimeMillis();
+                    #end
+                }
+
+                log("Thread " + trafficIdent + " finished!");
+            } catch (InterruptedException e) {
+                log("Thread " + trafficIdent + " was interrupted!");
+                Thread.currentThread().interrupt();
+            } catch (IOException e) {
+                log("Thread" + trafficIdent + " failed due to IOException: " + e.getMessage());
+            } catch (URISyntaxException e) {
+                log("Thread" + trafficIdent + " failed due to URISyntaxException: " + e.getMessage());
+            }
+        });

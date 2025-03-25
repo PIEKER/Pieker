@@ -1,0 +1,19 @@
+components:
+
+  - name: "serviceA"
+    provides:
+      interfaceType: HTTP_API
+    dependencies:
+      - type: HTTP_API
+        target: "serviceC"
+        targetUrlEnv: "SERVICE_C_URL"
+      - type: STORAGE
+        target: "db"
+        usernameEnv: "DB_USERNAME"
+        passwordEnv: "DB_PASSWORD"
+
+  - name: "serviceB"
+    dependencies:
+      - type: HTTP_API
+        target: "serviceD"
+        targetUrlEnv: "SERVICE_D_URL"

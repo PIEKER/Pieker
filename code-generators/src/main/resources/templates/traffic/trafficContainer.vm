@@ -1,0 +1,111 @@
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+import org.json.JSONObject; // requires json.jar
+
+//TRAFFIC-CONTAINER
+public class $className {
+    private static final String LOG_FILE = "/app/logs/proxy.log";
+
+    public static void main(String[] args) {
+
+        ${threadBody}
+
+    }
+
+    // -- SQL
+    public static ResponseTuple executeSQL(String dbUrl, String dbUser, String dbPassword, String sqlQuery) {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+             Statement statement = connection.createStatement()) {
+
+            boolean hasResultSet = statement.execute(sqlQuery);
+
+            if (hasResultSet) {
+                try (ResultSet resultSet = statement.getResultSet()) {
+                    return new ResponseTuple("request size: " + resultSet.getFetchSize(), 200);
+                }
+            } else {
+                int affectedRows = statement.getUpdateCount();
+                return new ResponseTuple("Query executed successfully, affected rows: " + affectedRows, 200);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseTuple("[SQL-ERROR] " + e.getMessage(), 400);
+        }
+    }
+
+    // -- perform HTTP
+    public static ResponseTuple sendHttpRequest(String urlString, String requestMethod, int connectTimeout, int readTimeout,
+                                         Map<String, String> headers, String requestBody) throws IOException, URISyntaxException {
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        // Set request method and timeouts
+        connection.setRequestMethod(requestMethod);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
+        connection.setDoOutput(true);
+
+        // Set headers
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            connection.setRequestProperty(header.getKey(), header.getValue());
+        }
+
+        // Write request body if applicable
+        InputStream inputStream = getInputStream(requestBody, connection);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            return new ResponseTuple(response.toString(), connection.getResponseCode());
+        }
+    }
+
+    private static InputStream getInputStream(String requestBody, HttpURLConnection connection) throws IOException {
+        if (requestBody != null && !requestBody.isEmpty()) {
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+        }
+
+        // Read response
+        return (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST)
+                ? connection.getInputStream() : connection.getErrorStream();
+    }
+
+    public static Map<String, String> jsonToMap(String jsonString) {
+        Map<String, String> map = new HashMap<>();
+        if (jsonString == null || jsonString.isEmpty()) {
+            return map;
+        }
+        JSONObject jsonObject = new JSONObject(jsonString);
+        for (String key : jsonObject.keySet()) {
+            map.put(key, jsonObject.getString(key));
+        }
+        return map;
+    }
+
+    private static void log(String message) {
+        try (FileWriter writer = new FileWriter(LOG_FILE, true)) {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            writer.write(timestamp + " - " + message + System.lineSeparator());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private record ResponseTuple(String response, int statusCode){
+        public String toString(){
+            return "REQUEST-STATUS{" + this.statusCode + "} REQUEST-MESSAGE{" + this.response + "}";
+        }
+    }
+}
