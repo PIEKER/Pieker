@@ -46,6 +46,8 @@ jobs:
 
       - name: SonarQube Scan
         run: ./gradlew sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Assemble Project
         run: ./gradlew assemble
