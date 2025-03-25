@@ -11,18 +11,29 @@ on:
       - dev
 
 jobs:
-  test-and-build:
+  build:
+    name: Build and Analyze
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           java-version: '23'
           distribution: 'temurin'
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -30,11 +41,15 @@ jobs:
       - name: Test Project
         run: ./gradlew test
 
+      - name: SonarQube Scan
+        run: ./gradlew sonar
+
       - name: Assemble Project
         run: ./gradlew assemble
 
 
   dependency-submission:
+    name: Submit Dependency Graph
     runs-on: ubuntu-latest
     permissions:
       contents: write
