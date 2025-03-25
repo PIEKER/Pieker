@@ -65,8 +65,9 @@ subprojects {
 
 sonar {
     properties {
-        property("sonar.projectKey", "PIEKER_Pieker")
+        property("sonar.projectKey", "pieker")
         property("sonar.organization", "pieker")
         property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", System.getenv("SONAR_TOKEN"))
     }
 }
