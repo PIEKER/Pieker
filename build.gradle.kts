@@ -53,6 +53,11 @@ subprojects {
     tasks.withType<JavaExec> {
         classpath = sourceSets.main.get().runtimeClasspath
         systemProperty("logback.configurationFile", "config/logback.xml")
+        project.properties.forEach { (k, v) ->
+            if (v != null) {
+                systemProperty(k, v.toString())
+            }
+        }
     }
 
     sourceSets {
