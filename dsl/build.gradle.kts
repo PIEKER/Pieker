@@ -1,7 +1,7 @@
 dependencies {
     // Internal
     implementation(project(":common"))
-    implementation(project(":code-generators"))
+    implementation(project(":generators"))
 
     // External
     implementation("org.antlr:antlr4-runtime:4.13.2")

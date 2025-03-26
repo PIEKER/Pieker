@@ -1,4 +1,4 @@
-package pieker.code.generators;
+package pieker.generators.code;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;

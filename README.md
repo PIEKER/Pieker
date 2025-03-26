@@ -1,7 +1,7 @@
 <br>
 <p align="center">
   <picture>
-    <img src="img/pieker-logo.svg" width="220">
+    <img src=".img/pieker-logo.svg" width="220">
   </picture>
 </p>
 <h3 align="center">Automated Testing Platform for Multi-Service Software Systems</h3>
@@ -36,9 +36,9 @@ For an overview of the development progress, see the [Roadmap](#roadmap).
 - [Modules](#modules)
     - [App-Module](#app-module)
     - [Architectures-Module](#architectures-module)
-    - [Code-Generators-Module](#code-generators-module)
-    - [Common-Module](#common-module)
+    - [Generators-Module](#generators-module)
     - [DSL-Module](#dsl-module)
+    - [Common-Module](#common-module)
 - [Roadmap](#roadmap)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -49,10 +49,9 @@ For an overview of the development progress, see the [Roadmap](#roadmap).
 Pieker
 ├── app               # PIEKER Application Module for Executable
 ├── architectures     # PIEKER Architectures Module
-├── code-generators   # PIEKER Code Generators Module
 ├── common            # Module for common classes and utilities
 ├── dsl               # PIEKER DSL Module
-├── img               # Image files
+├── generators        # PIEKER Generators Module
 └── config            # General configuration files
 ```
 
@@ -97,19 +96,14 @@ generating, modifying, and assembling models for different architectures like Do
 - Documentation: [Architecture-README](./architectures/README.md)
 - Maintainer: [@simohlsen](https://github.com/simohlsen)
 
-### Code-Generators-Module
+### Generators-Module
 
-This module contains classes to dynamically generate test code for test containers based on DSL inputs.
+This module contains classes to dynamically generate test code for test containers and the corresponding container 
+images based on DSL inputs.
 
-- Directory: [`code-generators/`](./code-generators)
-- Documentation: [Code-Generators-README](./code-generators/README.md)
+- Directory: [`generators/`](./generators)
+- Documentation: [Code-Generators-README](./generators/README.md)
 - Maintainer: [@YIllmann](https://github.com/YIllmann), [@simohlsen](https://github.com/simohlsen)
-
-### Common-Module
-
-This module contains classes for common utilities and functionalities used in other modules.
-
-- Directory: [`common/`](./common)
 
 ### DSL-Module
 
@@ -119,6 +113,12 @@ definition, parsing, and generating test code from Gherkin feature files.
 - Directory: [`dsl/`](./dsl)
 - Documentation: [DSL-README](./dsl/README.md)
 - Maintainer: [@YIllmann](https://github.com/YIllmann)
+
+### Common-Module
+
+This module contains classes for common utilities and functionalities used in other modules.
+
+- Directory: [`common/`](./common)
 
 ## Roadmap
 
@@ -143,6 +143,6 @@ This project is part of two Master's theses at the Software Engineering Group of
 by Donner & Reuschel AG, Hamburg, Germany.
 
 <p align="center">
-  <img src="img/cau-logo.svg" alt="Kiel University Logo" height="50" hspace="50" vspace="20"/>
-  <img src="img/dur-logo.svg" alt="Donner & Reuschel AG Logo" height="90" hspace="50"/>
+  <img src=".img/cau-logo.svg" alt="Kiel University Logo" height="50" hspace="50" vspace="20"/>
+  <img src=".img/dur-logo.svg" alt="Donner & Reuschel AG Logo" height="90" hspace="50"/>
 </p>

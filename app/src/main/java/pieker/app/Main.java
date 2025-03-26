@@ -2,7 +2,7 @@ package pieker.app;
 
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
-import pieker.code.generators.step.Generator;
+import pieker.generators.code.step.Generator;
 import pieker.dsl.model.Feature;
 
 import java.io.IOException;

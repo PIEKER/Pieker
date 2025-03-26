@@ -1,11 +1,11 @@
-package pieker.code.generators.step;
+package pieker.generators.code.step;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import pieker.code.generators.PiekerCodeGenerationException;
-import pieker.code.generators.VelocityTemplateProcessor;
+import pieker.generators.code.PiekerCodeGenerationException;
+import pieker.generators.code.VelocityTemplateProcessor;
 import pieker.common.ScenarioProxyComponent;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.ScenarioTrafficComponent;
