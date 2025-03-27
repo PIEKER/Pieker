@@ -76,13 +76,14 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
     @Override
     public <T extends ComposeComponent> void prependComponent(T proxy, ComposeComponent targetComponent) throws ComponentInjectionException {
-        ComponentLink.LinkType linkType = targetComponent.getProvidedInterfaceType();
-        if (linkType == null) {
+        ComponentLink.LinkType interfaceType = targetComponent.getProvidedInterfaceType();
+        if (interfaceType == null) {
             throw new ComponentInjectionException("Provided component type is null for target component: %s".formatted(targetComponent.getName()));
         }
-        switch (linkType) {
+        switch (interfaceType) {
             case HTTP_API -> {
                 ((ComposeService) proxy).setImage(proxy.getName());
+                ((ComposeService) proxy).addPortMappings(Map.of("80", "80", "42690", "42690"));
                 // TODO: Set env values of proxy for target
                 this.model.addLink(HttpApiLink.createForProxy(proxy, targetComponent));
             }
@@ -104,7 +105,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         this.model.addLink(proxyToTargetLink);
         final String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
         final String targetUrlValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getUrlVarName());
-        proxyComponent.setPorts(Map.of("80", "80", "81196", "81196"));
+        proxyComponent.addPortMappings(Map.of("80", "80", "42690", "42690"));
 
         if (existingLink.getPortVarName() != null && sourcePortVarValue != null) {
             proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getPortVarName(), sourcePortVarValue));
