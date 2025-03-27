@@ -2,6 +2,7 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import pieker.common.Assertions;
 import pieker.dsl.code.component.*;
 import pieker.common.Template;
 
@@ -87,5 +88,9 @@ public class Step {
 
     public void migrateBeforeEach(Step beforeEach) {
         beforeEach.testComponentMap.forEach((k,v) -> this.testComponentMap.put(k, v.copy()));
+    }
+
+    protected List<Assertions> getEvaluationList(){
+        return (this.then != null) ? this.then.getEvaluationList() : new ArrayList<>();
     }
 }

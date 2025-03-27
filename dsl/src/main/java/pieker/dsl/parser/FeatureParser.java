@@ -6,7 +6,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.antlr.gen.PiekerParser;
 import pieker.dsl.antlr.gen.PiekerParserBaseListener;
-import pieker.dsl.Keyword;
 import pieker.dsl.model.*;
 import pieker.dsl.model.assertions.Assert;
 import pieker.dsl.model.assertions.DatabaseAssert;
@@ -268,7 +267,7 @@ public class FeatureParser extends PiekerParserBaseListener {
             DatabaseAssert ass = new DatabaseAssert(ctxDatabaseBody.identifier().line().getText());
 
             PiekerParser.TableBodyContext ctxTableBody = ctxDatabaseBody.tableBody();
-            ass.setTable(ctxTableBody.line().getText());
+            ass.setTableSelect(ctxTableBody.line().getText());
             this.createAssertFunctionLists(then, ass,
                     ctxTableBody.assertBool(), ctxTableBody.assertEquals(), ctxTableBody.assertNull());
         }

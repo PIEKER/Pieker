@@ -182,8 +182,8 @@ public class Converter {
         // assert
         for (Assert ass: then.getAssertList()){
             if (ass instanceof DatabaseAssert databaseAssert){
-                databaseAssert.setTable(loadFileFromString(databaseAssert.getTable()));
-                databaseAssert.setTable(injectVariablesInString(databaseAssert.getTable(), scope));
+                databaseAssert.setTableSelect(loadFileFromString(databaseAssert.getTableSelect()));
+                databaseAssert.setTableSelect(injectVariablesInString(databaseAssert.getTableSelect(), scope));
             }
 
             ass.getBoolList().forEach(assertBool -> {
