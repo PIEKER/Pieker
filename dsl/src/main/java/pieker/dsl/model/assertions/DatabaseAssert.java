@@ -19,6 +19,9 @@ import java.util.List;
 @Slf4j
 public class DatabaseAssert extends Assert {
 
+    private static final String SELECT = "SELECT ";
+    private static final String WHERE = " WHERE ";
+    private static final String VALUE = " value: ";
     private static final String UUID = java.util.UUID.randomUUID().toString().replace("-","_");
     private final String assertableTableName = "assert_" + this.identifier+ "_" + UUID;
     private final String assertableTableQuery = "CREATE TABLE " + this.assertableTableName + " AS ";
@@ -70,13 +73,14 @@ public class DatabaseAssert extends Assert {
     protected void evaluateBoolNode(Bool bool, String[] args) {
         String[] values = Util.getArgumentsFromString(bool.getValue());
         if (values.length == 0 || values.length > 2){
-            String error = "invalid amount of arguments on an assertBool value! args: " + values.length + " value: " + bool.getValue();
+            String error = "invalid amount of arguments on an assertBool value! args: " + values.length + VALUE + bool.getValue();
             log.error(error);
             bool.setErrorMessage(error);
+            return;
         }
-        String query = "SELECT " + values[0];
+        String query = SELECT + values[0];
         if (values.length == 2){
-            query += " WHERE " + values[1];
+            query += WHERE + values[1];
         }
 
         String result = pieker.common.connection.Sql.send(this.identifier, args[1], args[2], args[3], query);
@@ -87,13 +91,14 @@ public class DatabaseAssert extends Assert {
     protected void evaluateEqualsNode(Equals equals, String[] args){
         String[] values = Util.getArgumentsFromString(equals.getValue());
         if (values.length == 0 || values.length > 2){
-            String error = "invalid amount of arguments on an assertEquals value! args: " + values.length + " value: " + equals.getValue();
+            String error = "invalid amount of arguments on an assertEquals value! args: " + values.length + VALUE + equals.getValue();
             log.error(error);
             equals.setErrorMessage(error);
+            return;
         }
-        String query = "SELECT " + values[0];
+        String query = SELECT + values[0];
         if (values.length == 2){
-            query += " WHERE " + values[1];
+            query += WHERE + values[1];
         }
 
         String result = pieker.common.connection.Sql.send(this.identifier, args[1], args[2], args[3], query);
@@ -104,13 +109,14 @@ public class DatabaseAssert extends Assert {
     protected void evaluateNullNode(Null nuLL, String[] args){
         String[] values = Util.getArgumentsFromString(nuLL.getValue());
         if (values.length == 0 || values.length > 2){
-            String error = "invalid amount of arguments on an assertNull value! args: " + values.length + " value: " + nuLL.getValue();
+            String error = "invalid amount of arguments on an assertNull value! args: " + values.length + VALUE + nuLL.getValue();
             log.error(error);
             nuLL.setErrorMessage(error);
+            return;
         }
-        String query = "SELECT " + values[0];
+        String query = SELECT + values[0];
         if (values.length == 2){
-            query += " WHERE " + values[1];
+            query += WHERE + values[1];
         }
 
         String result = pieker.common.connection.Sql.send(this.identifier, args[1], args[2], args[3], query);

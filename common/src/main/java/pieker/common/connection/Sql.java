@@ -17,15 +17,31 @@ public class Sql {
 
             if (hasResultSet) {
                 try (ResultSet resultSet = statement.getResultSet()) {
-                    return resultSet.toString();
+                    return createResultString(resultSet);
                 }
             } else {
                 int affectedRows = statement.getUpdateCount();
-                return "Query executed successfully, affected rows: {}" + affectedRows;
+                return "Query executed successfully, affected rows: " + affectedRows;
             }
         } catch (SQLException e) {
             log.error("exception occurred while sending SQL to database {}. Exception: {}", database, e.getMessage());
             return "ERROR ON SQL";
         }
+    }
+
+    private static String createResultString(ResultSet resultSet) throws SQLException {
+        StringBuilder resultString = new StringBuilder();
+        int columnCount = resultSet.getMetaData().getColumnCount();
+
+        while (resultSet.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                resultString.append(resultSet.getString(i));
+                if (i < columnCount) {
+                    resultString.append(", "); // Separator for columns
+                }
+            }
+            resultString.append("|"); // New line for each row
+        }
+        return resultString.toString();
     }
 }

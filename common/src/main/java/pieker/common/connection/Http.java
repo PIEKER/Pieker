@@ -65,7 +65,7 @@ public class Http {
                 ? connection.getInputStream() : connection.getErrorStream();
     }
 
-    public static Map<String, String> jsonToMap(String jsonString) {
+    private static Map<String, String> jsonToMap(String jsonString) {
         Map<String, String> map = new HashMap<>();
         if (jsonString == null || jsonString.isEmpty()) {
             return map;
