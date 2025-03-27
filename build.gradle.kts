@@ -48,6 +48,9 @@ subprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        project.properties.forEach { (key, value) ->
+            systemProperty(key, value.toString())
+        }
     }
 
     tasks.withType<JavaExec> {
