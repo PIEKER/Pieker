@@ -36,9 +36,10 @@ For an overview of the development progress, see the [Roadmap](#roadmap).
 - [Modules](#modules)
     - [App-Module](#app-module)
     - [Architectures-Module](#architectures-module)
-    - [Generators-Module](#generators-module)
-    - [DSL-Module](#dsl-module)
     - [Common-Module](#common-module)
+    - [DSL-Module](#dsl-module)
+    - [Evaluator-Module](#evaluator-module)
+    - [Generators-Module](#generators-module)
 - [Roadmap](#roadmap)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -51,6 +52,7 @@ Pieker
 ├── architectures     # PIEKER Architectures Module
 ├── common            # Module for common classes and utilities
 ├── dsl               # PIEKER DSL Module
+├── evaluator         # PIEKER Evaluation Module
 ├── generators        # PIEKER Generators Module
 └── config            # General configuration files
 ```
@@ -96,14 +98,11 @@ generating, modifying, and assembling models for different architectures like Do
 - Documentation: [Architecture-README](./architectures/README.md)
 - Maintainer: [@simohlsen](https://github.com/simohlsen)
 
-### Generators-Module
+### Common-Module
 
-This module contains classes to dynamically generate test code for test containers and the corresponding container 
-images based on DSL inputs.
+This module contains classes for common utilities and functionalities used in other modules.
 
-- Directory: [`generators/`](./generators)
-- Documentation: [Code-Generators-README](./generators/README.md)
-- Maintainer: [@YIllmann](https://github.com/YIllmann), [@simohlsen](https://github.com/simohlsen)
+- Directory: [`common/`](./common)
 
 ### DSL-Module
 
@@ -114,12 +113,22 @@ definition, parsing, and generating test code from Gherkin feature files.
 - Documentation: [DSL-README](./dsl/README.md)
 - Maintainer: [@YIllmann](https://github.com/YIllmann)
 
-### Common-Module
+### Evaluator-Module
 
-This module contains classes for common utilities and functionalities used in other modules.
+This module contains classes to start an evaluation of generated test output.
 
-- Directory: [`common/`](./common)
+- Directory: [`evaluator/`](./evaluator)
+- Maintainer: [@YIllmann](https://github.com/YIllmann)
 
+### Generators-Module
+
+This module contains classes to dynamically generate test code for test containers and the corresponding container 
+images based on DSL inputs.
+
+- Directory: [`generators/`](./generators)
+- Documentation: [Code-Generators-README](./generators/README.md)
+- Maintainer: [@YIllmann](https://github.com/YIllmann), [@simohlsen](https://github.com/simohlsen)
+- 
 ## Roadmap
 
 - [x] Initial concept and project setup
