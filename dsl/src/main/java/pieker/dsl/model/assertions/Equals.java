@@ -8,12 +8,14 @@ import pieker.common.Evaluation;
 @Getter
 public class Equals implements Evaluation {
 
+    private boolean isEqual;
     private String expected;
     private String value;
     private boolean success = false;
     private String errorMessage = "";
 
-    public Equals(String expected, String value) {
+    public Equals(boolean isEqual, String expected, String value) {
+        this.isEqual = isEqual;
         this.expected = expected;
         this.value = value;
     }
@@ -24,7 +26,7 @@ public class Equals implements Evaluation {
     }
 
     @Override
-    public void evaluate(String[] args) {
-        //todo
+    public void evaluate(String arg) {
+        this.success = this.isEqual == arg.trim().equals(this.expected.trim());
     }
 }

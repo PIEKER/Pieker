@@ -27,8 +27,8 @@ public abstract class Assert implements Assertions {
         this.boolList.add(new Bool(Util.parseBoolean(boolType), expression, value));
     }
 
-    public void addEqualsAssertion(String expected, String value){
-        this.equalsList.add(new Equals(expected, value));
+    public void addEqualsAssertion(String isEqual,String expected, String value){
+        this.equalsList.add(new Equals(Util.parseBoolean(isEqual), expected, value));
     }
 
     public void addNullAssertion(String isNull, String value){

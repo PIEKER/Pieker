@@ -2,6 +2,7 @@ package pieker.dsl.model.assertions;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.jexl3.*;
 import pieker.common.Evaluation;
 import pieker.dsl.code.exception.ValidationException;
 import pieker.dsl.util.Util;
@@ -43,7 +44,15 @@ public class Bool implements Evaluation {
         return this.getClass().getSimpleName();
     }
 
-    public void evaluate(String[] args){
-        //todo
+    public void evaluate(String arg){
+        try{
+            JexlEngine jexl = new JexlBuilder().create();
+            JexlExpression jexlExpression = jexl.createExpression(arg + " " + expression);
+            JexlContext context = new MapContext();
+            boolean result = (Boolean) jexlExpression.evaluate(context);
+            this.success = this.boolType == result;
+        } catch (JexlException e){
+            this.errorMessage = "Unable to evaluate boolean because of JexlException: " + e.getMessage();
+        }
     }
 }

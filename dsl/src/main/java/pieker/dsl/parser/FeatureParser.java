@@ -286,11 +286,14 @@ public class FeatureParser extends PiekerParserBaseListener {
             ass.addBoolAssertion(args[0].trim(), args[1].trim(), ctxBool.line().getText().trim());
         });
 
-        equalsContextList.forEach(ctxEquals ->
-                ass.addEqualsAssertion(
-                        ctxEquals.equalsHeader().line().getText().trim(),
-                        ctxEquals.line().getText().trim()
-                )
+        equalsContextList.forEach(ctxEquals -> {
+                String[] args = ctxEquals.equalsHeader().line().getText().trim().split("\\|");
+                if (args.length != 2) {
+                    throw new PiekerDslException(
+                            "invalid amount of arguments detected on Assert.EqualsHeader: " + then.getLine());
+                }
+                ass.addEqualsAssertion(args[0].trim(), args[1].trim(), ctxEquals.line().getText().trim());
+            }
         );
 
         nullContextList.forEach(ctxNull ->

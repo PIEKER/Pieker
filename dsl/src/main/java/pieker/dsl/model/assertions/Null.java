@@ -25,7 +25,7 @@ public class Null implements Evaluation {
     }
 
     @Override
-    public void evaluate(String[] args) {
-        // todo
+    public void evaluate(String arg) {
+        this.success = isNull == (arg == null || arg.isBlank());
     }
 }

@@ -12,6 +12,7 @@ import pieker.dsl.code.template.architecture.Sql;
 import pieker.dsl.util.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Setter
@@ -20,12 +21,14 @@ import java.util.List;
 public class DatabaseAssert extends Assert {
 
     private static final String SELECT = "SELECT ";
+    private static final String FROM = " FROM ";
+
     private static final String WHERE = " WHERE ";
     private static final String VALUE = " value: ";
-    private static final String UUID = java.util.UUID.randomUUID().toString().replace("-","_");
-    private final String assertableTableName = "assert_" + this.identifier+ "_" + UUID;
-    private final String assertableTableQuery = "CREATE TABLE " + this.assertableTableName + " AS ";
-    private String tableSelect;
+    private final String uuid = java.util.UUID.randomUUID().toString().replace("-","_");
+    private final String assertableTableName = "assert_" + this.identifier+ "_" + this.uuid;
+    protected final String assertableTableQuery = "CREATE TABLE " + this.assertableTableName + " AS ";
+    protected String tableSelect;
 
     public DatabaseAssert(String identifier) {
         super(identifier);
@@ -78,13 +81,14 @@ public class DatabaseAssert extends Assert {
             bool.setErrorMessage(error);
             return;
         }
-        String query = SELECT + values[0];
+        String query = SELECT + values[0] + FROM + this.assertableTableName;
         if (values.length == 2){
             query += WHERE + values[1];
         }
 
         String result = pieker.common.connection.Sql.send(this.identifier, args[1], args[2], args[3], query);
-        // todo
+        String[] valueList = result.split("\\|" );
+        Arrays.stream(valueList).forEach(bool::evaluate);
     }
 
     @Override
@@ -96,13 +100,14 @@ public class DatabaseAssert extends Assert {
             equals.setErrorMessage(error);
             return;
         }
-        String query = SELECT + values[0];
+        String query = SELECT + values[0] + FROM + this.assertableTableName;
         if (values.length == 2){
             query += WHERE + values[1];
         }
 
         String result = pieker.common.connection.Sql.send(this.identifier, args[1], args[2], args[3], query);
-        // todo
+        String[] valueList = result.split("\\|" );
+        Arrays.stream(valueList).forEach(equals::evaluate);
     }
 
     @Override
@@ -114,13 +119,15 @@ public class DatabaseAssert extends Assert {
             nuLL.setErrorMessage(error);
             return;
         }
-        String query = SELECT + values[0];
+        String query = SELECT + values[0] + FROM + this.assertableTableName;
         if (values.length == 2){
             query += WHERE + values[1];
         }
 
         String result = pieker.common.connection.Sql.send(this.identifier, args[1], args[2], args[3], query);
-        // todo
+        String[] valueList = result.split("\\|" );
+        if (valueList.length == 0) nuLL.setSuccess(nuLL.isNull());
+        Arrays.stream(valueList).forEach(nuLL::evaluate);
     }
 
     @Override
