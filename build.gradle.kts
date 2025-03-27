@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("application")
 }
 
 allprojects {
@@ -9,6 +10,12 @@ allprojects {
     repositories {
         mavenCentral()
     }
+}
+
+application {
+    applicationDefaultJvmArgs = listOf(
+        "-DprojectPath=${project.projectDir.absolutePath}"
+    )
 }
 
 subprojects {
@@ -51,6 +58,7 @@ subprojects {
         project.properties.forEach { (key, value) ->
             systemProperty(key, value.toString())
         }
+        systemProperty("projectRoot", project.projectDir.absolutePath.toString() + "/../")
     }
 
     tasks.withType<JavaExec> {
@@ -61,6 +69,7 @@ subprojects {
                 systemProperty(k, v.toString())
             }
         }
+        systemProperty("projectRoot", project.projectDir.absolutePath.toString() + "/../")
     }
 
     sourceSets {

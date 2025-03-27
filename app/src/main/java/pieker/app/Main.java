@@ -39,7 +39,7 @@ public class Main {
                 getMode(argumentHandler)
                 );
 
-        Feature feature = pieker.dsl.Main.parse(argumentHandler.dslFilePath, argumentHandler.dslResourceDirectory);
+        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"));
 
         if (argumentHandler.validateOnly){
             pieker.dsl.code.Engine.validate(feature);

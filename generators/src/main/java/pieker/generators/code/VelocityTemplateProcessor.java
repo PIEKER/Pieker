@@ -5,6 +5,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,13 +17,13 @@ import java.util.Properties;
  */
 public class VelocityTemplateProcessor {
 
+    protected final String outputDirectory;
     private final VelocityEngine velocityEngine;
     private final String templateDirectory;
-    protected final String outputDirectory;
 
     public VelocityTemplateProcessor() {
         this.templateDirectory = "templates/";
-        this.outputDirectory = "../.gen/";
+        this.outputDirectory = System.getProperty("projectRoot") + "/" + System.getProperty("genDir") + "/" + System.getProperty("executionName");
         this.velocityEngine = initVelocityEngine();
     }
 
@@ -73,12 +74,27 @@ public class VelocityTemplateProcessor {
      * @param templatePath Path to template file
      * @param context      Velocity context containing data for filling template
      * @param fileName     Name of the file to save the processed template to
-     * @throws Exception If an error occurs during file writing
+     * @throws IOException If an error occurs during file writing
      */
-    public void processTemplate(String templatePath, VelocityContext context, String fileName) throws Exception {
+    public void processTemplate(String templatePath, VelocityContext context, String fileName) throws IOException {
         Template template = loadTemplate(templatePath);
         String content = fillTemplate(template, context);
         saveToFile(content, this.outputDirectory + fileName);
+    }
+
+    /**
+     * Processes the given template with provided data and saves it to a file with the given name.
+     *
+     * @param templatePath    Path to template file
+     * @param context         Velocity context containing data for filling template
+     * @param fileName        Name of the file to save the processed template to
+     * @param outputDirectory Directory to save the file to
+     * @throws IOException If an error occurs during file writing
+     */
+    public void processTemplate(String templatePath, VelocityContext context, String fileName, String outputDirectory) throws IOException {
+        Template template = loadTemplate(templatePath);
+        String content = fillTemplate(template, context);
+        saveToFileAt(content, Path.of(outputDirectory + fileName));
     }
 
     /**
@@ -112,12 +128,16 @@ public class VelocityTemplateProcessor {
      *
      * @param content  Content string
      * @param fileName File name to save content to (uses output directory)
-     * @throws Exception If an error occurs during file writing
+     * @throws IOException If an error occurs during file writing
      */
-    public void saveToFile(String content, String fileName) throws Exception {
-        Files.createDirectories(Path.of(this.outputDirectory + fileName).getParent());
-        try (FileWriter writer = new FileWriter(this.outputDirectory + fileName)) {
-            writer.write(content);
+    public void saveToFile(String content, String fileName) throws IOException {
+        try {
+            Files.createDirectories(Path.of(this.outputDirectory + fileName).getParent());
+            try (FileWriter writer = new FileWriter(this.outputDirectory + fileName)) {
+                writer.write(content);
+            }
+        } catch (Exception e) {
+            throw new IOException("Failed to save file: " + e.getMessage());
         }
     }
 
@@ -126,13 +146,18 @@ public class VelocityTemplateProcessor {
      *
      * @param content    Content string
      * @param outputPath File path to save content to
-     * @throws Exception If an error occurs during file writing
+     * @throws IOException If an error occurs during file writing
      */
-    public void saveToFileAt(String content, Path outputPath) throws Exception {
-        Files.createDirectories(outputPath.getParent());
-        try (FileWriter writer = new FileWriter(outputPath.toString())) {
-            writer.write(content);
+    public void saveToFileAt(String content, Path outputPath) throws IOException {
+        try {
+            Files.createDirectories(outputPath.getParent());
+            try (FileWriter writer = new FileWriter(outputPath.toString())) {
+                writer.write(content);
+            }
+        } catch (Exception e) {
+            throw new IOException("Failed to save file: " + e.getMessage());
         }
+
     }
 
 }
