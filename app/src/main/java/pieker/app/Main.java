@@ -2,7 +2,7 @@ package pieker.app;
 
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
-import pieker.generators.code.step.Generator;
+import pieker.generators.code.step.StepGenerator;
 import pieker.dsl.model.Feature;
 
 import java.io.IOException;
@@ -47,15 +47,15 @@ public class Main {
         }
 
         pieker.dsl.code.Engine.run(feature);
-        feature.getScenarioTestPlanList().forEach(Generator::createScenarioJson);
+        feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
         if (argumentHandler.dslConfigOnly) return;
 
         log.debug("starting to create test-components.");
         feature.getScenarioTestPlanList().forEach(scenario -> {
             scenario.getTrafficComponents().forEach(
-                    c -> Generator.generateTrafficComponent(scenario.getName(), c));
+                    c -> StepGenerator.generateTrafficComponent(scenario.getName(), c));
             scenario.getProxyComponents().forEach(
-                    c -> Generator.generateProxyComponent(scenario.getName(), c));
+                    c -> StepGenerator.generateProxyComponent(scenario.getName(), c));
         });
         log.info("finished to create test-Components.");
 

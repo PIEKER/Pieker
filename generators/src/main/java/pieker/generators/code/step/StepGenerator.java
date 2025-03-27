@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import pieker.generators.code.PiekerCodeGenerationException;
+import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 import pieker.common.ScenarioProxyComponent;
 import pieker.common.ScenarioTestPlan;
@@ -21,19 +21,19 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class Generator {
+public class StepGenerator {
 
     private static final String PROXY_TEMPLATE_FILE = "proxyServer.vm";
     private static final String TRAFFIC_THREAD_TEMPLATE_FILE = "traffic/thread.vm";
     private static final String TRAFFIC_CONTAINER_TEMPLATE_FILE = "traffic/trafficContainer.vm";
     private static final String TIMESTAMP = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss"));
     private static final String DEFAULT_FILENAME = "Default";
-    private static final String OUTPUT_DIR = ".gen/";
+    private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
     private static final String CLASS_NAME = "className";
     private static final String ENABLE_LOGS = "enableLogging";
     private static final VelocityTemplateProcessor VELOCITY = new VelocityTemplateProcessor(OUTPUT_DIR);
 
-    private Generator() {}
+    private StepGenerator() {}
 
     public static void createScenarioJson(ScenarioTestPlan scenario){
         ObjectMapper om = new ObjectMapper();
@@ -46,7 +46,7 @@ public class Generator {
                     new File(path, scenario.getName() + ".json"), scenario);
             log.info("JSON file created successfully for {}!", scenario.getName());
         } catch (IOException e) {
-            throw new PiekerCodeGenerationException("unable to create JSON file for "
+            throw new CodeGenerationException("unable to create JSON file for "
                     + scenario.getName()
                     + ". Error: " + e.getMessage());
         }
@@ -104,7 +104,7 @@ public class Generator {
                     String thread = VELOCITY.fillTemplate(template, ctx);
                     threadBody.append(thread.concat("\n\t\t"));
                 } else {
-                    throw new PiekerCodeGenerationException("unknown traffic type detected. " +
+                    throw new CodeGenerationException("unknown traffic type detected. " +
                             "No code template applicable to type: '" + trafficType + "'.");
                 }
             }

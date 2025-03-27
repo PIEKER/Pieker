@@ -27,7 +27,6 @@ class VelocityTemplateGeneratorTest {
         String content = velocityTemplateProcessor.fillTemplate(t, context);
 
         velocityTemplateProcessor.saveToFile(content, "MultiStepProxy.java");
-
     }
 
 }
