@@ -18,9 +18,7 @@ Feature: Example System Running Example Thesis
         @service service-b
         @service service-c
         @database db
-
-        @passive @request passive-get-counter | service-c | $get-counter
-
+        @passive @request passive-get-counter | service-a | $get-counter
       When:
         @delay [service-a, service-b] | 2
         @delay db | 3
@@ -43,10 +41,10 @@ Feature: Example System Running Example Thesis
       Then:
         Assert:
           Traffic:
-            Identifier: passive-get-counter
+            Identifier: post-message
             Bool: True | < 100
               @times
-            Equals: 200
+            Equals: True | 200
               @status
             Null: False
               @content
@@ -67,12 +65,13 @@ Feature: Example System Running Example Thesis
         @delay 1a-post-message | 0.5
 
       Then:
+        LogAll: passive-get-counter
         Assert:
           Traffic:
             Identifier: 1b-get-counter
               Bool: True | < 100
                 @times
-              Equals: 200
+              Equals: True| 200
                 @status
               Null: False
                 @content
@@ -82,7 +81,7 @@ Feature: Example System Running Example Thesis
             Table: SELECT * FROM DataEntity de
               Null: False
                 de.id |
-              Equals: I am an important message!
+              Equals: True | I am an important message!
                 de.content | de.id = 1
               Bool: True | < 100
                 COUNT(de.content)|
