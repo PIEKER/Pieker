@@ -27,7 +27,7 @@ public class Engine {
         for (Scenario scenario : feature.getScenarioList()){
             log.debug("processing Scenario {}", scenario.getName());
             processTestScenario(scenario);
-            createArchitectureDraft(scenario);
+            createTestComponents(scenario);
             log.info("finished processing Scenario {}", scenario.getName());
         }
     }
@@ -74,7 +74,7 @@ public class Engine {
     /*
         -- ARCHITECTURE
      */
-    private static void createArchitectureDraft(Scenario scenario) {
+    private static void createTestComponents(Scenario scenario) {
         log.debug("creating architecture draft for Scenario {}", scenario.getName());
         createSupervisorSteps(scenario);
         createTrafficContainerList(scenario);
