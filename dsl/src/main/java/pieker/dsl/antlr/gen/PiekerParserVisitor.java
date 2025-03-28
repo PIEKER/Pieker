@@ -1,4 +1,4 @@
-// Generated from C:/Users/Yannick.Illmann/IdeaProjects/Pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
+// Generated from H:/Uni/Master/Semester-5/pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
 package pieker.dsl.antlr.gen;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -124,6 +124,12 @@ public interface PiekerParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssert(PiekerParser.AssertContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PiekerParser#assertAfter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssertAfter(PiekerParser.AssertAfterContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PiekerParser#databaseBlock}.
 	 * @param ctx the parse tree

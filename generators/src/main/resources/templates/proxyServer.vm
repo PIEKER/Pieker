@@ -1,0 +1,162 @@
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+
+//PROXY-SERVER
+public class $className {
+    private static final String LOG_FILE = "/app/logs/proxy.log";
+    private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
+    private static final Random RANDOM = new Random();
+
+    #if($after)
+    // --after
+    private static final long AFTER_TIME = $after;
+    private static final long BLOCKED_UNTIL = BOOT_TIMESTAMP + AFTER_TIME;
+    #end
+    #if($timeout)
+    // --timeout
+    private static final long TIMEOUT = $timeout
+    private static final long BLOCKED_TIMEOUT =  BOOT_TIMESTAMP + TIMEOUT
+    #end
+
+    public static void main(String[] args) throws Exception {
+        // Create an HTTP server that listens on port 80
+        HttpServer server = HttpServer.create(new InetSocketAddress(80), 1024);
+
+        String host = System.getenv("TARGET-PROXY-HOST");
+        String port = System.getenv("TARGET-PROXY-PORT");
+
+        if (host == null || host.isBlank()){
+            throw new RuntimeException("unable to start server: no host-url in system found.");
+        }
+        if (port == null || port.isBlank()){
+            throw new RuntimeException("unable to start server: no host-url in system found.");
+        }
+
+        // Define the root context ("/")
+        server.createContext("/", exchange -> {
+            long currentMillis = System.currentTimeMillis();
+
+            /*
+             -- DSL LOGIC START
+             */
+
+            #if($after)
+            // --after
+            if (currentMillis <= BLOCKED_UNTIL) return;
+            #end
+
+            #if($timeout)
+            // --timeout
+            if (TIMEOUT != -1 && currentMillis > BLOCKED_TIMEOUT) return;
+            #end
+
+            #if($delay)
+            // --delay
+            delay($delay);
+            #end
+
+            #if($dropout)
+            // --dropout
+            if (dropout($dropout)) return;
+            #end
+
+            /*
+             -- DSL LOGIC END
+             */
+
+            String targetUrl = host + ":" + port + exchange.getRequestURI();
+            proxy(exchange, targetUrl); // -- BOILERPLATE PROXY
+        });
+
+        // Start the server
+        server.start();
+        log("Proxy is running on port 80");
+    }
+
+    private static void proxy(HttpExchange exchange, String targetUrl) throws IOException {
+            // Forward the request to the target service
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URI(targetUrl).toURL().openConnection();
+                connection.setRequestMethod(exchange.getRequestMethod());
+
+                // Copy headers from the client request to the target request
+                exchange.getRequestHeaders().forEach((key, values) ->
+                        values.forEach(value -> connection.addRequestProperty(key, value)));
+
+                // If the request has a body, forward it
+                if (exchange.getRequestBody() != null && ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod()))) {
+                    connection.setDoOutput(true);
+                    try (OutputStream outputStream = connection.getOutputStream()) {
+                        exchange.getRequestBody().transferTo(outputStream);
+                    }
+                }
+
+                int responseCode = connection.getResponseCode();
+                try (InputStream inputStream = connection.getInputStream();
+                     OutputStream responseBody = exchange.getResponseBody();
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                    #if($enableLogging == true)
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    log(new ResponseTuple(response.toString(), responseCode).toString());
+                    #end
+
+                    // Forward the response from the target service to the client
+                    exchange.sendResponseHeaders(responseCode, connection.getContentLengthLong());
+                    inputStream.transferTo(responseBody);
+                }
+            } catch (Exception e) {
+                // Handle errors and send a 500 response
+                exchange.sendResponseHeaders(500, 0);
+                try (OutputStream responseBody = exchange.getResponseBody()) {
+                    responseBody.write(e.getMessage().getBytes());
+                }
+                log("Error handling request: " + e.getMessage());
+            }
+        }
+
+    private static void log(String message) {
+        try (FileWriter writer = new FileWriter(LOG_FILE, true)) {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            writer.write(timestamp + " - " + message + System.lineSeparator());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private record ResponseTuple(String response, int statusCode){
+        public String toString(){
+            return "REQUEST-STATUS{" + this.statusCode + "} REQUEST-MESSAGE{" + this.response + "}";
+        }
+    }
+
+    /*
+        -- KEYWORD UTIL
+    */
+    public static void delay(long delay){
+        if (delay > 0){
+            try {
+                Thread.sleep(delay); // Pause execution for the specified time
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public static boolean dropout(double dropProbability){
+        return RANDOM.nextDouble() < dropProbability;
+    }
+}

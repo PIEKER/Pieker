@@ -4,7 +4,9 @@ import java.util.List;
 
 public interface TestStep {
 
-    List<TrafficTemplate> getSequence();
     String getId();
+    List<TrafficTemplate> getSequence();
+    List<TrafficTemplate> getEvaluationPreparationSequence();
+    int getAssertAfter();
 
 }

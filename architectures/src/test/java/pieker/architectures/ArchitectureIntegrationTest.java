@@ -76,6 +76,9 @@ class ArchitectureIntegrationTest {
         model.removeUnlinkedComponents();
         // As long as STORAGE is not supported, at least one component should be removed
         assertTrue(model.getAllComponents().size() < existingComponents + newComponents);
+
+        String genDir = System.getProperty("genDir");
+        ((ComposeArchitectureModel) model).toYamlFile("../" + genDir + "pieker-example-docker-compose.yml");
     }
 
     private ScenarioTestPlan getTestPlan() throws IOException {

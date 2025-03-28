@@ -6,7 +6,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.antlr.gen.PiekerParser;
 import pieker.dsl.antlr.gen.PiekerParserBaseListener;
-import pieker.dsl.Keyword;
 import pieker.dsl.model.*;
 import pieker.dsl.model.assertions.Assert;
 import pieker.dsl.model.assertions.DatabaseAssert;
@@ -244,6 +243,13 @@ public class FeatureParser extends PiekerParserBaseListener {
         }
 
         if (ctxThen.assert_() != null){
+            if (ctxThen.assert_().assertAfter() != null){
+                PiekerParser.AssertAfterContext ctxAssertAfter = ctxThen.assert_().assertAfter();
+                if (ctxAssertAfter.line() == null || ctxAssertAfter.line().getText().trim().isEmpty()){
+                    throw new PiekerDslException("invalid assertAfter detected at: " + then.getLine());
+                }
+                then.setAssertAfter(Integer.parseInt(ctxAssertAfter.line().getText().trim()));
+            }
             this.createDatabaseAssertions(ctxThen.assert_().databaseBlock(), then);
             this.createTrafficAssertions(ctxThen.assert_().trafficBlock(), then);
         }
@@ -268,7 +274,7 @@ public class FeatureParser extends PiekerParserBaseListener {
             DatabaseAssert ass = new DatabaseAssert(ctxDatabaseBody.identifier().line().getText());
 
             PiekerParser.TableBodyContext ctxTableBody = ctxDatabaseBody.tableBody();
-            ass.setTable(ctxTableBody.line().getText());
+            ass.setTableSelect(ctxTableBody.line().getText());
             this.createAssertFunctionLists(then, ass,
                     ctxTableBody.assertBool(), ctxTableBody.assertEquals(), ctxTableBody.assertNull());
         }
@@ -287,11 +293,14 @@ public class FeatureParser extends PiekerParserBaseListener {
             ass.addBoolAssertion(args[0].trim(), args[1].trim(), ctxBool.line().getText().trim());
         });
 
-        equalsContextList.forEach(ctxEquals ->
-                ass.addEqualsAssertion(
-                        ctxEquals.equalsHeader().line().getText().trim(),
-                        ctxEquals.line().getText().trim()
-                )
+        equalsContextList.forEach(ctxEquals -> {
+                String[] args = ctxEquals.equalsHeader().line().getText().trim().split("\\|");
+                if (args.length != 2) {
+                    throw new PiekerDslException(
+                            "invalid amount of arguments detected on Assert.EqualsHeader: " + then.getLine());
+                }
+                ass.addEqualsAssertion(args[0].trim(), args[1].trim(), ctxEquals.line().getText().trim());
+            }
         );
 
         nullContextList.forEach(ctxNull ->

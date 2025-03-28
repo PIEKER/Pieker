@@ -27,7 +27,7 @@ Feature:
             Identifier: s-A-foo
               Bool: True | < 10
                 @time
-              Equals: 200
+              Equals: true | 200
                 @status
               Null: false
                 @content
@@ -50,7 +50,7 @@ Feature:
               Identifier: s-A-foo
                 Bool: True | < 10
                   @time
-                Equals: 200
+                Equals: true | 200
                   @status
                 Null: false
                   @content
@@ -73,7 +73,7 @@ Feature:
             Identifier: s-A-foo
               Bool: True | < 10
                 @time
-              Equals: 200
+              Equals: true | 200
                 @status
               Null: false
                 @content

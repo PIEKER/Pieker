@@ -1,4 +1,4 @@
-// Generated from C:/Users/Yannick.Illmann/IdeaProjects/Pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
+// Generated from H:/Uni/Master/Semester-5/pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
 package pieker.dsl.antlr.gen;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -240,6 +240,18 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAssert(PiekerParser.AssertContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssertAfter(PiekerParser.AssertAfterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssertAfter(PiekerParser.AssertAfterContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

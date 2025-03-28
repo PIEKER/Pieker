@@ -6,9 +6,7 @@ import lombok.Setter;
 import pieker.common.*;
 import pieker.dsl.code.component.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -89,7 +87,19 @@ public class Scenario implements ScenarioTestPlan {
 
     @JsonIgnore
     @Override
-    public Collection<TestStep> getSupervisorStepListAsTestStep() {
+    public Collection<TestStep> getTestSteps() {
         return new ArrayList<>(this.supervisorStepList);
+    }
+
+    @JsonIgnore
+    @Override
+    public Map<String, List<Assertions>> getAssertionsMap() {
+        Map<String, List<Assertions>> stepToAssertionsMap = new HashMap<>();
+        for (Step step : this.stepList) {
+            List<Assertions> assertionList = this.beforeEach.getEvaluationList();
+            assertionList.addAll(step.getEvaluationList());
+            stepToAssertionsMap.put(step.getId(), assertionList);
+        }
+        return stepToAssertionsMap;
     }
 }

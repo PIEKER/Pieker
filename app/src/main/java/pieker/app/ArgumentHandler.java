@@ -7,7 +7,7 @@ public class ArgumentHandler {
     @CommandLine.Option(names = "--dsl-resources", description = "The dir option sets the directory for additional resources referenced inside PIEKER DSL.")
     protected String dslResourceDirectory = ".";
 
-    @CommandLine.Option(names = "--dsl", description = "The dsl option sets the path to a PIEKER DSL file.", required = true)
+    @CommandLine.Option(names = "--dsl", description = "The dsl option sets the path to a PIEKER DSL file.")
     protected String dslFilePath;
 
     @CommandLine.Option(names = "--validate", description = "indicates validation-only on provided DSL file.")

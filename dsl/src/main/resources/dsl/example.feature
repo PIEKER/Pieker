@@ -36,7 +36,7 @@ Feature:
           Identifier: s-A-foo
             Bool: True | < 10
               @time
-            Equals: 200
+            Equals: true | 200
               @status
             Null: false
               @content
@@ -68,7 +68,7 @@ Feature:
                 Table: :FILE(/db1_init.sql)
                   Bool: True | < 10
                     MAX(column) AS maxCol | product.name == "FOO" OR product.name == "FAA"
-                  Equals: television
+                  Equals: true | television
                     product.category | product.name == "FOO" OR product.name == "FAA"
                   Null: false
                     product.id | product.name == "FOO" OR product.name == "FAA"
@@ -76,7 +76,7 @@ Feature:
                 Table: $r3
                   Bool: True | < 10
                     MAX(column) AS maxCol | product.name == "FOO" OR product.name == "FAA"
-                  Equals: television
+                  Equals: true | television
                     product.category | product.name == "FOO" OR product.name == "FAA"
                   Null: false
                     product.id | product.name == "FOO" OR product.name == "FAA"
@@ -103,7 +103,7 @@ Feature:
             Identifier: id-sa-1
               Bool: True | < 10
                 @time
-              Equals: 200
+              Equals: true | 200
                 @status
               Null: false
                 @content

@@ -52,16 +52,4 @@ public class CodeUtil {
         }
         return variables;
     }
-
-    public static Map<String, String> jsonToMap(String jsonString) {
-        Map<String, String> map = new HashMap<>();
-        if (jsonString == null || jsonString.isEmpty()) {
-            return map;
-        }
-        JSONObject jsonObject = new JSONObject(jsonString);
-        for (String key : jsonObject.keySet()) {
-            map.put(key, jsonObject.getString(key));
-        }
-        return map;
-    }
 }
