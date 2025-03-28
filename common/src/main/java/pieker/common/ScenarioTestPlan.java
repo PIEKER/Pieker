@@ -21,7 +21,7 @@ public interface ScenarioTestPlan {
 
     TestStep getBeforeStep();
 
-    Collection<TestStep> getSupervisorStepListAsTestStep();
+    Collection<TestStep> getTestSteps();
 
     Map<String, List<Assertions>> getAssertionsMap();
 

@@ -20,14 +20,16 @@ import java.util.List;
 @Slf4j
 public class DatabaseAssert extends Assert {
 
+    public static final String SUPERVISOR_TRAFFIC_PREFIX = "zzz-database-assert";
     private static final String SELECT = "SELECT ";
     private static final String FROM = " FROM ";
-
     private static final String WHERE = " WHERE ";
     private static final String VALUE = " value: ";
     private final String uuid = java.util.UUID.randomUUID().toString().replace("-","_");
     private final String assertableTableName = "assert_" + this.identifier+ "_" + this.uuid;
     protected final String assertableTableQuery = "CREATE TABLE " + this.assertableTableName + " AS ";
+
+    protected final String dropAssertableTableQuery = "DROP TABLE " + this.assertableTableName;
     protected String tableSelect;
 
     public DatabaseAssert(String identifier) {
@@ -47,7 +49,7 @@ public class DatabaseAssert extends Assert {
     @Override
     public void processAssert() {
         Sql assertableTable = new Sql(this.identifier, this.assertableTableQuery + tableSelect);
-        String identifier = "zzz-database-assert" + java.util.UUID.randomUUID();
+        String identifier = SUPERVISOR_TRAFFIC_PREFIX + java.util.UUID.randomUUID();
         Engine.getCurrentStep().addStepComponent(identifier, new SupervisorTraffic(identifier, assertableTable));
     }
 
@@ -70,6 +72,10 @@ public class DatabaseAssert extends Assert {
         this.equalsList.forEach(equals -> this.evaluateEqualsNode(equals, args));
         this.nullList.forEach(nuLL -> this.evaluateNullNode(nuLL, args));
 
+        log.debug("drop assertable Table");
+        Sql dropAssertableTable = new Sql(this.identifier, this.dropAssertableTableQuery);
+        String response = dropAssertableTable.sendTraffic(new String[]{args[1], args[2], args[3]});
+        log.debug(response);
     }
 
     @Override

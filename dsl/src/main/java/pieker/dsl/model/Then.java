@@ -20,6 +20,7 @@ public class Then {
     private int line;
     private String description;
 
+    int assertAfter = 0;
     private final List<Assert> assertList = new ArrayList<>();
     private List<String> logAllList = new ArrayList<>();
 

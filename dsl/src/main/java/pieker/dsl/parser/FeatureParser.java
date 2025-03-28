@@ -243,6 +243,13 @@ public class FeatureParser extends PiekerParserBaseListener {
         }
 
         if (ctxThen.assert_() != null){
+            if (ctxThen.assert_().assertAfter() != null){
+                PiekerParser.AssertAfterContext ctxAssertAfter = ctxThen.assert_().assertAfter();
+                if (ctxAssertAfter.line() == null || ctxAssertAfter.line().getText().trim().isEmpty()){
+                    throw new PiekerDslException("invalid assertAfter detected at: " + then.getLine());
+                }
+                then.setAssertAfter(Integer.parseInt(ctxAssertAfter.line().getText().trim()));
+            }
             this.createDatabaseAssertions(ctxThen.assert_().databaseBlock(), then);
             this.createTrafficAssertions(ctxThen.assert_().trafficBlock(), then);
         }

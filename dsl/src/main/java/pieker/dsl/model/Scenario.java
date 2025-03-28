@@ -87,7 +87,7 @@ public class Scenario implements ScenarioTestPlan {
 
     @JsonIgnore
     @Override
-    public Collection<TestStep> getSupervisorStepListAsTestStep() {
+    public Collection<TestStep> getTestSteps() {
         return new ArrayList<>(this.supervisorStepList);
     }
 
