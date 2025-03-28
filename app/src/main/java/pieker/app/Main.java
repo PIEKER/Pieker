@@ -34,8 +34,8 @@ public class Main {
                      mode:                      {}
                 """,
                 PIEKER_LOGO,
-                argumentHandler.dslFilePath,
-                argumentHandler.dslResourceDirectory,
+                System.getProperty("dslFilePath"),
+                System.getProperty("dslResourceDirectory"),
                 getMode(argumentHandler)
                 );
 
@@ -63,10 +63,10 @@ public class Main {
     }
 
     private static String getMode(ArgumentHandler h){
-        if (h.validateOnly){
+        if (Boolean.parseBoolean(System.getProperty("validateOnly"))){
             return "VALIDATE-ONLY";
         }
-        if (h.dslConfigOnly){
+        if (Boolean.parseBoolean(System.getProperty("dslConfigOnly"))){
             return "DSL-CONFIG-ONLY";
         }
 

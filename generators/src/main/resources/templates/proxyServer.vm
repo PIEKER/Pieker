@@ -117,8 +117,6 @@ public class $className {
                     exchange.sendResponseHeaders(responseCode, connection.getContentLengthLong());
                     inputStream.transferTo(responseBody);
                 }
-
-                log("[RESPONSE] " + responseCode + " for " + exchange.getRequestURI());
             } catch (Exception e) {
                 // Handle errors and send a 500 response
                 exchange.sendResponseHeaders(500, 0);

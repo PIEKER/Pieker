@@ -81,6 +81,7 @@ public class StepGenerator {
         //create empty default
         VelocityContext ctxContext = new VelocityContext();
         ctxContext.put("threadBody", "// no traffic required at default");
+        ctxContext.put(CLASS_NAME, DEFAULT_FILENAME);
         String defaultFile = VELOCITY.fillTemplate(VELOCITY.loadTemplate(TRAFFIC_CONTAINER_TEMPLATE_FILE), ctxContext);
         saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
 

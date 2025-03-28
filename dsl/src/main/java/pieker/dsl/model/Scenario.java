@@ -91,13 +91,14 @@ public class Scenario implements ScenarioTestPlan {
         return new ArrayList<>(this.supervisorStepList);
     }
 
+    @JsonIgnore
     @Override
     public Map<String, List<Assertions>> getAssertionsMap() {
         Map<String, List<Assertions>> stepToAssertionsMap = new HashMap<>();
         for (Step step : this.stepList) {
             List<Assertions> assertionList = this.beforeEach.getEvaluationList();
             assertionList.addAll(step.getEvaluationList());
-            stepToAssertionsMap.put(this.name, assertionList);
+            stepToAssertionsMap.put(step.getId(), assertionList);
         }
         return stepToAssertionsMap;
     }
