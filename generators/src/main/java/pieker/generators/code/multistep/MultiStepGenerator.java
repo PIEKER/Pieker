@@ -29,6 +29,9 @@ public class MultiStepGenerator {
     private static final String MANIFEST_TEMPLATE = "multistep" + File.separator + "MANIFEST.vm";
     private static final VelocityTemplateProcessor TEMPLATE_PROCESSOR = new VelocityTemplateProcessor();
 
+    private MultiStepGenerator() {
+    }
+
     /**
      * Generates multi-step proxies for the given test plan based on generated Java files for each step.
      *
