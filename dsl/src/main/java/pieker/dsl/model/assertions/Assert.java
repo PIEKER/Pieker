@@ -2,7 +2,7 @@ package pieker.dsl.model.assertions;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.dsl.code.exception.ValidationException;
+import pieker.common.Assertions;
 import pieker.dsl.util.Util;
 
 import java.util.ArrayList;
@@ -11,62 +11,13 @@ import java.util.List;
 
 @Getter
 @Setter
-public abstract class Assert {
+public abstract class Assert implements Assertions {
 
-    @Setter
-    @Getter
-    public static class Bool{
+    protected final String identifier;
 
-        private final boolean boolType;
-        private String expression;
-        private String value;
-
-
-        public Bool(boolean boolType, String expression, String value) {
-            this.boolType = boolType;
-            this.expression = expression;
-            this.value = value;
-        }
-
-        public void validate(){
-            String[] args = Util.getArgumentsFromString(this.expression);
-            if (args.length != 2){
-                throw new ValidationException("invalid amount of arguments on an assertBool! " +
-                        "args: " + args.length +
-                        "expression: " + this.expression);
-            }
-        }
-    }
-
-    @Setter
-    @Getter
-    public static class Equals{
-        private String expected;
-        private String value;
-
-        public Equals(String expected, String value) {
-            this.expected = expected;
-            this.value = value;
-        }
-    }
-
-    @Setter
-    @Getter
-    public static class Null{
-        private final boolean isNull;
-        private String value;
-
-        public Null(boolean isNull, String value) {
-            this.isNull = isNull;
-            this.value = value;
-        }
-    }
-
-    private final String identifier;
-
-    private final List<Bool> boolList = new ArrayList<>();
-    private final List<Equals> equalsList = new ArrayList<>();
-    private final List<Null> nullList = new ArrayList<>();
+    protected final List<Bool> boolList = new ArrayList<>();
+    protected final List<Equals> equalsList = new ArrayList<>();
+    protected final List<Null> nullList = new ArrayList<>();
 
     protected Assert(String identifier){
         this.identifier = identifier;
@@ -76,8 +27,8 @@ public abstract class Assert {
         this.boolList.add(new Bool(Util.parseBoolean(boolType), expression, value));
     }
 
-    public void addEqualsAssertion(String expected, String value){
-        this.equalsList.add(new Equals(expected, value));
+    public void addEqualsAssertion(String isEqual,String expected, String value){
+        this.equalsList.add(new Equals(Util.parseBoolean(isEqual), expected, value));
     }
 
     public void addNullAssertion(String isNull, String value){
@@ -86,4 +37,7 @@ public abstract class Assert {
 
     public abstract void validate();
     public abstract void processAssert();
+    protected abstract void evaluateBoolNode(Bool bool, String[] args);
+    protected abstract void evaluateEqualsNode(Equals equals, String[] args);
+    protected abstract void evaluateNullNode(Null nuLL, String[] args);
 }

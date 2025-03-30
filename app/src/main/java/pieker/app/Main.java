@@ -2,7 +2,7 @@ package pieker.app;
 
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
-import pieker.code.generators.step.Generator;
+import pieker.generators.code.step.StepGenerator;
 import pieker.dsl.model.Feature;
 
 import java.io.IOException;
@@ -34,12 +34,12 @@ public class Main {
                      mode:                      {}
                 """,
                 PIEKER_LOGO,
-                argumentHandler.dslFilePath,
-                argumentHandler.dslResourceDirectory,
+                System.getProperty("dslFilePath"),
+                System.getProperty("dslResourceDirectory"),
                 getMode(argumentHandler)
                 );
 
-        Feature feature = pieker.dsl.Main.parse(argumentHandler.dslFilePath, argumentHandler.dslResourceDirectory);
+        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"));
 
         if (argumentHandler.validateOnly){
             pieker.dsl.code.Engine.validate(feature);
@@ -47,15 +47,15 @@ public class Main {
         }
 
         pieker.dsl.code.Engine.run(feature);
-        feature.getScenarioTestPlanList().forEach(Generator::createScenarioJson);
+        feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
         if (argumentHandler.dslConfigOnly) return;
 
         log.debug("starting to create test-components.");
         feature.getScenarioTestPlanList().forEach(scenario -> {
             scenario.getTrafficComponents().forEach(
-                    c -> Generator.generateTrafficComponent(scenario.getName(), c));
+                    c -> StepGenerator.generateTrafficComponent(scenario.getName(), c));
             scenario.getProxyComponents().forEach(
-                    c -> Generator.generateProxyComponent(scenario.getName(), c));
+                    c -> StepGenerator.generateProxyComponent(scenario.getName(), c));
         });
         log.info("finished to create test-Components.");
 
@@ -63,10 +63,10 @@ public class Main {
     }
 
     private static String getMode(ArgumentHandler h){
-        if (h.validateOnly){
+        if (Boolean.parseBoolean(System.getProperty("validateOnly"))){
             return "VALIDATE-ONLY";
         }
-        if (h.dslConfigOnly){
+        if (Boolean.parseBoolean(System.getProperty("dslConfigOnly"))){
             return "DSL-CONFIG-ONLY";
         }
 

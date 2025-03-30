@@ -65,6 +65,7 @@ TIMEOUT: '@timeout' WS+;
 THEN: 'Then:' ;
 LOG_ALL: 'LogAll:' WS+;
 ASSERT: 'Assert:';
+ASSERT_AFTER: 'After:';
 DATABASE_BLOCK: 'Database:';
 TRAFFIC_BLOCK: 'Traffic:';
 

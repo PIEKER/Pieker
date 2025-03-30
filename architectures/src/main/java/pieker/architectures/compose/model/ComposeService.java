@@ -23,7 +23,7 @@ import static pieker.architectures.util.MapUtils.putIfNotNullOrEmpty;
 public class ComposeService extends Service implements ComposeComponent, EnvironmentVariables {
 
     private List<String> dependsOn;
-    private Map<String, String> ports;
+    private Map<String, String> ports = new HashMap<>();
     private String build;
     private List<String> networks;
     private List<String> configs;
@@ -55,5 +55,13 @@ public class ComposeService extends Service implements ComposeComponent, Environ
         putIfNotNullOrEmpty(attributeMap, "environment", this.getEnvironment());
 
         return Map.of(this.getName(), attributeMap);
+    }
+
+    public void addPortMapping(String port, String targetPort) {
+        this.ports.put(port, targetPort);
+    }
+
+    public void addPortMappings(Map<String, String> mappings) {
+        this.ports.putAll(mappings);
     }
 }

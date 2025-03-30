@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("application")
 }
 
 allprojects {
@@ -9,6 +10,12 @@ allprojects {
     repositories {
         mavenCentral()
     }
+}
+
+application {
+    applicationDefaultJvmArgs = listOf(
+        "-DprojectPath=${project.projectDir.absolutePath}"
+    )
 }
 
 subprojects {
@@ -48,11 +55,21 @@ subprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        project.properties.forEach { (key, value) ->
+            systemProperty(key, value.toString())
+        }
+        systemProperty("projectRoot", project.projectDir.absolutePath.toString() + "/../")
     }
 
     tasks.withType<JavaExec> {
         classpath = sourceSets.main.get().runtimeClasspath
         systemProperty("logback.configurationFile", "config/logback.xml")
+        project.properties.forEach { (k, v) ->
+            if (v != null) {
+                systemProperty(k, v.toString())
+            }
+        }
+        systemProperty("projectRoot", project.projectDir.absolutePath.toString() + "/../")
     }
 
     sourceSets {

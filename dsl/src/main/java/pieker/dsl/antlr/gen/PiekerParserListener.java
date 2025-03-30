@@ -1,4 +1,4 @@
-// Generated from C:/Users/Yannick.Illmann/IdeaProjects/Pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
+// Generated from H:/Uni/Master/Semester-5/pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
 package pieker.dsl.antlr.gen;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -197,6 +197,16 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssert(PiekerParser.AssertContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PiekerParser#assertAfter}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssertAfter(PiekerParser.AssertAfterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PiekerParser#assertAfter}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssertAfter(PiekerParser.AssertAfterContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PiekerParser#databaseBlock}.
 	 * @param ctx the parse tree

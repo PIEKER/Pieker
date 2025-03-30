@@ -42,7 +42,7 @@ public class Sql implements Template, TrafficType {
             log.error("unable to send SQL query du to missing parameters: 3 required, only {} found", args.length);
             return "ERROR ON SQL";
         }
-        return this.executeSQL(args[0], args[1], args[2], this.query);
+        return pieker.common.connection.Sql.send(this.database, args[0], args[1], args[2], this.query);
     }
 
     @Override
@@ -56,7 +56,6 @@ public class Sql implements Template, TrafficType {
         this.query = getParameter();
     }
 
-
     @Override
     public String getTarget() {
         return this.database;
@@ -67,25 +66,5 @@ public class Sql implements Template, TrafficType {
             return Engine.getFileManager().getDataFromFileHash(this.parameter);
         }
         return this.parameter;
-    }
-
-    private String executeSQL(String dbUrl, String dbUser, String dbPassword, String sqlQuery) {
-        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-             Statement statement = connection.createStatement()) {
-
-            boolean hasResultSet = statement.execute(sqlQuery);
-
-            if (hasResultSet) {
-                try (ResultSet resultSet = statement.getResultSet()) {
-                    return resultSet.toString();
-                }
-            } else {
-                int affectedRows = statement.getUpdateCount();
-                return "Query executed successfully, affected rows: {}" + affectedRows;
-            }
-        } catch (SQLException e) {
-            log.error("exception occurred while sending SQL to database {}. Exception: {}", this.database, e.getMessage());
-            return "ERROR ON SQL";
-        }
     }
 }

@@ -2,6 +2,7 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import pieker.common.Assertions;
 import pieker.dsl.code.component.StepComponent;
 import pieker.dsl.code.exception.PiekerProcessingException;
 import pieker.dsl.code.preprocessor.Validator;
@@ -19,6 +20,7 @@ public class Then {
     private int line;
     private String description;
 
+    int assertAfter = 0;
     private final List<Assert> assertList = new ArrayList<>();
     private List<String> logAllList = new ArrayList<>();
 
@@ -51,5 +53,9 @@ public class Then {
         });
 
         this.assertList.forEach(Assert::processAssert);
+    }
+
+    protected List<Assertions> getEvaluationList(){
+        return new ArrayList<>(this.assertList);
     }
 }

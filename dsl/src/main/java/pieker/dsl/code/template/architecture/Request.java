@@ -8,19 +8,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.Template;
+import pieker.common.connection.Http;
 import pieker.dsl.code.Engine;
 import pieker.dsl.code.exception.PiekerProcessingException;
 import pieker.dsl.code.preprocessor.FileManager;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.Map;
-
-import static pieker.dsl.util.CodeUtil.jsonToMap;
 
 @Slf4j
 @Getter
@@ -43,7 +36,7 @@ public class Request implements Template, TrafficType {
     @JsonIgnore
     private String headers = "{}";
     @JsonIgnore
-    private String requestBody = "{}";
+    private String body = "{}";
 
 
     public Request(String service, String parameter) {
@@ -53,37 +46,7 @@ public class Request implements Template, TrafficType {
 
     @Override
     public String sendTraffic(String[] args) {
-        try{
-            URL urlInstance = new URI(this.url).toURL();
-            HttpURLConnection connection = (HttpURLConnection) urlInstance.openConnection();
-
-            // Set request method and timeouts
-            connection.setRequestMethod(this.method.toUpperCase());
-            connection.setConnectTimeout(this.connectionTimeout);
-            connection.setReadTimeout(this.readTimeout);
-            connection.setDoOutput(true);
-
-            // Set headers
-
-            for (Map.Entry<String, String> header : jsonToMap(this.headers).entrySet()) {
-                connection.setRequestProperty(header.getKey(), header.getValue());
-            }
-
-            // Write request body if applicable
-            InputStream inputStream = getInputStream(requestBody, connection);
-
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                return response.toString();
-            }
-        } catch (Exception e){
-            log.error("exception occurred while sending request to service {}. Exception: {}", this.service, e.getMessage());
-            return "ERROR ON REQUEST";
-        }
+        return Http.send(this.service, this.url, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body);
     }
 
     @Override
@@ -94,7 +57,7 @@ public class Request implements Template, TrafficType {
         ctx.put("requestConnTimeout", this.connectionTimeout);
         ctx.put("requestReadTimeout", this.readTimeout);
         ctx.put("requestHeaders", this.headers);
-        ctx.put("requestBody", this.requestBody);
+        ctx.put("requestBody", this.body);
     }
 
     @Override
@@ -120,7 +83,7 @@ public class Request implements Template, TrafficType {
                     case "connectionTimeout" -> this.connectionTimeout = node.get(field).asInt();
                     case "readTimeout" -> this.readTimeout = node.get(field).asInt();
                     case "headers" -> this.headers = node.get(field).toString();
-                    case "body" -> this.requestBody = node.get(field).toString();
+                    case "body" -> this.body = node.get(field).toString();
                     default -> log.warn("unknown field used in request json: '{}'", field);
                 }
             }
@@ -143,19 +106,5 @@ public class Request implements Template, TrafficType {
             return Engine.getFileManager().getDataFromFileHash(this.parameter);
         }
         return this.parameter;
-    }
-
-    @JsonIgnore
-    private static InputStream getInputStream(String requestBody, HttpURLConnection connection) throws IOException {
-        if (requestBody != null && !requestBody.isEmpty()) {
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
-        }
-
-        // Read response
-        return (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST)
-                ? connection.getInputStream() : connection.getErrorStream();
     }
 }
