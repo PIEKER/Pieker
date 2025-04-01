@@ -1,4 +1,5 @@
 <configuration>
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <!-- Console Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -14,8 +15,9 @@
     <!-- Logger for Submodules -->
     <logger name="pieker.app" level="debug" />
     <logger name="pieker.architectures" level="debug" />
-    <logger name="pieker.code.generators" level="debug" />
     <logger name="pieker.common" level="debug" />
     <logger name="pieker.dsl" level="debug" />
+    <logger name="pieker.evaluator" level="debug" />
+    <logger name="pieker.generators" level="debug" />
 
 </configuration>

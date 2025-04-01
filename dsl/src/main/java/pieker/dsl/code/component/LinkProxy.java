@@ -56,7 +56,8 @@ public class LinkProxy extends ProxyComponent<LinkProxy> {
 
     @Override
     public String getName() {
-        return PREFIX + this.getIdentifier();
+        return PREFIX + this.getIdentifier().replace("-", "_");
     }
+
 }
 

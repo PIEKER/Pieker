@@ -79,6 +79,6 @@ public class ServiceProxy extends ProxyComponent<ServiceProxy> {
 
     @Override
     public String getName() {
-        return PREFIX + this.getIdentifier();
+        return PREFIX + this.getIdentifier().replace("-", "_");
     }
 }

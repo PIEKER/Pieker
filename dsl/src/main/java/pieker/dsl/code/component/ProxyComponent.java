@@ -10,7 +10,7 @@ import java.util.*;
 @Getter
 public abstract class ProxyComponent<T extends ProxyComponent<T>> implements ScenarioProxyComponent, StepComponent {
     @JsonIgnore
-    protected static final String PREFIX = "PIEKER-PROXY-";
+    protected static final String PREFIX = "PIEKER_PROXY_";
 
     private final String identifier;
     protected String scenarioIdentifier;
