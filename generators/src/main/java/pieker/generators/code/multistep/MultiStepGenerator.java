@@ -11,6 +11,7 @@ import pieker.generators.util.JarBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +23,14 @@ import java.util.Map;
 public class MultiStepGenerator {
 
     private static final String EXECUTION_NAME = System.getProperty("executionName");
+    // Paths
     private static final String PROJECT_ROOT = System.getProperty("projectRoot");
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir", "../.gen/");
     private static final String CODE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "code" + File.separator;
+    // Templates
     private static final String PROXY_TEMPLATE = "multistep" + File.separator + "MultiStepProxy.vm";
     private static final String MANIFEST_TEMPLATE = "multistep" + File.separator + "MANIFEST.vm";
+
     private static final VelocityTemplateProcessor TEMPLATE_PROCESSOR = new VelocityTemplateProcessor();
 
     private MultiStepGenerator() {
@@ -39,7 +43,17 @@ public class MultiStepGenerator {
      * @throws CodeGenerationException if an error occurs
      */
     public static void generateMultiStepProxies(ScenarioTestPlan testPlan) throws CodeGenerationException {
-        for (ScenarioComponent component : testPlan.getComponents()) {
+        generateMultiStepProxies(testPlan.getComponents());
+    }
+
+    /**
+     * Generates multi-step proxies for the given components based on generated Java files for each step.
+     *
+     * @param scenarioComponents collection of scenario components
+     * @throws CodeGenerationException if an error occurs
+     */
+    public static void generateMultiStepProxies(Collection<ScenarioComponent> scenarioComponents) throws CodeGenerationException {
+        for (ScenarioComponent component : scenarioComponents) {
             try {
                 generateMultiStepProxy(component.getName());
             } catch (IOException | InterruptedException e) {

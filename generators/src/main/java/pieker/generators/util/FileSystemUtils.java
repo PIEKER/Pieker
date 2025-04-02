@@ -1,12 +1,19 @@
 package pieker.generators.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Utility class for file operations.
+ */
+@Slf4j
 public final class FileSystemUtils {
 
     private FileSystemUtils() {
@@ -41,5 +48,26 @@ public final class FileSystemUtils {
                 .map(Path::getFileName)
                 .map(Path::toString)
                 .toList();
+    }
+
+    /**
+     * Get paths of all JAR files in a directory and its subdirectories.
+     *
+     * @param directory path to the directory
+     * @return list of JAR files in the directory
+     */
+    public static List<Path> getJARsInDir(String directory) {
+        log.debug("Searching JARs in directory: {}", directory);
+        Path dirPath = Path.of(directory);
+        try (var paths = Files.walk(dirPath)) {
+            List<Path> result = paths.filter(Files::isRegularFile)
+                    .filter(p -> p.toString().endsWith(".jar"))
+                    .toList();
+            log.debug("Found {} JARs: {}", result.size(), result.stream().map(Path::getFileName).toList());
+            return result;
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
     }
 }

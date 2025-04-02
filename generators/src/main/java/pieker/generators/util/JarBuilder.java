@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
 
+/**
+ * Utility class for building JAR files from Java source files.
+ */
 @Slf4j
 public final class JarBuilder {
 

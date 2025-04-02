@@ -1,0 +1,8 @@
+# PIEKER Proxy Dockerfile
+
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+
+COPY $jarPath /app/app.jar
+
+CMD ["java", "-jar", "/app/app.jar"]
