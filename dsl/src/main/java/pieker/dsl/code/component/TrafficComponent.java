@@ -16,7 +16,7 @@ import java.util.Map;
 public abstract class TrafficComponent <T extends TrafficComponent<T>> implements ScenarioTrafficComponent {
 
     @JsonIgnore
-    protected static final String PREFIX = "PIEKER-TRAFFIC-";
+    protected static final String PREFIX = "PIEKER_TRAFFIC_";
 
     private final String identifier;
     protected String scenarioIdentifier;

@@ -36,6 +36,6 @@ public class TrafficContainer extends TrafficComponent<TrafficContainer> {
 
     @Override
     public String getName() {
-        return PREFIX + this.getIdentifier();
+        return PREFIX + this.getIdentifier().replace("-", "_");
     }
 }
