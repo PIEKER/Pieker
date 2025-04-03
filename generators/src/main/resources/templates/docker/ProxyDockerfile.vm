@@ -1,6 +1,6 @@
-# PIEKER Proxy Dockerfile
+# PIEKER Proxy Dockerfile with Alpine
 
-FROM openjdk:17-jdk-slim
+FROM azul/zulu-openjdk-alpine:23-jre-headless
 WORKDIR /app
 
 COPY $jarPath /app/app.jar

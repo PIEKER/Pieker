@@ -161,7 +161,6 @@ public final class DockerImageGenerator {
 
             fos.close();
             imageStream.close();
-            dockerClient.close();
 
             log.debug("Saved image with ID {} to {}", imageId, dirPath + imageName);
         }

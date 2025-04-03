@@ -1,7 +1,7 @@
-# PIEKER Proxy Dockerfile for minimal JRE to minimize image size
+# PIEKER Proxy Dockerfile for minimal JRE
 
 # Step 1: Base image with full JDK to analyze dependencies
-FROM openjdk:23 as builder
+FROM openjdk:23-jdk as builder
 WORKDIR /app
 
 COPY $jarPath app.jar
@@ -16,7 +16,7 @@ RUN jlink --no-header-files --no-man-pages \
     --output /custom-jre
 
 # Step 2: Create minimal final image
-FROM scratch
+FROM gcr.io/distroless/java-base-debian12
 WORKDIR /app
 
 # Copy the stripped-down JRE and JAR file
@@ -24,4 +24,4 @@ COPY --from=builder /custom-jre /jre
 COPY --from=builder /app/app.jar app.jar
 
 # Run the application with the minimal JRE
-ENTRYPOINT ["/jre/bin/java", "-jar", "/app.jar"]
+CMD ["/jre/bin/java", "-jar", "app.jar"]
