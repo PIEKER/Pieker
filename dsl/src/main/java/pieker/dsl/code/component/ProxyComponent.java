@@ -2,13 +2,14 @@ package pieker.dsl.code.component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioProxyComponent;
 import pieker.common.Template;
 
 import java.util.*;
 
 @Getter
-public abstract class ProxyComponent<T extends ProxyComponent<T>> implements ScenarioProxyComponent, StepComponent {
+public abstract class ProxyComponent<T extends ProxyComponent<T>> implements ScenarioProxyComponent, StepComponent, ScenarioComponent {
     @JsonIgnore
     protected static final String PREFIX = "PIEKER_PROXY_";
 

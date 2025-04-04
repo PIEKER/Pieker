@@ -29,10 +29,7 @@ public final class FileSystemUtils {
      */
     public static List<String> getFiles(String directory, String extension) throws IOException {
         try (Stream<Path> walk = Files.walk(Paths.get(directory))) {
-            return walk.filter(Files::isRegularFile)
-                    .map(Path::toString)
-                    .filter(f -> f.endsWith(extension))
-                    .toList();
+            return walk.filter(Files::isRegularFile).map(Path::toString).filter(f -> f.endsWith(extension)).toList();
         }
     }
 
@@ -43,11 +40,7 @@ public final class FileSystemUtils {
      * @return list of file names
      */
     public static List<String> getFileNames(List<String> filePaths) {
-        return filePaths.stream()
-                .map(Path::of)
-                .map(Path::getFileName)
-                .map(Path::toString)
-                .toList();
+        return filePaths.stream().map(Path::of).map(Path::getFileName).map(Path::toString).toList();
     }
 
     /**
@@ -60,9 +53,7 @@ public final class FileSystemUtils {
         log.debug("Searching JARs in directory: {}", directory);
         Path dirPath = Path.of(directory);
         try (var paths = Files.walk(dirPath)) {
-            List<Path> result = paths.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".jar"))
-                    .toList();
+            List<Path> result = paths.filter(Files::isRegularFile).filter(p -> p.toString().endsWith(".jar")).toList();
             log.debug("Found {} JARs: {}", result.size(), result.stream().map(Path::getFileName).toList());
             return result;
         } catch (IOException e) {

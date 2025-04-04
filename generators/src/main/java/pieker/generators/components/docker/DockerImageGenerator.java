@@ -18,10 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is responsible for generating Docker images for the components defined in a test plan.
@@ -30,7 +27,7 @@ import java.util.Map;
 @Slf4j
 public final class DockerImageGenerator {
 
-    private static final String EXECUTION_NAME = System.getProperty("executionName");
+    private static final String EXECUTION_NAME = System.getProperty("scenarioName");
     private static final boolean MINIMAL_IMAGE = Boolean.parseBoolean(System.getProperty("minimalDockerImages"));
     // Paths
     private static final String PROJECT_ROOT = System.getProperty("projectRoot");
@@ -38,8 +35,8 @@ public final class DockerImageGenerator {
     private static final String CODE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "code" + File.separator;
     private static final String IMAGE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "images" + File.separator;
     // Templates
-    private static final String DOCKERFILE_TEMPLATE = "docker" + File.separator + "ProxyDockerfile.vm";
-    private static final String DOCKERFILE_MINIMAL_TEMPLATE = "docker" + File.separator + "ProxyDockerfileMinimal.vm";
+    private static final String DOCKERFILE_TEMPLATE = "docker/ProxyDockerfile.vm";
+    private static final String DOCKERFILE_MINIMAL_TEMPLATE = "docker/ProxyDockerfileMinimal.vm";
 
     private static final VelocityTemplateProcessor TEMPLATE_PROCESSOR = new VelocityTemplateProcessor();
 
@@ -53,7 +50,9 @@ public final class DockerImageGenerator {
      * @throws IOException if an error occurs
      */
     public static void generateImages(ScenarioTestPlan testPlan) throws IOException {
-        generateImages(testPlan.getComponents());
+        // FIXME: Enable traffic components when JARs can be generated with external dependencies
+        List<ScenarioComponent> proxyComponents = new ArrayList<>(testPlan.getProxyComponents());
+        generateImages(proxyComponents);
     }
 
     /**
@@ -98,18 +97,11 @@ public final class DockerImageGenerator {
         }
 
         // Build Docker images based on Dockerfiles
-        Map<String, String> componentToImageId = new HashMap<>();
         for (String componentName : componentNames) {
             final String buildContextPath = CODE_DIR + componentName;
             log.debug("Building image for component {} at {}", componentName, buildContextPath);
             final String imageId = buildImage(buildContextPath);
-            componentToImageId.put(componentName, imageId);
-        }
-
-        // Save Docker images to files
-        for (Map.Entry<String, String> entry : componentToImageId.entrySet()) {
-            final String componentName = entry.getKey();
-            final String imageId = entry.getValue();
+            // Save Docker image to file
             log.debug("Saving image {} for component {} to file", imageId, componentName);
             saveImage(imageId, componentName, IMAGE_DIR);
         }

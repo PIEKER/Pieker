@@ -1,3 +1,7 @@
+plugins {
+    java
+}
+
 dependencies {
     // Internal
     implementation(project(":common"))
@@ -11,6 +15,7 @@ dependencies {
     implementation("org.apache.velocity:velocity-engine-core:2.4.1")
     implementation("org.apache.commons:commons-jexl3:3.2.1")
     implementation("org.json:json:20250107")
+    implementation("info.picocli:picocli:4.7.6")
 
     testImplementation("org.postgresql:postgresql:42.7.5")
     testImplementation("org.testcontainers:junit-jupiter:1.20.6")

@@ -11,10 +11,7 @@ import pieker.generators.util.JarBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Generates multi-step proxies for the given test plan based on generated Java files for each step.
@@ -22,14 +19,14 @@ import java.util.Map;
 @Slf4j
 public class MultiStepGenerator {
 
-    private static final String EXECUTION_NAME = System.getProperty("executionName");
+    private static final String EXECUTION_NAME = System.getProperty("scenarioName");
     // Paths
     private static final String PROJECT_ROOT = System.getProperty("projectRoot");
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir", "../.gen/");
     private static final String CODE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "code" + File.separator;
     // Templates
-    private static final String PROXY_TEMPLATE = "multistep" + File.separator + "MultiStepProxy.vm";
-    private static final String MANIFEST_TEMPLATE = "multistep" + File.separator + "MANIFEST.vm";
+    private static final String PROXY_TEMPLATE = "multistep/MultiStepProxy.vm";
+    private static final String MANIFEST_TEMPLATE = "multistep/MANIFEST.vm";
 
     private static final VelocityTemplateProcessor TEMPLATE_PROCESSOR = new VelocityTemplateProcessor();
 
@@ -43,19 +40,25 @@ public class MultiStepGenerator {
      * @throws CodeGenerationException if an error occurs
      */
     public static void generateMultiStepProxies(ScenarioTestPlan testPlan) throws CodeGenerationException {
-        generateMultiStepProxies(testPlan.getComponents());
+        log.debug("Generating Multi-Step-Proxies...");
+        final Collection<ScenarioComponent> proxyComponents = new ArrayList<>(testPlan.getProxyComponents());
+        generateMultiStepProxies(proxyComponents);
+        // FIXME: Enable when JARs can be generated with external dependencies
+        //log.debug("Generating Multi-Step-Traffic-Components...");
+        //final Collection<ScenarioComponent> trafficComponents = new ArrayList<>(testPlan.getTrafficComponents());
+        //generateMultiStepTrafficComponents(trafficComponents);
     }
 
     /**
      * Generates multi-step proxies for the given components based on generated Java files for each step.
      *
-     * @param scenarioComponents collection of scenario components
+     * @param scenarioComponents  collection of proxy components
      * @throws CodeGenerationException if an error occurs
      */
     public static void generateMultiStepProxies(Collection<ScenarioComponent> scenarioComponents) throws CodeGenerationException {
         for (ScenarioComponent component : scenarioComponents) {
             try {
-                generateMultiStepProxy(component.getName());
+                generateMultiStepComponent(component.getName(), null);
             } catch (IOException | InterruptedException e) {
                 log.error("Error generating multi-step proxy for component '{}'", component.getName(), e);
                 throw new CodeGenerationException(e.getMessage());
@@ -64,13 +67,39 @@ public class MultiStepGenerator {
     }
 
     /**
-     * Generates a multi-step proxy for the given component based on generated Java files for each step.
+     * Generates multi-step traffic components for the given components based on generated Java files for each step.
+     *
+     * @param trafficComponents collection of traffic components
+     * @throws CodeGenerationException if an error occurs
+     */
+    public static void generateMultiStepTrafficComponents(Collection<ScenarioComponent> trafficComponents) throws CodeGenerationException {
+        for (ScenarioComponent component : trafficComponents) {
+            try {
+                List<String> dependencies = List.of(
+                        "dependencies" + File.separator + "json-20250107.jar"
+                );
+                log.debug("Starting to generate multi-step traffic component '{}' with dependencies: {}",
+                        component.getName(), dependencies);
+                generateMultiStepComponent(component.getName(), dependencies);
+            } catch (IOException | InterruptedException e) {
+                log.error("Error generating multi-step traffic component '{}'", component.getName(), e);
+                throw new CodeGenerationException(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Generates a multi-step component for the given component based on generated Java files for each step. If
+     * {@code dependencies} is not null or empty, the JAR will be compiled with the specified binaries in
+     * {@code /resources/dependencies}.
      *
      * @param componentName name of the component
+     * @param dependencies  list of dependencies for the component
      * @throws IOException          if an error occurs
      * @throws InterruptedException if the process is interrupted
      */
-    public static void generateMultiStepProxy(String componentName) throws IOException, InterruptedException {
+    public static void generateMultiStepComponent(String componentName, Collection<String> dependencies) throws IOException, InterruptedException {
         final List<String> javaStepFiles = FileSystemUtils.getFiles(CODE_DIR + componentName, ".java");
         final List<String> fileNames = FileSystemUtils.getFileNames(javaStepFiles);
         final String componentDir = CODE_DIR + componentName + File.separator;
@@ -80,7 +109,7 @@ public class MultiStepGenerator {
 
         // Build Step JARs
         for (String javaFile : javaStepFiles) {
-            JarBuilder.buildJar(javaFile);
+            JarBuilder.buildJar(javaFile, dependencies);
         }
 
         // Create MultiStepProxy.java file for current component
@@ -104,6 +133,7 @@ public class MultiStepGenerator {
         TEMPLATE_PROCESSOR.processTemplate(MANIFEST_TEMPLATE, manifestContext, "MANIFEST.MF", componentJarDir);
 
         // Build Multistep JAR
-        JarBuilder.buildJar(componentDir + multiStepProxyName + ".java", componentDir + "jars", true);
+        JarBuilder.buildJar(componentDir + multiStepProxyName + ".java", componentDir + "jars",
+                true, null);
     }
 }
