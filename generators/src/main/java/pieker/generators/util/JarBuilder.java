@@ -1,7 +1,6 @@
 package pieker.generators.util;
 
 import lombok.extern.slf4j.Slf4j;
-import pieker.generators.code.CodeGenerationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +109,7 @@ public final class JarBuilder {
         compileCommand.add(buildDirPath);
 
         // Add dependencies to classpath if applicable
+        /* FIXME: activate this code when dependency compilation is implemented
         if (dependencies != null && !dependencies.isEmpty()) {
             log.debug("Including dependencies in build: {}", dependencies);
             final String classpath = String.join(File.pathSeparator, dependencies.stream()
@@ -126,6 +126,7 @@ public final class JarBuilder {
                 }
             });
         }
+         */
 
         compileCommand.add(javaFilePath);
         Process compileProcess = new ProcessBuilder(compileCommand)
