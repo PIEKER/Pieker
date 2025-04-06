@@ -128,7 +128,7 @@ images based on DSL inputs.
 - Directory: [`generators/`](./generators)
 - Documentation: [Code-Generators-README](./generators/README.md)
 - Maintainer: [@YIllmann](https://github.com/YIllmann), [@simohlsen](https://github.com/simohlsen)
-- 
+
 ## Roadmap
 
 - [x] Initial concept and project setup

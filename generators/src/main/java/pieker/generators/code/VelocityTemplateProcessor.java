@@ -3,14 +3,15 @@ package pieker.generators.code;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Processor class for Apache Velocity templates.
@@ -23,7 +24,8 @@ public class VelocityTemplateProcessor {
 
     public VelocityTemplateProcessor() {
         this.templateDirectory = "templates/";
-        this.outputDirectory = System.getProperty("projectRoot") + "/" + System.getProperty("genDir") + "/" + System.getProperty("executionName");
+        this.outputDirectory = System.getProperty("projectRoot") + File.separator + System.getProperty("genDir") +
+                File.separator + System.getProperty("scenarioName");
         this.velocityEngine = initVelocityEngine();
     }
 
@@ -40,10 +42,9 @@ public class VelocityTemplateProcessor {
     }
 
     private VelocityEngine initVelocityEngine() {
-        Properties properties = new Properties();
-        properties.setProperty("resource.loaders", "classpath");
-        properties.setProperty("resource.loader.classpath.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-        VelocityEngine engine = new VelocityEngine(properties);
+        VelocityEngine engine = new VelocityEngine();
+        engine.setProperty("resource.loaders", "classpath");
+        engine.setProperty("resource.loader.classpath.class", ClasspathResourceLoader.class.getName());
         engine.init();
         return engine;
     }

@@ -48,6 +48,6 @@ public class DatabaseProxy extends ProxyComponent<DatabaseProxy> {
 
     @Override
     public String getName() {
-        return PREFIX + this.getTarget();
+        return PREFIX + this.getTarget().replace("-", "_");
     }
 }

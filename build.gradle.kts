@@ -1,6 +1,6 @@
 plugins {
-    id("java")
-    id("application")
+    java
+    base
 }
 
 allprojects {
@@ -10,12 +10,6 @@ allprojects {
     repositories {
         mavenCentral()
     }
-}
-
-application {
-    applicationDefaultJvmArgs = listOf(
-        "-DprojectPath=${project.projectDir.absolutePath}"
-    )
 }
 
 subprojects {
@@ -30,7 +24,6 @@ subprojects {
         // Common-Dependencies
         implementation("org.slf4j:slf4j-api:2.0.16")
         implementation("ch.qos.logback:logback-classic:1.5.16")
-        implementation("info.picocli:picocli:4.7.6")
         compileOnly("org.projectlombok:lombok:1.18.36")
         annotationProcessor("org.projectlombok:lombok:1.18.36")
 
@@ -58,7 +51,10 @@ subprojects {
         project.properties.forEach { (key, value) ->
             systemProperty(key, value.toString())
         }
-        systemProperty("projectRoot", project.projectDir.absolutePath.toString() + "/../")
+        systemProperty(
+            "projectRoot",
+            project.projectDir.absolutePath.toString() + File.pathSeparator + ".." + File.pathSeparator
+        )
     }
 
     tasks.withType<JavaExec> {
@@ -72,9 +68,4 @@ subprojects {
         systemProperty("projectRoot", project.projectDir.absolutePath.toString() + "/../")
     }
 
-    sourceSets {
-        main {
-            resources.srcDirs("src/main/resources")
-        }
-    }
 }

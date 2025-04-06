@@ -82,8 +82,8 @@ class ArchitectureIntegrationTest {
     }
 
     private ScenarioTestPlan getTestPlan() throws IOException {
-        final String dslFilePath = "../.input/dsl/runningExample.feature";
-        final String dslResourceDirectory = "../.input/resources";
+        final String dslFilePath = "../.input/example-system/runningExample.feature";
+        final String dslResourceDirectory = "../.input/example-system/resources";
         Feature feature = pieker.dsl.Main.parse(dslFilePath, dslResourceDirectory);
         pieker.dsl.code.Engine.validate(feature);
         pieker.dsl.code.Engine.run(feature);

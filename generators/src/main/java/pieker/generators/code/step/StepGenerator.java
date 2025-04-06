@@ -4,19 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import pieker.generators.code.CodeGenerationException;
-import pieker.generators.code.VelocityTemplateProcessor;
 import pieker.common.ScenarioProxyComponent;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.ScenarioTrafficComponent;
 import pieker.common.TrafficTemplate;
+import pieker.generators.code.CodeGenerationException;
+import pieker.generators.code.VelocityTemplateProcessor;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -26,19 +24,19 @@ public class StepGenerator {
     private static final String PROXY_TEMPLATE_FILE = "proxyServer.vm";
     private static final String TRAFFIC_THREAD_TEMPLATE_FILE = "traffic/thread.vm";
     private static final String TRAFFIC_CONTAINER_TEMPLATE_FILE = "traffic/trafficContainer.vm";
-    private static final String TIMESTAMP = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss"));
     private static final String DEFAULT_FILENAME = "Default";
     private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
     private static final String CLASS_NAME = "className";
     private static final String ENABLE_LOGS = "enableLogging";
     private static final VelocityTemplateProcessor VELOCITY = new VelocityTemplateProcessor(OUTPUT_DIR);
 
-    private StepGenerator() {}
+    private StepGenerator() {
+    }
 
-    public static void createScenarioJson(ScenarioTestPlan scenario){
+    public static void createScenarioJson(ScenarioTestPlan scenario) {
         ObjectMapper om = new ObjectMapper();
         try {
-            String path = OUTPUT_DIR + scenario.getName() + "-" + TIMESTAMP;
+            String path = OUTPUT_DIR + scenario.getName();
             Files.createDirectories(Path.of(path));
 
             // Convert object to JSON file
@@ -58,21 +56,21 @@ public class StepGenerator {
         VelocityContext defaultCtx = new VelocityContext();
         defaultCtx.put(CLASS_NAME, DEFAULT_FILENAME);
         String defaultFile = VELOCITY.fillTemplate(VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE), defaultCtx);
-        saveCodeFile(defaultFile,getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
+        saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
 
         //create step files
         Map<String, List<pieker.common.Template>> stepConditionMap = scenarioComponent.getStepToConditionMap();
         stepConditionMap.forEach((stepId, conditionList) -> {
-            VelocityContext ctx = new VelocityContext();
-            ctx.put(CLASS_NAME, stepId);
-            ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
-            Template template = VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE);
+                    VelocityContext ctx = new VelocityContext();
+                    ctx.put(CLASS_NAME, stepId);
+                    ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
+                    Template template = VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE);
 
-            conditionList.forEach(t -> t.addContextVariable(ctx));
-            String proxyFile = VELOCITY.fillTemplate(template, ctx);
-            saveCodeFile(proxyFile,
-                    getComponentFileName(scenarioName, scenarioComponent.getName(), stepId));
-            }
+                    conditionList.forEach(t -> t.addContextVariable(ctx));
+                    String proxyFile = VELOCITY.fillTemplate(template, ctx);
+                    saveCodeFile(proxyFile,
+                            getComponentFileName(scenarioName, scenarioComponent.getName(), stepId));
+                }
         );
 
     }
@@ -97,7 +95,7 @@ public class StepGenerator {
                 ctx.put(ENABLE_LOGS, traffic.isEnableLogs());
                 traffic.addContextVariable(ctx);
                 String trafficType = (String) ctx.get("trafficType");
-                if(trafficType == null){
+                if (trafficType == null) {
                     log.warn("traffic container with empty trafficType detected. Skipping traffic '{}'.",
                             traffic.getIdentifier());
                 } else if (trafficType.equals("request") || (trafficType.equals("sql"))) {
@@ -120,15 +118,15 @@ public class StepGenerator {
         }
     }
 
-    private static void saveCodeFile(String file, String filePath){
+    private static void saveCodeFile(String file, String filePath) {
         try {
             VELOCITY.saveToFile(file, filePath);
         } catch (Exception e) {
-            log.error("Error while saving code-file: {}" , e.getMessage());
+            log.error("Error while saving code-file: {}", e.getMessage());
         }
     }
 
-    private static String getComponentFileName(String scenarioName, String scenarioComponentName, String stepId){
-        return scenarioName + "-" + TIMESTAMP +  "/code/" + scenarioComponentName + "/" + stepId + ".java";
+    private static String getComponentFileName(String scenarioName, String scenarioComponentName, String stepId) {
+        return scenarioName + "/code/" + scenarioComponentName + "/" + stepId + ".java";
     }
 }

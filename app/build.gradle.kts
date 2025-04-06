@@ -1,3 +1,8 @@
+plugins {
+    java
+    application
+}
+
 dependencies {
     // Internal
     implementation(project(":dsl"))
@@ -5,4 +10,8 @@ dependencies {
     implementation(project(":generators"))
     // External
 
+}
+
+application {
+    mainClass.set("pieker.app.Main")
 }

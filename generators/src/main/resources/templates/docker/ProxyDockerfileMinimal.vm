@@ -1,0 +1,27 @@
+# PIEKER Proxy Dockerfile for minimal JRE
+
+# Step 1: Base image with full JDK to analyze dependencies
+FROM openjdk:23-jdk as builder
+WORKDIR /app
+
+COPY $jarPath app.jar
+
+# Analyze the JAR to find required Java modules
+RUN jdeps --print-module-deps app.jar > modules.txt
+
+# Generate a minimal JRE with only the required modules
+RUN jlink --no-header-files --no-man-pages \
+    --compress=2 --strip-debug \
+    --add-modules $(cat modules.txt) \
+    --output /custom-jre
+
+# Step 2: Create minimal final image
+FROM gcr.io/distroless/java-base-debian12
+WORKDIR /app
+
+# Copy the stripped-down JRE and JAR file
+COPY --from=builder /custom-jre /jre
+COPY --from=builder /app/app.jar app.jar
+
+# Run the application with the minimal JRE
+CMD ["/jre/bin/java", "-jar", "app.jar"]
