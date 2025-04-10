@@ -100,7 +100,8 @@ public final class DockerImageGenerator {
         for (String componentName : componentNames) {
             final String buildContextPath = CODE_DIR + componentName;
             log.debug("Building image for component {} at {}", componentName, buildContextPath);
-            final String imageId = buildImage(buildContextPath);
+            // Build Docker image with name "<componentName>:<scenarioName>"
+            final String imageId = buildImage(buildContextPath, componentName, System.getProperty("scenarioName", "latest"));
             // Save Docker image to file
             log.debug("Saving image {} for component {} to file", imageId, componentName);
             saveImage(imageId, componentName, IMAGE_DIR);
@@ -111,10 +112,12 @@ public final class DockerImageGenerator {
      * Builds a Docker image from the specified build context path.
      *
      * @param buildContextPath path to the build context directory (containing Dockerfile)
+     * @param imageName        name of the image (lowercase)
+     * @param tag              tag for the image (after name)
      * @return image ID of the built image
      * @throws IOException if an error occurs
      */
-    public static String buildImage(String buildContextPath) throws IOException {
+    public static String buildImage(String buildContextPath, String imageName, String tag) throws IOException {
 
         try (DockerClient dockerClient = getDockerClient()) {
             // Specify the directory containing your Dockerfile and compiled Java files (the build context)
@@ -123,10 +126,11 @@ public final class DockerImageGenerator {
             // Build the image from the Dockerfile; this returns the image ID
             String imageId = dockerClient.buildImageCmd(dockerContext)
                     .withDockerfile(new File(dockerContext, "Dockerfile"))
+                    .withTags(Set.of(imageName.toLowerCase() + ":" + tag.toLowerCase()))
                     .exec(new BuildImageResultCallback())
                     .awaitImageId();
 
-            log.info("Image built with ID: {}", imageId);
+            log.info("Image built with ID: {}and tag: {}:{}", imageId, imageName, tag);
             return imageId;
         }
     }

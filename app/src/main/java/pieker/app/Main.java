@@ -1,12 +1,18 @@
 package pieker.app;
 
 import lombok.extern.slf4j.Slf4j;
+import pieker.architectures.ArchitectureFactory;
+import pieker.architectures.generator.ModelGenerator;
+import pieker.architectures.injector.ComponentInjector;
+import pieker.architectures.model.ArchitectureModel;
 import pieker.dsl.model.Feature;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
 import pieker.generators.components.docker.DockerImageGenerator;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 @Slf4j
 public class Main {
@@ -29,7 +35,7 @@ public class Main {
                         Hello, this is PIEKER - let us 'kieken', what you got:
                         
                         Run Configuration:
-                             DSL:                        {},
+                             DSL file:                   {},
                              DSL resource directory:     {},
                              Architecture file:          {},
                              Interface description file: {},
@@ -84,7 +90,7 @@ public class Main {
         // Package test component code into JAR files
         log.info("Starting test component JAR generation...");
         feature.getScenarioTestPlanList().forEach(scenario -> {
-            System.setProperty("scenarioName",  scenario.getName());
+            System.setProperty("scenarioName", scenario.getName());
             MultiStepGenerator.generateMultiStepProxies(scenario);
         });
         log.info("Finished test component JAR generation.");
@@ -92,7 +98,7 @@ public class Main {
         // Generate Docker images for test components
         log.info("Starting Docker image generation...");
         feature.getScenarioTestPlanList().forEach(scenario -> {
-            System.setProperty("scenarioName",  scenario.getName());
+            System.setProperty("scenarioName", scenario.getName());
             try {
                 DockerImageGenerator.generateImages(scenario);
             } catch (Exception e) {
@@ -100,6 +106,21 @@ public class Main {
             }
         });
         log.info("Finished Docker image generation.");
+
+        // Generate Test Environment
+        log.info("Starting test architecture generation...");
+        final Path architectureFilePath = Path.of(System.getProperty("architectureFile"));
+        final Path interfaceDescriptionFilePath = Path.of(System.getProperty("interfaceDescriptionFile"));
+        final ModelGenerator<?> modelGenerator = ArchitectureFactory.createGenerator(architectureFilePath);
+        final ArchitectureModel<?> model = modelGenerator.generate(architectureFilePath, interfaceDescriptionFilePath);
+        final ComponentInjector<?, ?> componentInjector = ArchitectureFactory.createInjector(model);
+
+        // FIXME: Include all test plans
+        componentInjector.injectComponents(feature.getScenarioTestPlanList().getFirst());
+
+        log.info("Finished test architecture generation. Storing results...");
+        final String filePath = System.getProperty("genDir") + File.separator + System.getProperty("scenarioName") + File.separator + "docker-compose.yml";
+        model.saveToFile(filePath);
     }
 
 }

@@ -5,8 +5,9 @@ plugins {
 
 dependencies {
     // Internal
-    implementation(project(":dsl"))
+    implementation(project(":architectures"))
     implementation(project(":common"))
+    implementation(project(":dsl"))
     implementation(project(":generators"))
     // External
 
