@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pieker.common.TestStep;
 import pieker.common.TrafficTemplate;
+import pieker.dsl.model.Then;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,9 @@ public class SupervisorStep implements TestStep {
     private List<SupervisorTraffic> trafficList = new ArrayList<>();
     private List<SupervisorTraffic> evaluationPreparationList = new ArrayList<>();
 
-    public SupervisorStep(String id, int assertAfter) {
+    public SupervisorStep(String id, Then then) {
         this.id = id;
-        this.assertAfter = assertAfter;
+        this.assertAfter = then != null ? then.getAssertAfter() : 0;
     }
 
     @JsonIgnore

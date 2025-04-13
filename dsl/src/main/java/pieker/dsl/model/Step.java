@@ -91,13 +91,14 @@ public class Step {
         }
         trafficList.sort(new SupervisorTraffic.STComparator());
         evaluationPreparationList.sort(new SupervisorTraffic.STComparator());
-        SupervisorStep supervisorStep = new SupervisorStep(this.id, then.getAssertAfter());
+        SupervisorStep supervisorStep = new SupervisorStep(this.id, this.then);
         supervisorStep.setTrafficList(trafficList);
         supervisorStep.setEvaluationPreparationList(evaluationPreparationList);
         return supervisorStep;
     }
 
     public void migrateBeforeEach(Step beforeEach) {
+        if (beforeEach == null) return;
         beforeEach.testComponentMap.forEach((k,v) -> this.testComponentMap.put(k, v.copy()));
     }
 
