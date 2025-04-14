@@ -3,13 +3,13 @@ package pieker.architectures.description;
 /**
  * Exception thrown when an error occurs while parsing an architecture description file.
  */
-public class DependencyDescriptionException extends RuntimeException {
+public class InterfaceDescriptionException extends RuntimeException {
 
-    public DependencyDescriptionException(String message) {
+    public InterfaceDescriptionException(String message) {
         super(message);
     }
 
-    public DependencyDescriptionException(String message, Throwable cause) {
+    public InterfaceDescriptionException(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -10,14 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-class DependencyDescriptionTest {
+class InterfaceDescriptionTest {
 
     private static final Path DESCRIPTION_FILE = Path.of("src/test/resources/test.description.yml");
 
     @Test
     void testParsing() {
 
-        DependencyDescription architectureDescription = DependencyDescriptionParser.parse(DESCRIPTION_FILE);
+        InterfaceDescription architectureDescription = InterfaceDescriptionParser.parse(DESCRIPTION_FILE);
 
         assertNotNull(architectureDescription);
         assertEquals(2, architectureDescription.getComponents().size());

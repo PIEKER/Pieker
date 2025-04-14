@@ -10,7 +10,7 @@ import pieker.architectures.model.ComponentLink;
 import java.util.List;
 
 /**
- * Pieker Dependency Description link class. Each link resembles a link between two components in the architecture model.
+ * Pieker Interface Description link class. Each link resembles a link between two components in the architecture model.
  */
 @Getter
 @Setter
