@@ -77,8 +77,26 @@ Build executables: `./gradlew assemble`
 
 ## Usage
 
-TODO: Describe how to use the PIEKER Testing Platform using
-the [Example System](https://github.com/PIEKER/example-system)
+To use PIEKER with Docker Compose based systems you need:
+
+  - Java 23
+  - Docker
+
+**Note:** For now the Docker Demon must be exposed on `tcp://localhost:2375` _without_ TLS (default: `tcp://localhost:2376` with TLS)
+
+In the [`gradle.properties`](./gradle.properties) file set the required input properties to match your system. Required 
+are at least:
+
+- A `docker-compose.yml` file with the architecture of your system
+- An [PIEKER Interface Description](architectures/src/main/java/pieker/architectures/description/README.md) in YAML format
+- A PIEKER DSL file with the test specification
+
+You can run PIEKER with the following command:
+
+`./gradlew :app:run` (Alternatively run the [main class](app/src/main/java/pieker/app/Main.java) of the [`app`](app/) 
+module in your IDE manually)
+
+It is recommended to clear the `genDir` specified in the [`gradle.properties`](./gradle.properties) before every run.
 
 ## Modules
 

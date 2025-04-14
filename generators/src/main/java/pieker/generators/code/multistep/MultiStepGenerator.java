@@ -43,10 +43,9 @@ public class MultiStepGenerator {
         log.debug("Generating Multi-Step-Proxies...");
         final Collection<ScenarioComponent> proxyComponents = new ArrayList<>(testPlan.getProxyComponents());
         generateMultiStepProxies(proxyComponents);
-        // FIXME: Enable when JARs can be generated with external dependencies
-        //log.debug("Generating Multi-Step-Traffic-Components...");
-        //final Collection<ScenarioComponent> trafficComponents = new ArrayList<>(testPlan.getTrafficComponents());
-        //generateMultiStepTrafficComponents(trafficComponents);
+        log.debug("Generating Multi-Step-Traffic-Components...");
+        final Collection<ScenarioComponent> trafficComponents = new ArrayList<>(testPlan.getTrafficComponents());
+        generateMultiStepTrafficComponents(trafficComponents);
     }
 
     /**
@@ -76,7 +75,7 @@ public class MultiStepGenerator {
         for (ScenarioComponent component : trafficComponents) {
             try {
                 List<String> dependencies = List.of(
-                        "dependencies" + File.separator + "json-20250107.jar"
+                        "dependencies/json-20250107.jar"
                 );
                 log.debug("Starting to generate multi-step traffic component '{}' with dependencies: {}",
                         component.getName(), dependencies);
@@ -136,4 +135,5 @@ public class MultiStepGenerator {
         JarBuilder.buildJar(componentDir + multiStepProxyName + ".java", componentDir + "jars",
                 true, null);
     }
+
 }

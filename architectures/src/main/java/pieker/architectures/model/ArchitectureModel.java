@@ -111,4 +111,11 @@ public interface ArchitectureModel<C extends Component> {
      */
     Collection<Link<C>> getLinksForSourceAndTarget(C source, C target);
 
+    /**
+     * Saves the architecture model to a file.
+     *
+     * @param filePath path to the file
+     */
+    void saveToFile(String filePath);
+
 }

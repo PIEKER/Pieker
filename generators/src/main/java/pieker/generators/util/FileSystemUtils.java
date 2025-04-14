@@ -2,7 +2,10 @@ package pieker.generators.util;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,4 +64,54 @@ public final class FileSystemUtils {
             return new ArrayList<>();
         }
     }
+
+    /**
+     * Checks if a directory contains a file with the specified name.
+     *
+     * @param directoryPath path to the directory
+     * @param fileName      name of the file to check
+     * @return true if the directory contains the file, false otherwise
+     */
+    public static boolean directoryContainsFile(String directoryPath, String fileName) {
+        File directory = new File(directoryPath);
+
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                boolean found = false;
+                for (File file : files) {
+                    if (file.getName().equals(fileName)) {
+                        found = true;
+                        break;
+                    }
+                }
+                return found;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Copies a file from the classpath to a specified destination.
+     *
+     * @param resource    path to the source file in the classpath
+     * @param destination path to the destination file
+     * @throws IOException if an error occurs
+     */
+    public static void copyFileFromClasspath(String resource, String destination) throws IOException {
+        File file = new File(resource);
+        Path destinationPath = Paths.get(destination, file.getName());
+
+        try (InputStream resourceStream = FileSystemUtils.class.getClassLoader().getResourceAsStream(resource)) {
+
+            if (resourceStream == null) {
+                throw new FileNotFoundException("Resource not found: " + resource);
+            }
+
+            Files.copy(resourceStream, destinationPath);
+            log.debug("File copied to: {}", destinationPath.toAbsolutePath());
+        }
+    }
+
 }

@@ -82,7 +82,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         }
         switch (interfaceType) {
             case HTTP_API -> {
-                ((ComposeService) proxy).setImage(proxy.getName());
+                ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
                 ((ComposeService) proxy).addPortMappings(Map.of("80", "80", "42690", "42690"));
                 // TODO: Set env values of proxy for target
                 this.model.addLink(HttpApiLink.createForProxy(proxy, targetComponent));
@@ -100,7 +100,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
      */
     private void connectHttpApiProxyToTarget(ComposeService proxyComponent, ComposeService targetComponent,
                                              HttpApiLink<ComposeComponent> existingLink) {
-        proxyComponent.setImage(proxyComponent.getName());
+        proxyComponent.setImage(proxyComponent.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
         HttpApiLink<ComposeComponent> proxyToTargetLink = HttpApiLink.createForProxy(proxyComponent, targetComponent);
         this.model.addLink(proxyToTargetLink);
         final String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());

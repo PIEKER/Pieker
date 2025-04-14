@@ -18,7 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class is responsible for generating Docker images for the components defined in a test plan.
@@ -50,9 +52,7 @@ public final class DockerImageGenerator {
      * @throws IOException if an error occurs
      */
     public static void generateImages(ScenarioTestPlan testPlan) throws IOException {
-        // FIXME: Enable traffic components when JARs can be generated with external dependencies
-        List<ScenarioComponent> proxyComponents = new ArrayList<>(testPlan.getProxyComponents());
-        generateImages(proxyComponents);
+        generateImages(testPlan.getComponents());
     }
 
     /**
@@ -100,7 +100,8 @@ public final class DockerImageGenerator {
         for (String componentName : componentNames) {
             final String buildContextPath = CODE_DIR + componentName;
             log.debug("Building image for component {} at {}", componentName, buildContextPath);
-            final String imageId = buildImage(buildContextPath);
+            // Build Docker image with name "<componentName>:<scenarioName>"
+            final String imageId = buildImage(buildContextPath, componentName, System.getProperty("scenarioName", "latest"));
             // Save Docker image to file
             log.debug("Saving image {} for component {} to file", imageId, componentName);
             saveImage(imageId, componentName, IMAGE_DIR);
@@ -111,10 +112,12 @@ public final class DockerImageGenerator {
      * Builds a Docker image from the specified build context path.
      *
      * @param buildContextPath path to the build context directory (containing Dockerfile)
+     * @param imageName        name of the image (lowercase)
+     * @param tag              tag for the image (after name)
      * @return image ID of the built image
      * @throws IOException if an error occurs
      */
-    public static String buildImage(String buildContextPath) throws IOException {
+    public static String buildImage(String buildContextPath, String imageName, String tag) throws IOException {
 
         try (DockerClient dockerClient = getDockerClient()) {
             // Specify the directory containing your Dockerfile and compiled Java files (the build context)
@@ -123,10 +126,11 @@ public final class DockerImageGenerator {
             // Build the image from the Dockerfile; this returns the image ID
             String imageId = dockerClient.buildImageCmd(dockerContext)
                     .withDockerfile(new File(dockerContext, "Dockerfile"))
+                    .withTags(Set.of(imageName.toLowerCase() + ":" + tag.toLowerCase()))
                     .exec(new BuildImageResultCallback())
                     .awaitImageId();
 
-            log.info("Image built with ID: {}", imageId);
+            log.info("Image built with ID: {}and tag: {}:{}", imageId, imageName, tag);
             return imageId;
         }
     }
@@ -164,6 +168,7 @@ public final class DockerImageGenerator {
      * @return Docker client
      */
     private static DockerClient getDockerClient() {
+        // FIXME: Use TLS-enabled Docker client
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost("tcp://localhost:2375")
                 .build();

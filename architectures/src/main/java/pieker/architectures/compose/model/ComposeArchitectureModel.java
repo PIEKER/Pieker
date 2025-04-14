@@ -127,6 +127,11 @@ public class ComposeArchitectureModel extends AbstractArchitectureModel<ComposeC
     }
 
     @Override
+    public void saveToFile(String filePath) {
+        this.toYamlFile(filePath);
+    }
+
+    @Override
     protected ComposeService createComponentInstance(String name) {
         return new ComposeService(name);
     }
