@@ -49,4 +49,4 @@ least the name of the environment variable that contains the URL of the target c
 This model resembles the structure of objects that define the interface description of the PIEKER Architectures Module.
 The implementation of this model is located in the [`pieker.architectures.description`](.) package.
 
-![PIEKER Interface Description Model](../../../../../../doc/img/pieker_dependency_desc.svg)
+![PIEKER Interface Description Model](../../../../../../doc/img/pieker_interface_desc.svg)
