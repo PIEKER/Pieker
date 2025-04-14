@@ -79,10 +79,8 @@ Build executables: `./gradlew assemble`
 
 To use PIEKER with Docker Compose based systems you need:
 
-  - Java 23
+  - Java 23 (JRE)
   - Docker
-
-**Note:** For now the Docker Demon must be exposed on `tcp://localhost:2375` _without_ TLS (default: `tcp://localhost:2376` with TLS)
 
 In the [`gradle.properties`](./gradle.properties) file set the required input properties to match your system. Required 
 are at least:
