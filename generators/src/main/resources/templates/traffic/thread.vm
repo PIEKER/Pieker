@@ -63,9 +63,6 @@ Thread.ofVirtual().start(() -> {
                 }
 
                 log("Thread " + trafficIdent + " finished!");
-            } catch (InterruptedException e) {
-                log("Thread " + trafficIdent + " was interrupted!");
-                Thread.currentThread().interrupt();
             } catch (IOException e) {
                 log("Thread" + trafficIdent + " failed due to IOException: " + e.getMessage());
             } catch (URISyntaxException e) {
