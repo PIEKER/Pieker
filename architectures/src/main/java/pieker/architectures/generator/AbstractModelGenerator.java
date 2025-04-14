@@ -3,8 +3,8 @@ package pieker.architectures.generator;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pieker.architectures.ArchitectureFactory;
-import pieker.architectures.description.DependencyDescription;
-import pieker.architectures.description.DependencyDescriptionParser;
+import pieker.architectures.description.InterfaceDescription;
+import pieker.architectures.description.InterfaceDescriptionParser;
 import pieker.architectures.description.DescriptionComponent;
 import pieker.architectures.generator.exceptions.ArchitectureGeneratorException;
 import pieker.architectures.model.ArchitectureModel;
@@ -33,17 +33,17 @@ public abstract class AbstractModelGenerator<M extends ArchitectureModel<C>, C e
         return model;
     }
 
-    public M generate(DependencyDescription description) throws ArchitectureGeneratorException, NoSuchElementException {
+    public M generate(InterfaceDescription description) throws ArchitectureGeneratorException, NoSuchElementException {
         return generate(filePath, description);
     }
 
     @Override
     public M generate(Path file, Path descriptionPath) throws ArchitectureGeneratorException, NoSuchElementException {
-        return generate(file, DependencyDescriptionParser.parse(descriptionPath));
+        return generate(file, InterfaceDescriptionParser.parse(descriptionPath));
     }
 
     @Override
-    public M generate(Path file, DependencyDescription description) throws ArchitectureGeneratorException, NoSuchElementException {
+    public M generate(Path file, InterfaceDescription description) throws ArchitectureGeneratorException, NoSuchElementException {
         M model = generate(file);
         description.validate(model);
         model.addLinks(constructLinks(description));
@@ -85,7 +85,7 @@ public abstract class AbstractModelGenerator<M extends ArchitectureModel<C>, C e
         if (descriptionPath == null) {
             return List.of();
         }
-        return constructLinks(DependencyDescriptionParser.parse(descriptionPath));
+        return constructLinks(InterfaceDescriptionParser.parse(descriptionPath));
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class AbstractModelGenerator<M extends ArchitectureModel<C>, C e
      * @param description dependency description
      * @return list of links
      */
-    protected abstract List<Link<C>> constructLinks(DependencyDescription description);
+    protected abstract List<Link<C>> constructLinks(InterfaceDescription description);
 
     /**
      * Sets the types of provided interfaces of components in the architecture model.
@@ -102,7 +102,7 @@ public abstract class AbstractModelGenerator<M extends ArchitectureModel<C>, C e
      * @param model       architecture model
      * @param description dependency description
      */
-    protected void setComponentInterfaceTypes(M model, DependencyDescription description) {
+    protected void setComponentInterfaceTypes(M model, InterfaceDescription description) {
         for (DescriptionComponent descComponent : description.getComponents()) {
             model.getComponent(descComponent.getName()).ifPresent(component ->
                     component.setProvidedInterfaceType(descComponent.getProvides().getInterfaceType()));

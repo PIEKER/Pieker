@@ -3,7 +3,7 @@ package pieker.architectures.compose;
 import lombok.extern.slf4j.Slf4j;
 import pieker.architectures.common.model.HttpApiLink;
 import pieker.architectures.compose.model.*;
-import pieker.architectures.description.DependencyDescription;
+import pieker.architectures.description.InterfaceDescription;
 import pieker.architectures.description.DescriptionComponent;
 import pieker.architectures.description.DescriptionLink;
 import pieker.architectures.generator.AbstractModelGenerator;
@@ -54,14 +54,14 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
     }
 
     @Override
-    protected List<Link<ComposeComponent>> constructLinks(DependencyDescription description) {
+    protected List<Link<ComposeComponent>> constructLinks(InterfaceDescription description) {
         final ArrayList<Link<ComposeComponent>> links = new ArrayList<>();
-        // For each component in the PIEKER Dependency Description ...
+        // For each component in the PIEKER Interface Description ...
         for (DescriptionComponent descriptionComponent : description.getComponents()) {
             // ... find the corresponding component in the ComposeArchitectureModel ...
             model.getComponent(descriptionComponent.getName()).ifPresent(source -> {
                 if (descriptionComponent.getDependencies() != null && !descriptionComponent.getDependencies().isEmpty()) {
-                    // ... and for each link in the Dependency Description of this component ...
+                    // ... and for each link in the Interface Description of this component ...
                     for (DescriptionLink descriptionLink : descriptionComponent.getDependencies()) {
                         // ... find the corresponding target component in the ComposeArchitectureModel ...
                         model.getComponent(descriptionLink.getTarget()).ifPresent(target -> {

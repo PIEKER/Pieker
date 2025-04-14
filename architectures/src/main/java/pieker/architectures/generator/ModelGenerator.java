@@ -1,6 +1,6 @@
 package pieker.architectures.generator;
 
-import pieker.architectures.description.DependencyDescription;
+import pieker.architectures.description.InterfaceDescription;
 import pieker.architectures.generator.exceptions.ArchitectureGeneratorException;
 import pieker.architectures.model.ArchitectureModel;
 
@@ -29,12 +29,12 @@ public interface ModelGenerator<M extends ArchitectureModel<?>> {
      * Generates an architecture model from the given file path using the specified parser.
      *
      * @param filePath              path to the file to be parsed
-     * @param dependencyDescription dependency description
+     * @param interfaceDescription dependency description
      * @return generated architecture model
      * @throws ArchitectureGeneratorException if generating the model fails
      * @throws NoSuchElementException         if a component in the description does not exist in the model
      */
-    M generate(Path filePath, DependencyDescription dependencyDescription) throws ArchitectureGeneratorException;
+    M generate(Path filePath, InterfaceDescription interfaceDescription) throws ArchitectureGeneratorException;
 
     /**
      * Generates an architecture model from the given file path using the specified parser.

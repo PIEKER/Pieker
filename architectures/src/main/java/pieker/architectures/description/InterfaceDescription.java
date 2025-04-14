@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Pieker Dependency Description base class.
+ * Pieker Interface Description base class.
  */
 @Getter
 @Setter
 @NoArgsConstructor
-public class DependencyDescription {
+public class InterfaceDescription {
 
     private List<DescriptionComponent> components;
     private List<DescriptionComponent> mocks;

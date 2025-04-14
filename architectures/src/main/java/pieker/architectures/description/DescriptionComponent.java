@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * Pieker Dependency Description component class. Each component resembles a component in the architecture model.
+ * Pieker Interface Description component class. Each component resembles a component in the architecture model.
  */
 @Getter
 @Setter
