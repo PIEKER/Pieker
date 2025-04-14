@@ -49,8 +49,8 @@ Thread.ofVirtual().start(() -> {
                     r = sendHttpRequest("$requestUrl",
                                         "$requestMethod",
                                         $requestConnTimeout, $requestReadTimeout,
-                                        jsonToMap("$requestHeaders"),
-                                        "$requestBody");
+                                        jsonToMap($requestHeaders),
+                                        $requestBody);
                     #end
 
                     #if($enableLogging == true)

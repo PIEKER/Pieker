@@ -34,9 +34,9 @@ public class Request implements Template, TrafficType {
     @JsonIgnore
     private int readTimeout = 0;
     @JsonIgnore
-    private String headers = "{}";
+    private String headers = "";
     @JsonIgnore
-    private String body = "{}";
+    private String body = "";
 
 
     public Request(String service, String parameter) {
@@ -51,13 +51,18 @@ public class Request implements Template, TrafficType {
 
     @Override
     public void addContextVariable(VelocityContext ctx) {
-        ctx.put("trafficType", "request");
-        ctx.put("requestUrl", this.url);
-        ctx.put("requestMethod", this.method);
-        ctx.put("requestConnTimeout", this.connectionTimeout);
-        ctx.put("requestReadTimeout", this.readTimeout);
-        ctx.put("requestHeaders", this.headers);
-        ctx.put("requestBody", this.body);
+        try{
+            ObjectMapper om = new ObjectMapper();
+            ctx.put("trafficType", "request");
+            ctx.put("requestUrl", this.url);
+            ctx.put("requestMethod", this.method);
+            ctx.put("requestConnTimeout", this.connectionTimeout);
+            ctx.put("requestReadTimeout", this.readTimeout);
+            ctx.put("requestHeaders", om.writeValueAsString(this.headers));
+            ctx.put("requestBody", om.writeValueAsString(this.body));
+        } catch(JsonProcessingException e){
+            throw new PiekerProcessingException("unable escape characters for header/body: " + e.getMessage());
+        }
     }
 
     @Override
