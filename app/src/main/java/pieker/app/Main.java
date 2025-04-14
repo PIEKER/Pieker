@@ -115,7 +115,7 @@ public class Main {
         final ArchitectureModel<?> model = modelGenerator.generate(architectureFilePath, interfaceDescriptionFilePath);
         final ComponentInjector<?, ?> componentInjector = ArchitectureFactory.createInjector(model);
 
-        // FIXME: Include all test plans
+        // FIXME: Ensure only one scenario is executed at a time (e.g. through config)
         componentInjector.injectComponents(feature.getScenarioTestPlanList().getFirst());
 
         log.info("Finished test architecture generation. Storing results...");

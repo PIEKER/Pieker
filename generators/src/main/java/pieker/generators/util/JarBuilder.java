@@ -1,14 +1,12 @@
 package pieker.generators.util;
 
 import lombok.extern.slf4j.Slf4j;
+import pieker.generators.code.CodeGenerationException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Utility class for building JAR files from Java source files.
@@ -109,26 +107,27 @@ public final class JarBuilder {
         compileCommand.add(buildDirPath);
 
         // Add dependencies to classpath if applicable
-        /* FIXME: activate this code when dependency compilation is implemented
         if (dependencies != null && !dependencies.isEmpty()) {
             log.debug("Including dependencies in build: {}", dependencies);
             final String classpath = String.join(File.pathSeparator, dependencies.stream()
-                    .map(s -> s.substring(s.lastIndexOf(File.separator)))
+                    .map(s -> buildDirPath + File.separator + s.substring(s.lastIndexOf("/") + 1))
                     .toList());
             compileCommand.add("-cp");
             compileCommand.add(classpath);
             dependencies.forEach(dependencyPath -> {
                 try {
-                    FileSystemUtils.copyFileFromClasspath(dependencyPath, buildDirPath);
+                    if (!FileSystemUtils.directoryContainsFile(buildDirPath, dependencyPath.substring(dependencyPath.lastIndexOf("/") + 1))) {
+                        FileSystemUtils.copyFileFromClasspath(dependencyPath, buildDirPath);
+                    }
                 } catch (IOException e) {
                     log.error("Failed to copy file from classpath: {}", dependencyPath, e);
                     throw new CodeGenerationException("Failed to copy file from classpath: " + dependencyPath);
                 }
             });
         }
-         */
 
         compileCommand.add(javaFilePath);
+        log.debug("Compiling Java file with command: {}", compileCommand);
         Process compileProcess = new ProcessBuilder(compileCommand)
                 .directory(new File(directory))
                 .inheritIO()
@@ -150,7 +149,8 @@ public final class JarBuilder {
         // Extract dependencies into build directory if provided
         if (dependencies != null && !dependencies.isEmpty()) {
             for (String dependencyPath : dependencies) {
-                Process jarExtractionProcess = new ProcessBuilder("jar", "xf", dependencyPath)
+                final String dependencyName = dependencyPath.substring(dependencyPath.lastIndexOf("/") + 1);
+                Process jarExtractionProcess = new ProcessBuilder("jar", "xf", dependencyName)
                         .directory(new File(buildDirPath))
                         .inheritIO()
                         .start();

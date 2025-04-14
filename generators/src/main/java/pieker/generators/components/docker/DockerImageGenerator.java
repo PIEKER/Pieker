@@ -18,7 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class is responsible for generating Docker images for the components defined in a test plan.
@@ -50,9 +52,7 @@ public final class DockerImageGenerator {
      * @throws IOException if an error occurs
      */
     public static void generateImages(ScenarioTestPlan testPlan) throws IOException {
-        // FIXME: Enable traffic components when JARs can be generated with external dependencies
-        List<ScenarioComponent> proxyComponents = new ArrayList<>(testPlan.getProxyComponents());
-        generateImages(proxyComponents);
+        generateImages(testPlan.getComponents());
     }
 
     /**
@@ -168,6 +168,7 @@ public final class DockerImageGenerator {
      * @return Docker client
      */
     private static DockerClient getDockerClient() {
+        // FIXME: Use TLS-enabled Docker client
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost("tcp://localhost:2375")
                 .build();
