@@ -5,7 +5,7 @@ import pieker.architectures.ArchitectureFactory;
 import pieker.architectures.generator.ModelGenerator;
 import pieker.architectures.injector.ComponentInjector;
 import pieker.architectures.model.ArchitectureModel;
-import pieker.common.PluginManager;
+import pieker.common.plugin.PluginManager;
 import pieker.dsl.model.Feature;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
@@ -28,7 +28,7 @@ public class Main {
             |_|     |_| |_______| | | \\_\\ |_______| |_| \\_\\ |_|
             """;
 
-    private static final PluginManager PLUGIN_MANAGER = new PluginManager("./plugins/jar");
+    private static final PluginManager PLUGIN_MANAGER = new PluginManager( System.getProperty("pluginDir"));
 
     public static void main(String[] args) throws IOException {
 

@@ -1,6 +1,7 @@
 package pieker.log.eval;
 
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import pieker.api.Evaluation;
 import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
@@ -33,27 +34,37 @@ public class LogAssert extends Assert {
     }
 
     @Override
-    protected void evaluateBoolNode(Bool bool, String[] args) {
+    protected void evaluateBoolNode(Bool bool) {
         log.info("evaluate BoolNode in LogEvaluation");
     }
 
     @Override
-    protected void evaluateEqualsNode(Equals equals, String[] args) {
+    protected void evaluateEqualsNode(Equals equals) {
         log.info("evaluate Equals in LogEvaluation");
     }
 
     @Override
-    protected void evaluateNullNode(Null nuLL, String[] args) {
+    protected void evaluateNullNode(Null nuLL) {
         log.info("evaluate Null in LogEvaluation");
     }
 
     @Override
-    public void evaluate(String[] args) {
+    public void evaluate() {
         log.info("evaluate LogEvaluation");
     }
 
     @Override
     public List<Evaluation> getEvaluation() {
         return List.of();
+    }
+
+    @Override
+    public boolean requiresConnectionParam(){
+        return false;
+    }
+
+    @Override
+    public void setupConnectionParam(JSONObject cpJson) {
+        log.info("setup ConnectionParam in LogEvaluation");
     }
 }

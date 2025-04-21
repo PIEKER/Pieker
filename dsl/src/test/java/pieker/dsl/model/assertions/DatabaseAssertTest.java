@@ -1,6 +1,7 @@
 package pieker.dsl.model.assertions;
 
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -53,12 +54,21 @@ class DatabaseAssertTest {
     @Test
     void testDatabaseAssert(){
         DatabaseAssert valid = getValidTestObject();
-
+        valid.setupConnectionParam(new JSONObject("""
+                {
+                    "targetUrlEnv": "<?>",
+                    "usernameEnv": "<?>",
+                    "passwordEnv": "<?>"
+                }
+                """.replaceFirst("<\\?>", postgres.getJdbcUrl())
+                    .replaceFirst("<\\?>", postgres.getUsername())
+                .replaceFirst("<\\?>", postgres.getPassword()))
+        );
         // simulate supervisor step
         send(valid.assertableTableQuery + valid.tableSelect);
 
         // run evaluation
-        valid.evaluate(new String[]{DB, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword()});
+        valid.evaluate();
         List<Evaluation> evaluationList = valid.getEvaluation();
 
         evaluationList.forEach(evaluation -> assertTrue(evaluation.isSuccess()));
@@ -68,7 +78,7 @@ class DatabaseAssertTest {
         invalid = getEmptyDatabaseAssert();
         invalid.addBoolAssertion("true", " == 3", "COUNT(LastName) City = 'Kiel'");
         send(invalid.assertableTableQuery + invalid.tableSelect);
-        invalid.evaluate(new String[]{DB, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword()});
+        invalid.evaluate();
         evaluationList = invalid.getEvaluation();
         evaluationList.forEach(evaluation -> assertFalse(evaluation.isSuccess()));
 
@@ -76,7 +86,7 @@ class DatabaseAssertTest {
         invalid = getEmptyDatabaseAssert();
         invalid.addBoolAssertion("true", " false 3", "COUNT(LastName) | City = 'Kiel'");
         send(invalid.assertableTableQuery + invalid.tableSelect);
-        invalid.evaluate(new String[]{DB, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword()});
+        invalid.evaluate();
         evaluationList = invalid.getEvaluation();
         evaluationList.forEach(evaluation -> assertFalse(evaluation.isSuccess()));
 
@@ -84,7 +94,7 @@ class DatabaseAssertTest {
         invalid = getEmptyDatabaseAssert();
         invalid.addEqualsAssertion("true", "Yannick", "FirstName City = 'Kiel'");
         send(invalid.assertableTableQuery + invalid.tableSelect);
-        invalid.evaluate(new String[]{DB, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword()});
+        invalid.evaluate();
         evaluationList = invalid.getEvaluation();
         evaluationList.forEach(evaluation -> assertFalse(evaluation.isSuccess()));
 
@@ -92,21 +102,18 @@ class DatabaseAssertTest {
         invalid = getEmptyDatabaseAssert();
         invalid.addNullAssertion("true", "FirstName City = 'Kiel'");
         send(invalid.assertableTableQuery + invalid.tableSelect);
-        invalid.evaluate(new String[]{DB, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword()});
+        invalid.evaluate();
         evaluationList = invalid.getEvaluation();
         evaluationList.forEach(evaluation -> assertFalse(evaluation.isSuccess()));
     }
 
     DatabaseAssert getEmptyDatabaseAssert(){
-        DatabaseAssert databaseAssert = new DatabaseAssert(DB);
-        databaseAssert.setTableSelect("SELECT * FROM " + TABLE);
-        return databaseAssert;
+        return new DatabaseAssert(DB + "|" + "SELECT * FROM " + TABLE);
     }
 
     DatabaseAssert getValidTestObject(){
 
-        DatabaseAssert databaseAssert = new DatabaseAssert(DB);
-        databaseAssert.setTableSelect("SELECT * FROM " + TABLE);
+        DatabaseAssert databaseAssert = new DatabaseAssert(DB + "|" + "SELECT * FROM " + TABLE);
         databaseAssert.addBoolAssertion("true", " == 4", "COUNT(LastName)");
         databaseAssert.addBoolAssertion("true", " < 2", "COUNT(LastName) | LastName = 'Ohlsen'");
         databaseAssert.addBoolAssertion("false", " > 2", "COUNT(FirstName) | FirstName = 'Yannick'");

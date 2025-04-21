@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pieker.api.assertions.Assert;
-import pieker.common.PluginManager;
+import pieker.common.plugin.PluginManager;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.antlr.gen.PiekerParser;
 import pieker.dsl.antlr.gen.PiekerParserBaseListener;

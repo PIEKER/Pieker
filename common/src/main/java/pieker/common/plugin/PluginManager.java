@@ -1,4 +1,4 @@
-package pieker.common;
+package pieker.common.plugin;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

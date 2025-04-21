@@ -2,7 +2,7 @@ package pieker.dsl;
 
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
-import pieker.common.PluginManager;
+import pieker.common.plugin.PluginManager;
 import pieker.dsl.code.Engine;
 import pieker.dsl.parser.FeatureParser;
 import pieker.dsl.model.Feature;
