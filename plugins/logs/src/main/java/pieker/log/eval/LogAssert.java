@@ -10,14 +10,16 @@ import pieker.api.assertions.Null;
 import java.util.List;
 
 @Slf4j
-public class LogEvaluation extends Assert {
+public class LogAssert extends Assert {
 
-    public LogEvaluation(){
-        super("LogEvaluation");
+    private static final String ASSERT_PLUGIN = "Log";
+
+    public LogAssert(){
+        super(ASSERT_PLUGIN);
     }
 
-    public LogEvaluation(String identifier) {
-        super(identifier);
+    public LogAssert(String identifier) {
+        super(ASSERT_PLUGIN, identifier);
     }
 
     @Override
@@ -47,7 +49,7 @@ public class LogEvaluation extends Assert {
 
     @Override
     public void evaluate(String[] args) {
-
+        log.info("evaluate LogEvaluation");
     }
 
     @Override

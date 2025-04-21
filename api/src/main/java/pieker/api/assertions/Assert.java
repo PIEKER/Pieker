@@ -13,14 +13,20 @@ import java.util.List;
 @Setter
 public abstract class Assert implements Assertions {
 
-    protected final String identifier;
+    protected final String assertPlugin;
+    protected String identifier;
 
     protected final List<Bool> boolList = new ArrayList<>();
     protected final List<Equals> equalsList = new ArrayList<>();
     protected final List<Null> nullList = new ArrayList<>();
 
-    protected Assert(String identifier){
+    protected Assert(String assertPlugin, String identifier){
+        this.assertPlugin = assertPlugin;
         this.identifier = identifier;
+    }
+
+    protected Assert(String assertPlugin){
+        this(assertPlugin, "");
     }
 
     public void addBoolAssertion(String boolType, String expression, String value){

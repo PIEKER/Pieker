@@ -8,6 +8,7 @@ import pieker.api.assertions.Bool;
 import pieker.api.assertions.Equals;
 import pieker.api.assertions.Null;
 import pieker.api.Evaluation;
+import pieker.dsl.PiekerDslException;
 import pieker.dsl.code.Engine;
 import pieker.dsl.code.component.SupervisorTraffic;
 import pieker.dsl.code.exception.PiekerProcessingException;
@@ -24,6 +25,7 @@ import java.util.List;
 @Slf4j
 public class DatabaseAssert extends Assert {
 
+    private static final String ASSERT_PLUGIN = "Database";
     public static final String SUPERVISOR_TRAFFIC_PREFIX = "zzz-database-assert";
     private static final String SELECT = "SELECT ";
     private static final String FROM = " FROM ";
@@ -36,8 +38,16 @@ public class DatabaseAssert extends Assert {
     protected final String dropAssertableTableQuery = "DROP TABLE " + this.assertableTableName;
     protected String tableSelect;
 
-    public DatabaseAssert(String identifier) {
-        super(identifier);
+    public DatabaseAssert(String arguments) {
+        super(ASSERT_PLUGIN);
+        String[] args = Util.getArgumentsFromString(arguments);
+        if (args.length > 2){
+            throw new PiekerDslException("invalid amount of arguments on an DatabaseAssert! " +
+                    "args: " + args.length +
+                    "value: " + arguments);
+        }
+        this.identifier = args[0];
+        this.tableSelect = args[1];
     }
 
     @Override

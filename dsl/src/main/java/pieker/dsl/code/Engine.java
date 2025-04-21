@@ -18,8 +18,6 @@ public class Engine {
 
     @Getter
     private static Step currentStep = new Step(null, null, "PLACEHOLDER_STEP");
-    @Getter
-    private static Map<String, Assert> PLUGINS = new HashMap<>();
 
     private static FileManager fileManager;
 
@@ -27,11 +25,6 @@ public class Engine {
     private Engine(){}
 
     public static void run(Feature feature){
-        run(feature, null);
-    }
-
-    public static void run(Feature feature, Map<String, Assert> plugins){
-        if (plugins != null) PLUGINS = plugins;
 
         validate(feature);
 
@@ -44,11 +37,6 @@ public class Engine {
     }
 
     public static void validate(Feature feature){
-        validate(feature, null);
-    }
-
-    public static void validate(Feature feature, Map<String, Assert> plugins){
-        if (plugins != null) PLUGINS = plugins;
 
         fileManager = new FileManager(feature.getResourceDirectory());
         log.debug("starting validation of Feature {}", feature.getName());

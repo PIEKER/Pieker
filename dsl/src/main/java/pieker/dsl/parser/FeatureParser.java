@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pieker.api.assertions.Assert;
+import pieker.common.PluginManager;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.antlr.gen.PiekerParser;
 import pieker.dsl.antlr.gen.PiekerParserBaseListener;
@@ -19,6 +20,8 @@ import static pieker.dsl.util.FeatureUtil.getShiftedLineIndex;
 
 @Slf4j
 public class FeatureParser extends PiekerParserBaseListener {
+
+    private static PluginManager pluginManager = new PluginManager();
 
     private final ParsingReader reader;
     private final Feature feature;
@@ -42,6 +45,12 @@ public class FeatureParser extends PiekerParserBaseListener {
      * @throws IOException  if file could not be loaded properly
      */
     public static void parse(Feature feature, boolean fromResource) throws IOException {
+        parse(feature,fromResource, null);
+    }
+
+    public static void parse(Feature feature, boolean fromResource, PluginManager pm) throws IOException{
+        if (pm != null) pluginManager = pm;
+
         ParsingReader r = new ParsingReader(feature.getFileName(), fromResource);
         FeatureParser fp = new FeatureParser(r, feature);
         if(fp.reader.errorListener.isFail()){
@@ -242,41 +251,43 @@ public class FeatureParser extends PiekerParserBaseListener {
         }
 
         if (ctxThen.assert_() != null){
-            if (ctxThen.assert_().assertAfter() != null){
-                PiekerParser.AssertAfterContext ctxAssertAfter = ctxThen.assert_().assertAfter();
-                if (ctxAssertAfter.line() == null || ctxAssertAfter.line().getText().trim().isEmpty()){
-                    throw new PiekerDslException("invalid assertAfter detected at: " + then.getLine());
-                }
-                then.setAssertAfter(Integer.parseInt(ctxAssertAfter.line().getText().trim()));
-            }
-            this.createDatabaseAssertions(ctxThen.assert_().databaseBlock(), then);
-            this.createTrafficAssertions(ctxThen.assert_().trafficBlock(), then);
+            ctxThen.assert_().forEach(ctxAssert -> this.createAssertions(then, ctxAssert));
         }
 
         step.setThen(then);
     }
 
-    private void createTrafficAssertions(PiekerParser.TrafficBlockContext trafficBlockContext, Then then) {
-        if (trafficBlockContext == null) return;
+    private void createAssertions(Then then, PiekerParser.AssertContext ctxAssert){
 
-//        for (PiekerParser.TrafficBodyContext ctxTrafficBody : trafficBlockContext.trafficBody()){
-//            TrafficAssert ass = new TrafficAssert(ctxTrafficBody.identifier().line().getText().trim());
-//            this.createAssertFunctionLists(then, ass,
-//                    ctxTrafficBody.assertBool(), ctxTrafficBody.assertEquals(), ctxTrafficBody.assertNull());
-//        }
-    }
-
-    private void createDatabaseAssertions(PiekerParser.DatabaseBlockContext databaseBlockContext, Then then) {
-        if (databaseBlockContext == null) return;
-
-        for (PiekerParser.DatabaseBodyContext ctxDatabaseBody : databaseBlockContext.databaseBody()){
-            DatabaseAssert ass = new DatabaseAssert(ctxDatabaseBody.identifier().line().getText());
-
-            PiekerParser.TableBodyContext ctxTableBody = ctxDatabaseBody.tableBody();
-            ass.setTableSelect(ctxTableBody.line().getText());
-            this.createAssertFunctionLists(then, ass,
-                    ctxTableBody.assertBool(), ctxTableBody.assertEquals(), ctxTableBody.assertNull());
+        String assertPlugin = "";
+        if (ctxAssert.line() != null){
+            assertPlugin = ctxAssert.line().getText().trim();
         }
+
+        String arguments = "";
+        if (ctxAssert.arguments() != null && ctxAssert.arguments().line() != null){
+            arguments = ctxAssert.arguments().line().getText().trim();
+        }
+
+        Assert ass = assertPlugin.equals("Database") ? new DatabaseAssert(arguments): pluginManager.createPluginInstance(assertPlugin, arguments);
+
+        if (ctxAssert.assertAfter() != null){
+            PiekerParser.AssertAfterContext ctxAssertAfter = ctxAssert.assertAfter();
+            if (ctxAssertAfter.line() == null || ctxAssertAfter.line().getText().trim().isEmpty()){
+                throw new PiekerDslException("invalid assertAfter detected at: " + then.getLine());
+            }
+            then.setAssertAfter(Integer.parseInt(ctxAssertAfter.line().getText().trim()));
+        }
+
+        if (ctxAssert.assertBody() == null) {
+            throw new PiekerDslException("Assert with no body detected: " + then.getLine());
+        }
+
+        this.createAssertFunctionLists(then, ass,
+                ctxAssert.assertBody().assertBool(), ctxAssert.assertBody().assertEquals(), ctxAssert.assertBody().assertNull());
+
+        then.addAssert(ass);
+
     }
 
     private void createAssertFunctionLists(Then then, Assert ass,
@@ -308,8 +319,6 @@ public class FeatureParser extends PiekerParserBaseListener {
                         ctxNull.line().getText().trim()
                 )
         );
-
-        then.addAssert(ass);
     }
 
     private void addEntryForGivenNode(PiekerParser.GivenKeyContext ctxGivenKey, Given given,

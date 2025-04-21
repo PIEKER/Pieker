@@ -5,6 +5,7 @@ import pieker.architectures.ArchitectureFactory;
 import pieker.architectures.generator.ModelGenerator;
 import pieker.architectures.injector.ComponentInjector;
 import pieker.architectures.model.ArchitectureModel;
+import pieker.common.PluginManager;
 import pieker.dsl.model.Feature;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
@@ -27,7 +28,7 @@ public class Main {
             |_|     |_| |_______| | | \\_\\ |_______| |_| \\_\\ |_|
             """;
 
-    private static final PluginManager PLUGIN_MANAGER = new PluginManager("./plugins/");
+    private static final PluginManager PLUGIN_MANAGER = new PluginManager("./plugins/jar");
 
     public static void main(String[] args) throws IOException {
 
@@ -62,16 +63,16 @@ public class Main {
 
     private static void preprocessing() throws IOException {
         // Parse DSL
-        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"));
+        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"), PLUGIN_MANAGER);
 
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
-            pieker.dsl.code.Engine.validate(feature, PLUGIN_MANAGER.getPlugins());
+            pieker.dsl.code.Engine.validate(feature);
             log.info("Validation finished successfully.");
             return;
         }
 
         // Generate Test Plan
-        pieker.dsl.code.Engine.run(feature,  PLUGIN_MANAGER.getPlugins());
+        pieker.dsl.code.Engine.run(feature);
         feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
 
         if (Boolean.parseBoolean(System.getProperty("testPlanOnly", "false"))) {

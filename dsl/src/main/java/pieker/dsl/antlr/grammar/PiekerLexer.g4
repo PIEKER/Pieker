@@ -69,8 +69,7 @@ ASSERT_AFTER: 'After:';
 DATABASE_BLOCK: 'Database:';
 TRAFFIC_BLOCK: 'Traffic:';
 
-IDENTIFIER: 'Identifier:' WS+;
-TABLE: 'Table:' WS+;
+ARGUMENTS: 'Arguments:' WS+;
 BOOL: 'Bool:' WS+;
 EQUALS: 'Equals:' WS+;
 NULL: 'Null:' WS+;

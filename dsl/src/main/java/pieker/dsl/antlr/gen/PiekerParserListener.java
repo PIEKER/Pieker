@@ -1,4 +1,4 @@
-// Generated from H:/Uni/Master/Semester-5/pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
+// Generated from H:/Uni/Master/Semester-5/Pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
 package pieker.dsl.antlr.gen;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -148,46 +148,6 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 */
 	void exitLogAll(PiekerParser.LogAllContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PiekerParser#identifier}.
-	 * @param ctx the parse tree
-	 */
-	void enterIdentifier(PiekerParser.IdentifierContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#identifier}.
-	 * @param ctx the parse tree
-	 */
-	void exitIdentifier(PiekerParser.IdentifierContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#trafficBody}.
-	 * @param ctx the parse tree
-	 */
-	void enterTrafficBody(PiekerParser.TrafficBodyContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#trafficBody}.
-	 * @param ctx the parse tree
-	 */
-	void exitTrafficBody(PiekerParser.TrafficBodyContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#databaseBody}.
-	 * @param ctx the parse tree
-	 */
-	void enterDatabaseBody(PiekerParser.DatabaseBodyContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#databaseBody}.
-	 * @param ctx the parse tree
-	 */
-	void exitDatabaseBody(PiekerParser.DatabaseBodyContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#tableBody}.
-	 * @param ctx the parse tree
-	 */
-	void enterTableBody(PiekerParser.TableBodyContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#tableBody}.
-	 * @param ctx the parse tree
-	 */
-	void exitTableBody(PiekerParser.TableBodyContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link PiekerParser#assert}.
 	 * @param ctx the parse tree
 	 */
@@ -208,55 +168,25 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 */
 	void exitAssertAfter(PiekerParser.AssertAfterContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PiekerParser#databaseBlock}.
+	 * Enter a parse tree produced by {@link PiekerParser#assertBody}.
 	 * @param ctx the parse tree
 	 */
-	void enterDatabaseBlock(PiekerParser.DatabaseBlockContext ctx);
+	void enterAssertBody(PiekerParser.AssertBodyContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link PiekerParser#databaseBlock}.
+	 * Exit a parse tree produced by {@link PiekerParser#assertBody}.
 	 * @param ctx the parse tree
 	 */
-	void exitDatabaseBlock(PiekerParser.DatabaseBlockContext ctx);
+	void exitAssertBody(PiekerParser.AssertBodyContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PiekerParser#trafficBlock}.
+	 * Enter a parse tree produced by {@link PiekerParser#arguments}.
 	 * @param ctx the parse tree
 	 */
-	void enterTrafficBlock(PiekerParser.TrafficBlockContext ctx);
+	void enterArguments(PiekerParser.ArgumentsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link PiekerParser#trafficBlock}.
+	 * Exit a parse tree produced by {@link PiekerParser#arguments}.
 	 * @param ctx the parse tree
 	 */
-	void exitTrafficBlock(PiekerParser.TrafficBlockContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#boolHeader}.
-	 * @param ctx the parse tree
-	 */
-	void enterBoolHeader(PiekerParser.BoolHeaderContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#boolHeader}.
-	 * @param ctx the parse tree
-	 */
-	void exitBoolHeader(PiekerParser.BoolHeaderContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#equalsHeader}.
-	 * @param ctx the parse tree
-	 */
-	void enterEqualsHeader(PiekerParser.EqualsHeaderContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#equalsHeader}.
-	 * @param ctx the parse tree
-	 */
-	void exitEqualsHeader(PiekerParser.EqualsHeaderContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#nullHeader}.
-	 * @param ctx the parse tree
-	 */
-	void enterNullHeader(PiekerParser.NullHeaderContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#nullHeader}.
-	 * @param ctx the parse tree
-	 */
-	void exitNullHeader(PiekerParser.NullHeaderContext ctx);
+	void exitArguments(PiekerParser.ArgumentsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PiekerParser#assertBool}.
 	 * @param ctx the parse tree
@@ -268,6 +198,16 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 */
 	void exitAssertBool(PiekerParser.AssertBoolContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PiekerParser#boolHeader}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolHeader(PiekerParser.BoolHeaderContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PiekerParser#boolHeader}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolHeader(PiekerParser.BoolHeaderContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PiekerParser#assertEquals}.
 	 * @param ctx the parse tree
 	 */
@@ -278,6 +218,16 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 */
 	void exitAssertEquals(PiekerParser.AssertEqualsContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PiekerParser#equalsHeader}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqualsHeader(PiekerParser.EqualsHeaderContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PiekerParser#equalsHeader}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqualsHeader(PiekerParser.EqualsHeaderContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PiekerParser#assertNull}.
 	 * @param ctx the parse tree
 	 */
@@ -287,6 +237,16 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssertNull(PiekerParser.AssertNullContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PiekerParser#nullHeader}.
+	 * @param ctx the parse tree
+	 */
+	void enterNullHeader(PiekerParser.NullHeaderContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PiekerParser#nullHeader}.
+	 * @param ctx the parse tree
+	 */
+	void exitNullHeader(PiekerParser.NullHeaderContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PiekerParser#description}.
 	 * @param ctx the parse tree
