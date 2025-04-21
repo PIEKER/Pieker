@@ -1,11 +1,12 @@
-package pieker.dsl.model.assertions;
+package pieker.api.assertions;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.jexl3.*;
-import pieker.common.Evaluation;
-import pieker.dsl.code.exception.ValidationException;
-import pieker.dsl.util.Util;
+import pieker.api.assertions.util.Util;
+import pieker.api.exception.ValidationException;
+import pieker.api.Evaluation;
+
 
 @Setter
 @Getter
@@ -24,7 +25,7 @@ public class Bool implements Evaluation {
         this.value = value;
     }
 
-    public void validate(){
+    public void validate() throws ValidationException {
         String[] args = Util.getArgumentsFromString(this.expression);
         if (args.length != 2){
             throw new ValidationException("invalid amount of arguments on an assertBool! " +

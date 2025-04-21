@@ -5,13 +5,13 @@ import org.cornutum.regexpgen.RandomGen;
 import org.cornutum.regexpgen.RegExpGen;
 import org.cornutum.regexpgen.js.Provider;
 import org.cornutum.regexpgen.random.RandomBoundsGen;
+import pieker.api.assertions.Assert;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.code.Engine;
 import pieker.dsl.code.exception.ValidationException;
 import pieker.dsl.code.exception.VariableConfigurationException;
 import pieker.dsl.Keyword;
 import pieker.dsl.model.*;
-import pieker.dsl.model.assertions.Assert;
 import pieker.dsl.model.assertions.DatabaseAssert;
 
 import java.util.*;

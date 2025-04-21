@@ -1,9 +1,9 @@
-package pieker.dsl.model.assertions;
+package pieker.api.assertions;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.common.Assertions;
-import pieker.dsl.util.Util;
+import pieker.api.assertions.util.Util;
+import pieker.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;

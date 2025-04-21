@@ -1,4 +1,4 @@
-package pieker.common;
+package pieker.api;
 
 public interface Evaluation {
 

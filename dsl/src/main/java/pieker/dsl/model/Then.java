@@ -2,11 +2,11 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.common.Assertions;
+import pieker.api.assertions.Assert;
+import pieker.api.Assertions;
 import pieker.dsl.code.component.StepComponent;
 import pieker.dsl.code.exception.PiekerProcessingException;
 import pieker.dsl.code.preprocessor.Validator;
-import pieker.dsl.model.assertions.Assert;
 
 import java.util.ArrayList;
 import java.util.List;

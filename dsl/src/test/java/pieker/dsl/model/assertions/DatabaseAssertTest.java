@@ -5,7 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
-import pieker.common.Evaluation;
+import pieker.api.Evaluation;
 import pieker.common.connection.Sql;
 
 import java.util.List;

@@ -2,6 +2,7 @@ package pieker.dsl.code;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import pieker.api.assertions.Assert;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.code.component.*;
 import pieker.dsl.code.exception.PiekerProcessingException;
@@ -17,11 +18,21 @@ public class Engine {
 
     @Getter
     private static Step currentStep = new Step(null, null, "PLACEHOLDER_STEP");
+    @Getter
+    private static Map<String, Assert> PLUGINS = new HashMap<>();
+
     private static FileManager fileManager;
+
 
     private Engine(){}
 
     public static void run(Feature feature){
+        run(feature, null);
+    }
+
+    public static void run(Feature feature, Map<String, Assert> plugins){
+        if (plugins != null) PLUGINS = plugins;
+
         validate(feature);
 
         for (Scenario scenario : feature.getScenarioList()){
@@ -33,6 +44,12 @@ public class Engine {
     }
 
     public static void validate(Feature feature){
+        validate(feature, null);
+    }
+
+    public static void validate(Feature feature, Map<String, Assert> plugins){
+        if (plugins != null) PLUGINS = plugins;
+
         fileManager = new FileManager(feature.getResourceDirectory());
         log.debug("starting validation of Feature {}", feature.getName());
         Converter.run(feature);

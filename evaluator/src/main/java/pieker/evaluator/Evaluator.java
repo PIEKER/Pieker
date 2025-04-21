@@ -2,7 +2,7 @@ package pieker.evaluator;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import pieker.common.Assertions;
+import pieker.api.Assertions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +32,6 @@ public class Evaluator {
         stepToEvaluationMap.forEach((s, evaluations) ->
                 evaluations.forEach(evaluation -> {
                     if (this.databaseMap.containsKey(evaluation.getIdentifier())){
-                        //fixme: implement loggable and accessible interfaces for assertions
                         log.debug("{} identified as DatabaseAssert.", evaluation.getIdentifier());
                         SQLConnection con = this.databaseMap.get(evaluation.getIdentifier());
                         evaluation.evaluate(new String[]{s, con.url, con.user, con.password});

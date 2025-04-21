@@ -3,13 +3,12 @@ package pieker.dsl.parser;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import pieker.api.assertions.Assert;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.antlr.gen.PiekerParser;
 import pieker.dsl.antlr.gen.PiekerParserBaseListener;
 import pieker.dsl.model.*;
-import pieker.dsl.model.assertions.Assert;
 import pieker.dsl.model.assertions.DatabaseAssert;
-import pieker.dsl.model.assertions.TrafficAssert;
 import pieker.dsl.util.Util;
 
 import java.io.IOException;
@@ -260,11 +259,11 @@ public class FeatureParser extends PiekerParserBaseListener {
     private void createTrafficAssertions(PiekerParser.TrafficBlockContext trafficBlockContext, Then then) {
         if (trafficBlockContext == null) return;
 
-        for (PiekerParser.TrafficBodyContext ctxTrafficBody : trafficBlockContext.trafficBody()){
-            TrafficAssert ass = new TrafficAssert(ctxTrafficBody.identifier().line().getText().trim());
-            this.createAssertFunctionLists(then, ass,
-                    ctxTrafficBody.assertBool(), ctxTrafficBody.assertEquals(), ctxTrafficBody.assertNull());
-        }
+//        for (PiekerParser.TrafficBodyContext ctxTrafficBody : trafficBlockContext.trafficBody()){
+//            TrafficAssert ass = new TrafficAssert(ctxTrafficBody.identifier().line().getText().trim());
+//            this.createAssertFunctionLists(then, ass,
+//                    ctxTrafficBody.assertBool(), ctxTrafficBody.assertEquals(), ctxTrafficBody.assertNull());
+//        }
     }
 
     private void createDatabaseAssertions(PiekerParser.DatabaseBlockContext databaseBlockContext, Then then) {

@@ -27,6 +27,8 @@ public class Main {
             |_|     |_| |_______| | | \\_\\ |_______| |_| \\_\\ |_|
             """;
 
+    private static final PluginManager PLUGIN_MANAGER = new PluginManager("./plugins/");
+
     public static void main(String[] args) throws IOException {
 
         log.info("""
@@ -63,13 +65,13 @@ public class Main {
         Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"));
 
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
-            pieker.dsl.code.Engine.validate(feature);
+            pieker.dsl.code.Engine.validate(feature, PLUGIN_MANAGER.getPlugins());
             log.info("Validation finished successfully.");
             return;
         }
 
         // Generate Test Plan
-        pieker.dsl.code.Engine.run(feature);
+        pieker.dsl.code.Engine.run(feature,  PLUGIN_MANAGER.getPlugins());
         feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
 
         if (Boolean.parseBoolean(System.getProperty("testPlanOnly", "false"))) {
