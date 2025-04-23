@@ -64,7 +64,7 @@ public abstract class Assert implements Assertions {
     /**
      * Allows further syntax validation, next to Parsing Rules.
      */
-    public abstract void validate();
+    public abstract void validate(int line);
 
     /**
      * Allows data processing before any performed evaluation.

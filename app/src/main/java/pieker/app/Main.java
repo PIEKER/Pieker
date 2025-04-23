@@ -42,13 +42,14 @@ public class Main {
                              DSL resource directory:     {},
                              Architecture file:          {},
                              Interface description file: {},
-                        
+                             Installed Plugins:          {},
                         """,
                 PIEKER_LOGO,
                 System.getProperty("dslFilePath"),
                 System.getProperty("dslResourceDirectory"),
                 System.getProperty("architectureFile"),
-                System.getProperty("interfaceDescriptionFile")
+                System.getProperty("interfaceDescriptionFile"),
+                PLUGIN_MANAGER
         );
 
         // Parse DSL, Architecture and Interface description files, generate test code, test components, and test environment

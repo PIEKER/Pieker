@@ -46,22 +46,22 @@ public class DatabaseAssert extends Assert {
 
         String[] args = Util.getArgumentsFromString(arguments);
         if (args.length != 2){
-            throw new PiekerDslException("invalid amount of arguments on an DatabaseAssert! " +
-                    "args: " + args.length +
-                    "value: " + arguments);
+            throw new PiekerDslException("invalid amount of arguments on an DatabaseAssert!" +
+                    " args: " + args.length +
+                    VALUE + arguments);
         }
         this.identifier = args[0];
         this.tableSelect = args[1];
     }
 
     @Override
-    public void validate(){
+    public void validate(int line){
         this.getBoolList().forEach(bool -> {
-            bool.validate();
-            this.validateValue(bool.getValue());
+            bool.validate(line);
+            this.validateValue(line, bool.getValue());
         });
-        this.getEqualsList().forEach(equals -> this.validateValue(equals.getValue()));
-        this.getNullList().forEach(nullAssert ->this.validateValue(nullAssert.getValue()));
+        this.getEqualsList().forEach(equals -> this.validateValue(line, equals.getValue()));
+        this.getNullList().forEach(nullAssert ->this.validateValue(line, nullAssert.getValue()));
     }
 
     @Override
@@ -71,12 +71,13 @@ public class DatabaseAssert extends Assert {
         Engine.getCurrentStep().addStepComponent(identifier, new SupervisorTraffic(identifier, assertableTable));
     }
 
-    private void validateValue(String value){
+    private void validateValue(int line, String value){
         String[] args = Util.getArgumentsFromString(value);
         if (args.length > 2){
-            throw new ValidationException("invalid amount of arguments on an DatabaseAssert! " +
-                    "args: " + args.length +
-                    "value: " + value);
+            throw new ValidationException("invalid amount of arguments on an DatabaseAssert!" +
+                    " line" + line +
+                    " args: " + args.length +
+                    VALUE + value);
         }
     }
 

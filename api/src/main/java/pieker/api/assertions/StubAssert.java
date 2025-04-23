@@ -20,7 +20,7 @@ public class StubAssert extends Assert{
     }
 
     @Override
-    public void validate() {
+    public void validate(int line) {
         log.debug("validate StubAssert");
     }
 

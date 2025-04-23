@@ -25,18 +25,20 @@ public class Bool implements Evaluation {
         this.value = value;
     }
 
-    public void validate() throws ValidationException {
+    public void validate(int line) throws ValidationException {
         String[] args = Util.getArgumentsFromString(this.expression);
-        if (args.length != 2){
-            throw new ValidationException("invalid amount of arguments on an assertBool! " +
-                    "args: " + args.length +
-                    "expression: " + this.expression);
+        if (args.length != 1){
+            throw new ValidationException("invalid amount of arguments on an assertBool!" +
+                    " line: " + line +
+                    " args: " + args.length +
+                    " expression: " + this.expression);
         }
         args = Util.getArgumentsFromString(this.value);
         if (args.length == 0 || args.length > 2){
-            throw new ValidationException("invalid amount of arguments on an assertBool value! " +
-                    "args: " + args.length +
-                    "value: " + this.value);
+            throw new ValidationException("invalid amount of arguments on an assertBool value!" +
+                    " line " + line +
+                    " args: " + args.length +
+                    " value: " + this.value);
         }
     }
 

@@ -33,7 +33,10 @@ public class Then {
     }
 
     public void validateAssertList() {
-        this.assertList.forEach(ass -> Validator.isIdentifierPresent(ass.getIdentifier()));
+        this.assertList.forEach(ass -> {
+            Validator.isIdentifierPresent(ass.getIdentifier());
+            ass.validate(this.line);
+        });
     }
 
     public void addLogAllIdentifier(String identifier){

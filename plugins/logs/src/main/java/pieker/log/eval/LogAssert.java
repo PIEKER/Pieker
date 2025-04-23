@@ -24,7 +24,7 @@ public class LogAssert extends Assert {
     }
 
     @Override
-    public void validate() {
+    public void validate(int line) {
         log.info("validate LogEvaluation");
     }
 

@@ -62,4 +62,11 @@ public class PluginManager {
             throw new RuntimeException("Failed to instantiate plugin: " + assertPlugin, e);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        this.pluginRegistry.forEach((k,v) -> s.append(k).append("::").append(v).append(" || "));
+        return s.substring(0, s.length()-4);
+    }
 }
