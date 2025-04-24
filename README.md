@@ -40,6 +40,7 @@ For an overview of the development progress, see the [Roadmap](#roadmap).
     - [DSL-Module](#dsl-module)
     - [Evaluator-Module](#evaluator-module)
     - [Generators-Module](#generators-module)
+    - [Supervisor-Module](#supervisor-module)
 - [Roadmap](#roadmap)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -54,6 +55,7 @@ Pieker
 ├── dsl               # PIEKER DSL Module
 ├── evaluator         # PIEKER Evaluation Module
 ├── generators        # PIEKER Generators Module
+├── supervisor        # PIEKER Supervisor Module
 └── config            # General configuration files
 ```
 
@@ -85,9 +87,9 @@ To use PIEKER with Docker Compose based systems you need:
 In the [`gradle.properties`](./gradle.properties) file set the required input properties to match your system. Required 
 are at least:
 
-- A `docker-compose.yml` file with the architecture of your system
-- An [PIEKER Interface Description](architectures/src/main/java/pieker/architectures/description/README.md) in YAML format
-- A PIEKER DSL file with the test specification
+- `docker-compose.yml` file with the architecture of your system
+- [PIEKER Interface Description](architectures/src/main/java/pieker/architectures/description/README.md) in YAML format
+- PIEKER DSL file with the test specification
 
 You can run PIEKER with the following command:
 
@@ -145,15 +147,24 @@ images based on DSL inputs.
 - Documentation: [Code-Generators-README](./generators/README.md)
 - Maintainer: [@YIllmann](https://github.com/YIllmann), [@simohlsen](https://github.com/simohlsen)
 
+### Supervisor-Module
+
+This module contains classes to supervise the test execution process, including starting and stopping of the test
+environment.
+
+- Directory: [`supervisor/`](./generators)
+- Documentation: TODO
+- Maintainer: [@simohlsen](https://github.com/simohlsen)
+
 ## Roadmap
 
 - [x] Initial concept and project setup
 - [x] Define and implement architecture meta-model
 - [x] Define and implement DSL for test specification
 - [x] Automatic generation of test code from DSL
-- [ ] _Automatic injection of test code into test containers and architectures_
-- [ ] Automatic deployment of a test environment
-- [ ] Automatic test execution and evaluation
+- [x] Automatic injection of test code into test containers and architectures
+- [ ] _Automatic deployment of a test environment_
+- [ ] _Automatic test execution and evaluation_
 - [ ] First prototype for testing Docker Compose architectures
 - [ ] First release for Docker Compose architectures
 - [ ] Expand functionality and architecture support (Azure, Terraform, ...)
