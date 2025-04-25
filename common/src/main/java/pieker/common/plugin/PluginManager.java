@@ -65,6 +65,8 @@ public class PluginManager {
 
     @Override
     public String toString() {
+        if (this.pluginRegistry.isEmpty()) return "None";
+
         StringBuilder s = new StringBuilder();
         this.pluginRegistry.forEach((k,v) -> s.append(k).append("::").append(v).append(" || "));
         return s.substring(0, s.length()-4);

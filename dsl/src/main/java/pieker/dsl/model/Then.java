@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pieker.api.assertions.Assert;
 import pieker.api.Assertions;
+import pieker.api.assertions.StubAssert;
 import pieker.dsl.code.component.StepComponent;
 import pieker.dsl.code.exception.PiekerProcessingException;
 import pieker.dsl.code.preprocessor.Validator;
@@ -34,7 +35,9 @@ public class Then {
 
     public void validateAssertList() {
         this.assertList.forEach(ass -> {
-            Validator.isIdentifierPresent(ass.getIdentifier());
+            if (!(ass instanceof StubAssert)){
+                Validator.isIdentifierPresent(ass.getIdentifier());
+            }
             ass.validate(this.line);
         });
     }
