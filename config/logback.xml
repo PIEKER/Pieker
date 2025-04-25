@@ -19,5 +19,6 @@
     <logger name="pieker.dsl" level="debug" />
     <logger name="pieker.evaluator" level="debug" />
     <logger name="pieker.generators" level="debug" />
+    <logger name="pieker.supervisor" level="debug" />
 
 </configuration>
