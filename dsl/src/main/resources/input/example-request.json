@@ -1,0 +1,26 @@
+[
+  {
+    "url": "/message",
+    "method": "POST",
+    "connectionTimeout": 0,
+    "readTimeout": 0,
+    "headers": {},
+    "body": {"content":  "I am an important message!"}
+  },
+  {
+    "url": "/counter",
+    "method": "GET",
+    "connectionTimeout": 0,
+    "readTimeout": 0,
+    "headers": {},
+    "body": {}
+  },
+  {
+    "url": "/allMessages",
+    "method": "GET",
+    "connectionTimeout": 0,
+    "readTimeout": 0,
+    "headers": {},
+    "body": {}
+  }
+]

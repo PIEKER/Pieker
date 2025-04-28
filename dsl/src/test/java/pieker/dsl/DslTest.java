@@ -16,29 +16,14 @@ class DslTest {
 
     @Test
     void testFeatureParsingExample() {
-        String inputFile = "example.feature";
-        Feature feature = new Feature(inputFile, resourceDir);
-        assertDoesNotThrow(() -> FeatureParser.parse(feature, true));
-    }
-
-    @Test
-    void testFeatureParsingPerformance(){
-        String inputFile = "performanceTest.feature";
+        String inputFile = "runningExample.feature";
         Feature feature = new Feature(inputFile, resourceDir);
         assertDoesNotThrow(() -> FeatureParser.parse(feature, true));
     }
 
     @Test
     void testEngineExample() throws IOException {
-        String inputFile = "example.feature";
-        Feature feature = new Feature(inputFile, resourceDir);
-        FeatureParser.parse(feature, true);
-        assertDoesNotThrow(() -> Engine.run(feature));
-    }
-
-    @Test
-    void testEnginePerformance() throws IOException {
-        String inputFile = "performanceTest.feature";
+        String inputFile = "runningExample.feature";
         Feature feature = new Feature(inputFile, resourceDir);
         FeatureParser.parse(feature, true);
         assertDoesNotThrow(() -> Engine.run(feature));
