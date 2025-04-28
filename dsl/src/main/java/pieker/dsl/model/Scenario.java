@@ -3,6 +3,7 @@ package pieker.dsl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import pieker.api.Assertions;
 import pieker.common.*;
 import pieker.dsl.code.component.*;
 

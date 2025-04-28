@@ -5,6 +5,7 @@ import pieker.architectures.ArchitectureFactory;
 import pieker.architectures.generator.ModelGenerator;
 import pieker.architectures.injector.ComponentInjector;
 import pieker.architectures.model.ArchitectureModel;
+import pieker.common.plugin.PluginManager;
 import pieker.dsl.model.Feature;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
@@ -27,6 +28,8 @@ public class Main {
             |_|     |_| |_______| | | \\_\\ |_______| |_| \\_\\ |_|
             """;
 
+    private static final PluginManager PLUGIN_MANAGER = new PluginManager( System.getProperty("pluginDir"));
+
     public static void main(String[] args) throws IOException {
 
         log.info("""
@@ -39,13 +42,14 @@ public class Main {
                              DSL resource directory:     {},
                              Architecture file:          {},
                              Interface description file: {},
-                        
+                             Installed Plugins:          {},
                         """,
                 PIEKER_LOGO,
                 System.getProperty("dslFilePath"),
                 System.getProperty("dslResourceDirectory"),
                 System.getProperty("architectureFile"),
-                System.getProperty("interfaceDescriptionFile")
+                System.getProperty("interfaceDescriptionFile"),
+                PLUGIN_MANAGER
         );
 
         // Parse DSL, Architecture and Interface description files, generate test code, test components, and test environment
@@ -60,7 +64,7 @@ public class Main {
 
     private static void preprocessing() throws IOException {
         // Parse DSL
-        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"));
+        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"), PLUGIN_MANAGER);
 
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
             pieker.dsl.code.Engine.validate(feature);

@@ -2,7 +2,8 @@ package pieker.evaluator;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import pieker.common.Assertions;
+import org.json.JSONObject;
+import pieker.api.Assertions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,36 +13,39 @@ import java.util.Map;
 @Slf4j
 public class Evaluator {
 
-    public record SQLConnection(String url, String user, String password){}
-
-    private String logDirectory = ".";
-    private Map<String, SQLConnection> databaseMap = new HashMap<>();
+    private Map<String, JSONObject> componentMap = new HashMap<>();
 
     public Evaluator(){}
 
-    public Evaluator(String logDirectory, Map<String, SQLConnection> databaseMap){
-        this.logDirectory = logDirectory;
-        this.databaseMap = databaseMap;
+    public Evaluator(Map<String, JSONObject> componentMap){
+        this.componentMap = componentMap;
     }
 
-    public void addDatabaseConnection(String identifier, SQLConnection con){
-        this.databaseMap.put(identifier, con);
+    /**
+     * Adds a JSONObject storing connection attributes mapped to a component identifier.
+     *
+     * @param identifier of component
+     * @param component JSONObject
+     */
+    public void addComponent(String identifier, JSONObject component){
+        this.componentMap.put(identifier, component);
     }
 
+    /**
+     * Runs an evaluation on a provided List of steps mapped to a list of evaluation objects.
+     *
+     * @param stepToEvaluationMap TestSteps mapped to evaluation lists.
+     */
     public void run(Map<String, List<Assertions>> stepToEvaluationMap){
-        stepToEvaluationMap.forEach((s, evaluations) ->
-                evaluations.forEach(evaluation -> {
-                    if (this.databaseMap.containsKey(evaluation.getIdentifier())){
-                        //fixme: implement loggable and accessible interfaces for assertions
-                        log.debug("{} identified as DatabaseAssert.", evaluation.getIdentifier());
-                        SQLConnection con = this.databaseMap.get(evaluation.getIdentifier());
-                        evaluation.evaluate(new String[]{s, con.url, con.user, con.password});
-                    } else {
-                        log.debug("{} identified as TrafficAssert.", evaluation.getIdentifier());
-                        evaluation.evaluate(new String[]{s, this.logDirectory});
-                    }
-                }
-            )
-        );
+        stepToEvaluationMap.forEach(this::evaluateStep);
+    }
+
+    private void evaluateStep(String s, List<Assertions> evaluations){
+        evaluations.forEach(ev -> {
+            if (ev.requiresConnectionParam()) {
+                ev.setupConnectionParam(this.componentMap.get(ev.getIdentifier()));
+            }
+            ev.evaluate();
+        });
     }
 }

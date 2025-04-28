@@ -2,7 +2,7 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.common.Assertions;
+import pieker.api.Assertions;
 import pieker.dsl.code.component.*;
 import pieker.common.Template;
 import pieker.dsl.model.assertions.DatabaseAssert;
