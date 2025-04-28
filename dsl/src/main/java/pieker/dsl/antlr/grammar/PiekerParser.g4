@@ -43,22 +43,18 @@ when: WHEN (description | NEWLINE) whenCondition+;
 whenCondition: whenKey line NEWLINE? ;
 whenKey: AFTER | RETRY | TIMES| DELAY | DROPOUT | TIMEOUT | DEF ;
 
-then: THEN (description | NEWLINE) logAll? assert? ;
+then: THEN (description | NEWLINE) logAll? assert* ;
 logAll: LOG_ALL line NEWLINE? ;
-identifier: IDENTIFIER line NEWLINE ;
-trafficBody: identifier (assertBool | assertEquals | assertNull)+ ;
-databaseBody: identifier tableBody;
-tableBody: TABLE line NEWLINE (assertBool | assertEquals | assertNull)+;
-assert: ASSERT NEWLINE assertAfter? (databaseBlock | trafficBlock | databaseBlock trafficBlock | trafficBlock databaseBlock) ;
+assert: ASSERT line NEWLINE assertAfter? arguments? assertBody ;
 assertAfter: ASSERT_AFTER line NEWLINE;
-databaseBlock: DATABASE_BLOCK NEWLINE databaseBody+ ;
-trafficBlock: TRAFFIC_BLOCK NEWLINE trafficBody+ ;
-boolHeader: BOOL line NEWLINE ;
-equalsHeader: EQUALS line NEWLINE ;
-nullHeader: NULL line NEWLINE ;
+assertBody: (assertBool | assertEquals | assertNull)+ ;
+arguments: ARGUMENTS line NEWLINE;
 assertBool: boolHeader line NEWLINE?;
+boolHeader: BOOL line NEWLINE ;
 assertEquals: equalsHeader line NEWLINE?;
+equalsHeader: EQUALS line NEWLINE ;
 assertNull: nullHeader line NEWLINE?;
+nullHeader: NULL line NEWLINE ;
 
 description: DOC_STRING;
 

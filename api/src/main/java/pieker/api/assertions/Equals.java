@@ -1,8 +1,8 @@
-package pieker.dsl.model.assertions;
+package pieker.api.assertions;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.common.Evaluation;
+import pieker.api.Evaluation;
 
 @Setter
 @Getter

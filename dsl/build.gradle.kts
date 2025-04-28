@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     // Internal
+    implementation(project(":api"))
     implementation(project(":common"))
     implementation(project(":generators"))
 

@@ -2,11 +2,12 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.common.Assertions;
+import pieker.api.assertions.Assert;
+import pieker.api.Assertions;
+import pieker.api.assertions.StubAssert;
 import pieker.dsl.code.component.StepComponent;
 import pieker.dsl.code.exception.PiekerProcessingException;
 import pieker.dsl.code.preprocessor.Validator;
-import pieker.dsl.model.assertions.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,12 @@ public class Then {
     }
 
     public void validateAssertList() {
-        this.assertList.forEach(ass -> Validator.isIdentifierPresent(ass.getIdentifier()));
+        this.assertList.forEach(ass -> {
+            if (!(ass instanceof StubAssert)){
+                Validator.isIdentifierPresent(ass.getIdentifier());
+            }
+            ass.validate(this.line);
+        });
     }
 
     public void addLogAllIdentifier(String identifier){

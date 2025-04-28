@@ -1,4 +1,4 @@
-// Generated from H:/Uni/Master/Semester-5/pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
+// Generated from H:/Uni/Master/Semester-5/Pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
 package pieker.dsl.antlr.gen;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -95,30 +95,6 @@ public interface PiekerParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLogAll(PiekerParser.LogAllContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PiekerParser#identifier}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIdentifier(PiekerParser.IdentifierContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#trafficBody}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTrafficBody(PiekerParser.TrafficBodyContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#databaseBody}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDatabaseBody(PiekerParser.DatabaseBodyContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#tableBody}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTableBody(PiekerParser.TableBodyContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PiekerParser#assert}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -131,35 +107,17 @@ public interface PiekerParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssertAfter(PiekerParser.AssertAfterContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PiekerParser#databaseBlock}.
+	 * Visit a parse tree produced by {@link PiekerParser#assertBody}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDatabaseBlock(PiekerParser.DatabaseBlockContext ctx);
+	T visitAssertBody(PiekerParser.AssertBodyContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PiekerParser#trafficBlock}.
+	 * Visit a parse tree produced by {@link PiekerParser#arguments}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTrafficBlock(PiekerParser.TrafficBlockContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#boolHeader}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBoolHeader(PiekerParser.BoolHeaderContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#equalsHeader}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEqualsHeader(PiekerParser.EqualsHeaderContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#nullHeader}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNullHeader(PiekerParser.NullHeaderContext ctx);
+	T visitArguments(PiekerParser.ArgumentsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PiekerParser#assertBool}.
 	 * @param ctx the parse tree
@@ -167,17 +125,35 @@ public interface PiekerParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssertBool(PiekerParser.AssertBoolContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PiekerParser#boolHeader}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolHeader(PiekerParser.BoolHeaderContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PiekerParser#assertEquals}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssertEquals(PiekerParser.AssertEqualsContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PiekerParser#equalsHeader}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqualsHeader(PiekerParser.EqualsHeaderContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PiekerParser#assertNull}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssertNull(PiekerParser.AssertNullContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PiekerParser#nullHeader}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNullHeader(PiekerParser.NullHeaderContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PiekerParser#description}.
 	 * @param ctx the parse tree

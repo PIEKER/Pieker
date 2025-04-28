@@ -1,4 +1,4 @@
-// Generated from H:/Uni/Master/Semester-5/pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
+// Generated from H:/Uni/Master/Semester-5/Pieker/dsl/src/main/java/pieker/dsl/antlr/grammar/PiekerParser.g4 by ANTLR 4.13.2
 package pieker.dsl.antlr.gen;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -185,54 +185,6 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIdentifier(PiekerParser.IdentifierContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIdentifier(PiekerParser.IdentifierContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTrafficBody(PiekerParser.TrafficBodyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTrafficBody(PiekerParser.TrafficBodyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDatabaseBody(PiekerParser.DatabaseBodyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDatabaseBody(PiekerParser.DatabaseBodyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTableBody(PiekerParser.TableBodyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTableBody(PiekerParser.TableBodyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterAssert(PiekerParser.AssertContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -257,61 +209,25 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDatabaseBlock(PiekerParser.DatabaseBlockContext ctx) { }
+	@Override public void enterAssertBody(PiekerParser.AssertBodyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDatabaseBlock(PiekerParser.DatabaseBlockContext ctx) { }
+	@Override public void exitAssertBody(PiekerParser.AssertBodyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTrafficBlock(PiekerParser.TrafficBlockContext ctx) { }
+	@Override public void enterArguments(PiekerParser.ArgumentsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTrafficBlock(PiekerParser.TrafficBlockContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBoolHeader(PiekerParser.BoolHeaderContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBoolHeader(PiekerParser.BoolHeaderContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEqualsHeader(PiekerParser.EqualsHeaderContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEqualsHeader(PiekerParser.EqualsHeaderContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNullHeader(PiekerParser.NullHeaderContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNullHeader(PiekerParser.NullHeaderContext ctx) { }
+	@Override public void exitArguments(PiekerParser.ArgumentsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -329,6 +245,18 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBoolHeader(PiekerParser.BoolHeaderContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBoolHeader(PiekerParser.BoolHeaderContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAssertEquals(PiekerParser.AssertEqualsContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -341,6 +269,18 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterEqualsHeader(PiekerParser.EqualsHeaderContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEqualsHeader(PiekerParser.EqualsHeaderContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAssertNull(PiekerParser.AssertNullContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -348,6 +288,18 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAssertNull(PiekerParser.AssertNullContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNullHeader(PiekerParser.NullHeaderContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNullHeader(PiekerParser.NullHeaderContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

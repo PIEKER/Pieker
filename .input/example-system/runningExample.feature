@@ -39,9 +39,8 @@ Feature: Example System Running Example Thesis
         @times post-message | 100
         @delay post-message | 0.5
       Then:
-        Assert:
-          Traffic:
-            Identifier: post-message
+        Assert: Log
+          Arguments: post-message
             Bool: True | < 100
               @times
             Equals: True | 200
@@ -66,19 +65,17 @@ Feature: Example System Running Example Thesis
 
       Then:
         LogAll: passive-get-counter
-        Assert:
-          Traffic:
-            Identifier: 1b-get-counter
-              Bool: True | < 100
-                @times
-              Equals: True| 200
-                @status
-              Null: False
-                @content
-
-          Database:
-            Identifier: db
-            Table: SELECT * FROM DataEntity de
+        Assert: Log
+          After: 30
+          Arguments: 1b-get-counter
+            Bool: True | < 100
+              @times
+            Equals: True| 200
+              @status
+            Null: False
+              @content
+        Assert: Database
+          Arguments: db | SELECT * FROM DataEntity de
               Null: False
                 de.id |
               Equals: True | I am an important message!
