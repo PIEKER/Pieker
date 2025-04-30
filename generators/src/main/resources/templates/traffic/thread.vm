@@ -1,21 +1,21 @@
 Thread.ofVirtual().start(() -> {
             try {
-                #if ($after)
+                #if ($after != $null)
                 // --after
                 Thread.sleep($after);
                 #end
 
                 log("Thread " + trafficIdent + " started!");
 
-                #if ($timeout)
+                #if ($timeout != $null)
                 long endTime = System.currentTimeMillis() + $timeout;
                 #end
 
                 // TRAFFIC BODY
-                #if ($times)
+                #if ($times != $null)
                 // -- times
                 for (int i = 0; i < $times; i++) {
-                #elseif ($retry)
+                #elseif ($retry != $null)
                 // -- retry for x seconds
                 long trafficUntil = System.currentTimeMillis() + $retry;
                 long timer = System.currentTimeMillis();
@@ -23,18 +23,18 @@ Thread.ofVirtual().start(() -> {
                 #else
                 for (int i = 0; i < 1; i++) {
                 #end
-                    #if ($timeout)
+                    #if ($timeout != $null)
                     // TIMEOUT
                     if (System.currentTimeMillis() >= endTime) break;
                     #end
 
                     // -- TRAFFIC CONDITIONS
-                    #if($delay)
+                    #if($delay != $null)
                     // --delay
                     delay($delay);
                     #end
 
-                    #if($dropout)
+                    #if($dropout != $null)
                     // --dropout
                     dropout($dropout);
                     #end
@@ -57,7 +57,7 @@ Thread.ofVirtual().start(() -> {
                     log(r.toString());
                     #end
 
-                    #if ($retry)
+                    #if ($retry != $null)
                     timer = System.currentTimeMillis();
                     #end
                 }
