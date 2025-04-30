@@ -31,12 +31,12 @@ Thread.ofVirtual().start(() -> {
                     // -- TRAFFIC CONDITIONS
                     #if($delay)
                     // --delay
-                    delay($delay)
+                    delay($delay);
                     #end
 
                     #if($dropout)
                     // --dropout
-                    dropout($dropout)
+                    dropout($dropout);
                     #end
 
                     // TRAFFIC HERE

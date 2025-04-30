@@ -23,8 +23,8 @@ public class $className {
     #end
     #if($timeout)
     // --timeout
-    private static final long TIMEOUT = $timeout
-    private static final long BLOCKED_TIMEOUT =  BOOT_TIMESTAMP + TIMEOUT
+    private static final long TIMEOUT = $timeout;
+    private static final long BLOCKED_TIMEOUT =  BOOT_TIMESTAMP + TIMEOUT;
     #end
 
     public static void main(String[] args) throws Exception {

@@ -11,6 +11,7 @@ import org.json.JSONObject; // requires json.jar
 //TRAFFIC-CONTAINER
 public class $className {
     private static final String LOG_FILE = "/app/logs/proxy.log";
+    private static final Random RANDOM = new Random();
 
     public static void main(String[] args) {
         String trafficIdent = "Foo"; // FIXME
@@ -109,4 +110,22 @@ public class $className {
             return "REQUEST-STATUS{" + this.statusCode + "} REQUEST-MESSAGE{" + this.response + "}";
         }
     }
+
+    /*
+            -- KEYWORD UTIL
+        */
+        public static void delay(long delay){
+            if (delay > 0){
+                try {
+                    Thread.sleep(delay); // Pause execution for the specified time
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        public static boolean dropout(double dropProbability){
+            return RANDOM.nextDouble() < dropProbability;
+        }
 }
