@@ -2,10 +2,11 @@ package pieker.dsl.code.component;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @Setter
@@ -20,15 +21,28 @@ public class LinkProxy extends ProxyComponent<LinkProxy> {
         this.hostB = hostB;
     }
 
-    public LinkProxy(String identifier, String hostA, String hostB, List<Template> conditionList, boolean enableLogs) {
+    public LinkProxy(String identifier, String hostA, String hostB, List<ConditionTemplate> conditionList, boolean enableLogs) {
         super(identifier, conditionList, enableLogs);
         this.hostA = hostA;
         this.hostB = hostB;
     }
 
     @Override
-    public void addCondition(Template condition) {
-        this.conditionList.add(condition);
+    public void addCondition(ConditionTemplate condition) {
+        List<ConditionTemplate> newConditionList = new ArrayList<>();
+        AtomicBoolean updated = new AtomicBoolean(false);
+        this.conditionList.forEach(t -> {
+            if (t.getName().equals(condition.getName())){
+                newConditionList.add(condition);
+                updated.set(true);
+            } else {
+                newConditionList.add(t);
+            }
+        });
+
+        if(!updated.get()) newConditionList.add(condition);
+
+        this.conditionList = newConditionList;
     }
 
     @Override

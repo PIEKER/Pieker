@@ -2,12 +2,13 @@ package pieker.dsl.code.component;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Setter
 @Getter
@@ -27,7 +28,7 @@ public class ServiceProxy extends ProxyComponent<ServiceProxy> {
         this.service = service;
     }
 
-    public ServiceProxy(String identifier, String service, List<Template> conditionList, boolean enableLogs) {
+    public ServiceProxy(String identifier, String service, List<ConditionTemplate> conditionList, boolean enableLogs) {
         super(identifier, conditionList, enableLogs);
         this.service = service;
     }
@@ -46,11 +47,24 @@ public class ServiceProxy extends ProxyComponent<ServiceProxy> {
     }
 
     @Override
-    public void addCondition(Template condition) {
-        this.conditionList.add(condition);
+    public void addCondition(ConditionTemplate condition) {
+        List<ConditionTemplate> newConditionList = new ArrayList<>();
+        AtomicBoolean updated = new AtomicBoolean(false);
+        this.conditionList.forEach(t -> {
+            if (t.getName().equals(condition.getName())){
+                newConditionList.add(condition);
+                updated.set(true);
+            } else {
+                newConditionList.add(t);
+            }
+        });
+
+        if(!updated.get()) newConditionList.add(condition);
+
+        this.conditionList = newConditionList;
     }
 
-    public void addStepWithCondition(String stepIdentifier, List<Template> conditionList, List<String> urlList){
+    public void addStepWithCondition(String stepIdentifier, List<ConditionTemplate> conditionList, List<String> urlList){
         if (this.stepToUrlList.containsKey(stepIdentifier)){
             this.stepToUrlList.get(stepIdentifier).addAll(urlList);
         } else {

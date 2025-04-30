@@ -2,10 +2,8 @@ package pieker.dsl.code;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import pieker.api.assertions.Assert;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.code.component.*;
-import pieker.dsl.code.exception.PiekerProcessingException;
 import pieker.dsl.code.preprocessor.Converter;
 import pieker.dsl.code.preprocessor.FileManager;
 import pieker.dsl.code.preprocessor.Validator;
@@ -66,8 +64,6 @@ public class Engine {
 
         Given given = step.getGiven();
         if (given != null) given.processEntryList();
-        else throw new PiekerProcessingException("invalid step detected: '" + step.getName() + "' has no given node.");
-
 
         When when = step.getWhen();
         if (when != null) when.processEntryList();

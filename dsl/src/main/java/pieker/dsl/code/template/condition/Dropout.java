@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 
 import java.util.Random;
 
 @Slf4j
 @Getter
-public class Dropout implements Template {
+public class Dropout implements ConditionTemplate {
 
     private final String name = Dropout.class.getSimpleName();
     @JsonIgnore
@@ -31,5 +31,10 @@ public class Dropout implements Template {
 
     public boolean performCondition() {
         return RANDOM.nextDouble() < (percentage / 100);
+    }
+
+    @Override
+    public Object getValue() {
+        return this.percentage;
     }
 }

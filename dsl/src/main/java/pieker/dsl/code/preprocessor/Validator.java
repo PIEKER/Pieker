@@ -48,8 +48,10 @@ public class Validator {
 
         // validate given
         Given given = step.getGiven();
-        log.debug("validating Given at: {}", given.getLine());
-        given.validateEntryList();
+        if(given != null){
+            log.debug("validating Given at: {}", given.getLine());
+            given.validateEntryList();
+        }
 
         When when = step.getWhen();
         if(when != null){

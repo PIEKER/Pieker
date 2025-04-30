@@ -1,10 +1,11 @@
 package pieker.dsl.code.component;
 
 import lombok.Setter;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Setter
 public class DatabaseProxy extends ProxyComponent<DatabaseProxy> {
@@ -14,13 +15,26 @@ public class DatabaseProxy extends ProxyComponent<DatabaseProxy> {
         super(identifier);
     }
 
-    public DatabaseProxy(String identifier, List<Template> conditionList, boolean enableLogs) {
+    public DatabaseProxy(String identifier, List<ConditionTemplate> conditionList, boolean enableLogs) {
         super(identifier, conditionList, enableLogs);
     }
 
     @Override
-    public void addCondition(Template condition) {
-        this.conditionList.add(condition);
+    public void addCondition(ConditionTemplate condition) {
+        List<ConditionTemplate> newConditionList = new ArrayList<>();
+        AtomicBoolean updated = new AtomicBoolean(false);
+        this.conditionList.forEach(t -> {
+            if (t.getName().equals(condition.getName())){
+                newConditionList.add(condition);
+                updated.set(true);
+            } else {
+                newConditionList.add(t);
+            }
+        });
+
+        if(!updated.get()) newConditionList.add(condition);
+
+        this.conditionList = newConditionList;
     }
 
     @Override

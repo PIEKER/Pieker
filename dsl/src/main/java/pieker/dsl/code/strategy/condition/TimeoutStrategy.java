@@ -1,11 +1,11 @@
 package pieker.dsl.code.strategy.condition;
 
 import lombok.extern.slf4j.Slf4j;
+import pieker.common.ConditionTemplate;
 import pieker.dsl.code.Engine;
 import pieker.dsl.code.exception.ValidationException;
 import pieker.dsl.code.preprocessor.Validator;
 import pieker.dsl.code.strategy.KeywordStrategy;
-import pieker.common.Template;
 import pieker.dsl.code.template.condition.Timeout;
 import pieker.dsl.util.Util;
 
@@ -19,13 +19,13 @@ public class TimeoutStrategy implements KeywordStrategy {
         this.checkArguments(args);
 
         String[] identifiers = Util.convertStringToStringArray(args[0]);
-        Template template;
+        ConditionTemplate template;
         if (args[0].contains(".")){
             template = new Timeout(Float.parseFloat(args[0]));
         } else {
             template = new Timeout(Integer.parseInt(args[1]));
         }
-        Engine.getCurrentStep().addTemplate(identifiers, template);
+        Engine.getCurrentStep().addConditionTemplate(identifiers, template);
     }
 
     @Override

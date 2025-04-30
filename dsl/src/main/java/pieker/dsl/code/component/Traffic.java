@@ -5,13 +5,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 import pieker.common.TrafficTemplate;
 import pieker.dsl.code.template.architecture.TrafficType;
 import pieker.dsl.code.template.condition.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @Setter
@@ -20,7 +23,8 @@ public class Traffic implements StepComponent, TrafficTemplate {
 
     private final String identifier;
     private final TrafficType trafficType;
-    private List<Template> conditionList = new ArrayList<>();
+    private Map<String, List<ConditionTemplate>> stepToConditionMap = new HashMap<>();
+    private List<ConditionTemplate> conditionList = new ArrayList<>();
     private boolean enableLogs;
 
     @JsonIgnore
@@ -41,20 +45,33 @@ public class Traffic implements StepComponent, TrafficTemplate {
         this.trafficType = trafficType;
     }
 
-    public Traffic(String identifier, TrafficType trafficType, List<Template> conditionList) {
+    public Traffic(String identifier, TrafficType trafficType, List<ConditionTemplate> conditionList) {
         this.identifier = identifier;
         this.trafficType = trafficType;
         this.conditionList = conditionList;
     }
 
     @Override
-    public void addCondition(Template condition) {
-        this.conditionList.add(condition);
+    public void addCondition(ConditionTemplate condition) {
+        List<ConditionTemplate> newConditionList = new ArrayList<>();
+        AtomicBoolean updated = new AtomicBoolean(false);
+        this.conditionList.forEach(t -> {
+            if (t.getName().equals(condition.getName())){
+                newConditionList.add(condition);
+                updated.set(true);
+            } else {
+                newConditionList.add(t);
+            }
+        });
+
+        if(!updated.get()) newConditionList.add(condition);
+
+        this.conditionList = newConditionList;
     }
 
     @Override
     public StepComponent copy() {
-        return new Traffic(this.identifier, this.trafficType, new ArrayList<>(this.conditionList));
+        return new Traffic(this.identifier, this.trafficType, this.conditionList);
     }
 
     @Override

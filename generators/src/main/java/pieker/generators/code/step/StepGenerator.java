@@ -59,7 +59,7 @@ public class StepGenerator {
         saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
 
         //create step files
-        Map<String, List<pieker.common.Template>> stepConditionMap = scenarioComponent.getStepToConditionMap();
+        Map<String, List<pieker.common.ConditionTemplate>> stepConditionMap = scenarioComponent.getStepToConditionMap();
         stepConditionMap.forEach((stepId, conditionList) -> {
                     VelocityContext ctx = new VelocityContext();
                     ctx.put(CLASS_NAME, stepId);

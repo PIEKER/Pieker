@@ -3,11 +3,11 @@ package pieker.dsl.code.template.condition;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 
 @Slf4j
 @Getter
-public class After implements Template {
+public class After implements ConditionTemplate {
 
     private final String name = After.class.getSimpleName();
     private final float seconds;
@@ -22,7 +22,7 @@ public class After implements Template {
 
     @Override
     public void addContextVariable(VelocityContext ctx) {
-        ctx.put("after", seconds*1000);
+        ctx.put("after",(long) seconds*1000);
     }
 
     public void performCondition() {
@@ -35,5 +35,10 @@ public class After implements Template {
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    @Override
+    public Object getValue() {
+        return this.seconds;
     }
 }

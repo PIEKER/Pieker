@@ -1,6 +1,7 @@
 package pieker.dsl.code.strategy.condition;
 
 import lombok.extern.slf4j.Slf4j;
+import pieker.common.ConditionTemplate;
 import pieker.dsl.code.Engine;
 import pieker.dsl.code.exception.ValidationException;
 import pieker.dsl.code.preprocessor.Validator;
@@ -19,8 +20,8 @@ public class TimesStrategy implements KeywordStrategy {
         this.checkArguments(args);
 
         String[] identifiers = Util.convertStringToStringArray(args[0]);
-        Template template = new Times(Integer.parseInt(args[1]));
-        Engine.getCurrentStep().addTemplate(identifiers, template);
+        ConditionTemplate template = new Times(Integer.parseInt(args[1]));
+        Engine.getCurrentStep().addConditionTemplate(identifiers, template);
     }
 
     @Override

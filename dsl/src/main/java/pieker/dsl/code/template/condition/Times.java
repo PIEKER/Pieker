@@ -3,13 +3,13 @@ package pieker.dsl.code.template.condition;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 
 import java.util.function.Consumer;
 
 @Slf4j
 @Getter
-public class Times implements Template {
+public class Times implements ConditionTemplate {
 
     private final String name = Times.class.getSimpleName();
     private final int amount;
@@ -27,5 +27,10 @@ public class Times implements Template {
         for (int i = 0; i < this.amount; i++) {
             traffic.accept(args);
         }
+    }
+
+    @Override
+    public Object getValue() {
+        return this.amount;
     }
 }

@@ -58,7 +58,7 @@ nullHeader: NULL line NEWLINE ;
 
 description: DOC_STRING;
 
-step: STEP line (description | NEWLINE) given when? then? ;
+step: STEP line (description | NEWLINE) given? when? then? ;
 beforeEach: BEFORE_EACH NEWLINE given when? then? ;
 
 line: CHAR+ ;

@@ -1,6 +1,7 @@
 package pieker.dsl.code.strategy.condition;
 
 import lombok.extern.slf4j.Slf4j;
+import pieker.common.ConditionTemplate;
 import pieker.dsl.code.Engine;
 import pieker.dsl.code.exception.ValidationException;
 import pieker.dsl.code.preprocessor.Validator;
@@ -19,13 +20,13 @@ public class DelayStrategy implements KeywordStrategy {
         this.checkArguments(args);
         String[] identifiers = Util.convertStringToStringArray(args[0]);
 
-        Template template;
+        ConditionTemplate template;
         if (args[1].contains(".")){
             template = new Delay(Float.parseFloat(args[1]));
         } else {
             template = new Delay(Integer.parseInt(args[1]));
         }
-        Engine.getCurrentStep().addTemplate(identifiers, template);
+        Engine.getCurrentStep().addConditionTemplate(identifiers, template);
     }
 
     @Override

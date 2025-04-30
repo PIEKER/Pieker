@@ -3,11 +3,11 @@ package pieker.dsl.code.template.condition;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
-import pieker.common.Template;
+import pieker.common.ConditionTemplate;
 
 @Slf4j
 @Getter
-public class Timeout implements Template {
+public class Timeout implements ConditionTemplate {
 
     private final String name = Timeout.class.getSimpleName();
     private final float seconds;
@@ -20,6 +20,11 @@ public class Timeout implements Template {
     }
 
     public void addContextVariable(VelocityContext ctx){
-        ctx.put("timeout", seconds*1000);
+        ctx.put("timeout", (long) seconds*1000);
+    }
+
+    @Override
+    public Object getValue() {
+        return this.seconds;
     }
 }

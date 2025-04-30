@@ -3,8 +3,8 @@ package pieker.dsl.model;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Assertions;
+import pieker.common.ConditionTemplate;
 import pieker.dsl.code.component.*;
-import pieker.common.Template;
 import pieker.dsl.model.assertions.DatabaseAssert;
 
 import java.util.*;
@@ -52,7 +52,7 @@ public class Step {
         this.testComponentMap.put(identifier, stepComponent);
     }
 
-    public void addTemplate(String[] identifiers, Template template){
+    public void addConditionTemplate(String[] identifiers, ConditionTemplate template){
         for (String identifier : identifiers){
             this.testComponentMap.get(identifier).addCondition(template);
         }

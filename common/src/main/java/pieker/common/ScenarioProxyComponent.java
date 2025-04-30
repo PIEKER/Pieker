@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface ScenarioProxyComponent extends ScenarioComponent{
 
-    Map<String, List<Template>> getStepToConditionMap();
+    Map<String, List<ConditionTemplate>> getStepToConditionMap();
 
     Map<String, Boolean> getStepToLog();
 }
