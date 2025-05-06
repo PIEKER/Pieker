@@ -27,6 +27,8 @@ public class StepGenerator {
     private static final String DEFAULT_FILENAME = "Default";
     private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
     private static final String CLASS_NAME = "className";
+    private static final String TRAFFIC_IDENTIFIER = "trafficIdentifier";
+    private static final String PROXY_IDENTIFIER = "proxyIdentifier";
     private static final String ENABLE_LOGS = "enableLogging";
     private static final VelocityTemplateProcessor VELOCITY = new VelocityTemplateProcessor(OUTPUT_DIR);
 
@@ -63,6 +65,7 @@ public class StepGenerator {
         stepConditionMap.forEach((stepId, conditionList) -> {
                     VelocityContext ctx = new VelocityContext();
                     ctx.put(CLASS_NAME, stepId);
+                    ctx.put(PROXY_IDENTIFIER, stepId +"_"+ scenarioComponent.getName());
                     ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
                     Template template = VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE);
 
@@ -93,6 +96,7 @@ public class StepGenerator {
             for (TrafficTemplate traffic : entry.getValue()) {
                 VelocityContext ctx = new VelocityContext();
                 ctx.put(ENABLE_LOGS, traffic.isEnableLogs());
+                ctx.put(TRAFFIC_IDENTIFIER, stepId +"_"+ traffic.getIdentifier());
                 traffic.addContextVariable(ctx);
                 String trafficType = (String) ctx.get("trafficType");
                 if (trafficType == null) {

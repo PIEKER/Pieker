@@ -10,14 +10,11 @@ import org.json.JSONObject; // requires json.jar
 
 //TRAFFIC-CONTAINER
 public class $className {
-    private static final String LOG_FILE = "/app/logs/proxy.log";
+    private static final String LOG_FILE = "/app/logs/traffic.log";
     private static final Random RANDOM = new Random();
 
     public static void main(String[] args) {
-        String trafficIdent = "Foo"; // FIXME
-
         ${threadBody}
-
     }
 
     // -- SQL
@@ -107,7 +104,7 @@ public class $className {
 
     private record ResponseTuple(String response, int statusCode){
         public String toString(){
-            return "REQUEST-STATUS{" + this.statusCode + "} REQUEST-MESSAGE{" + this.response + "}";
+            return "REQUEST-STATUS{" + this.statusCode + "}-REQUEST-MESSAGE{" + this.response + "}";
         }
     }
 

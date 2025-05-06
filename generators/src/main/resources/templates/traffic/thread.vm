@@ -1,4 +1,5 @@
-Thread.ofVirtual().start(() -> {
+Thread $trafficIdentifier = Thread.ofVirtual().start(() -> {
+            String trafficIdent = "$trafficIdentifier";
             try {
                 #if ($after != $null)
                 // --after
@@ -54,7 +55,7 @@ Thread.ofVirtual().start(() -> {
                     #end
 
                     #if($enableLogging == true)
-                    log(r.toString());
+                    log(trafficIdent + " - " + r.toString());
                     #end
 
                     #if ($retry != $null)
@@ -69,3 +70,9 @@ Thread.ofVirtual().start(() -> {
                 log("Thread" + trafficIdent + " failed due to URISyntaxException: " + e.getMessage());
             }
         });
+
+        try {
+            ${trafficIdentifier}.join();
+        } catch (InterruptedException e) {
+            log(e.getMessage());
+        }

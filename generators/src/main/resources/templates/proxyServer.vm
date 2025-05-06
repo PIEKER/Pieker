@@ -1,5 +1,6 @@
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.Headers;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -13,6 +14,7 @@ import java.util.Random;
 //PROXY-SERVER
 public class $className {
     private static final String LOG_FILE = "/app/logs/proxy.log";
+    private static final String PROXY_IDENTIFIER = "${proxyIdentifier}";
     private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
     private static final Random RANDOM = new Random();
 
@@ -79,53 +81,74 @@ public class $className {
 
         // Start the server
         server.start();
-        log("Proxy is running on port 80");
+        log("Proxy " + PROXY_IDENTIFIER + " is running on port 80");
     }
 
     private static void proxy(HttpExchange exchange, String targetUrl) throws IOException {
-            // Forward the request to the target service
-            try {
-                HttpURLConnection connection = (HttpURLConnection) new URI(targetUrl).toURL().openConnection();
-                connection.setRequestMethod(exchange.getRequestMethod());
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URI(targetUrl).toURL().openConnection();
+            connection.setRequestMethod(exchange.getRequestMethod());
 
-                // Copy headers from the client request to the target request
-                exchange.getRequestHeaders().forEach((key, values) ->
-                        values.forEach(value -> connection.addRequestProperty(key, value)));
+            // Copy request headers
+            exchange.getRequestHeaders().forEach((key, values) ->
+                    values.forEach(value -> connection.addRequestProperty(key, value))
+            );
 
-                // If the request has a body, forward it
-                if (exchange.getRequestBody() != null && ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod()))) {
-                    connection.setDoOutput(true);
-                    try (OutputStream outputStream = connection.getOutputStream()) {
-                        exchange.getRequestBody().transferTo(outputStream);
-                    }
+            // Forward request body if present
+            if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+                connection.setDoOutput(true);
+                try (OutputStream outputStream = connection.getOutputStream()) {
+                    exchange.getRequestBody().transferTo(outputStream);
                 }
-
-                int responseCode = connection.getResponseCode();
-                try (InputStream inputStream = connection.getInputStream();
-                     OutputStream responseBody = exchange.getResponseBody();
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                    #if($enableLogging == true)
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    log(new ResponseTuple(response.toString(), responseCode).toString());
-                    #end
-
-                    // Forward the response from the target service to the client
-                    exchange.sendResponseHeaders(responseCode, connection.getContentLengthLong());
-                    inputStream.transferTo(responseBody);
-                }
-            } catch (Exception e) {
-                // Handle errors and send a 500 response
-                exchange.sendResponseHeaders(500, 0);
-                try (OutputStream responseBody = exchange.getResponseBody()) {
-                    responseBody.write(e.getMessage().getBytes());
-                }
-                log("Error handling request: " + e.getMessage());
             }
+
+            // Get response
+            int responseCode = connection.getResponseCode();
+            InputStream inputStream = (responseCode >= 400)
+                    ? connection.getErrorStream()
+                    : connection.getInputStream();
+
+            byte[] responseBytes = (inputStream != null) ? inputStream.readAllBytes() : new byte[0];
+            #if($enableLogging == true)
+            String responseText = new String(responseBytes, StandardCharsets.UTF_8);
+            log(PROXY_IDENTIFIER + " - " + new ResponseTuple(responseText, responseCode));
+            #end
+
+            // Prepare response headers
+            Headers responseHeaders = exchange.getResponseHeaders();
+            connection.getHeaderFields().forEach((key, values) -> {
+                if (key != null && values != null) {
+                    // Avoid headers that are restricted or duplicated (like Content-Length)
+                    if (!key.equalsIgnoreCase("Transfer-Encoding") &&
+                            !key.equalsIgnoreCase("Content-Length") &&
+                            !key.equalsIgnoreCase("Connection")) {
+                        responseHeaders.put(key, values);
+                    }
+                }
+            });
+
+            // Ensure necessary headers are present
+            if (!responseHeaders.containsKey("Content-Type")) {
+                responseHeaders.set("Content-Type", "text/plain; charset=utf-8");
+            }
+            responseHeaders.set("Connection", "close");
+
+            // Send response
+            exchange.sendResponseHeaders(responseCode, responseBytes.length);
+            try (OutputStream responseBody = exchange.getResponseBody()) {
+                responseBody.write(responseBytes);
+                responseBody.flush();
+            }
+
+        } catch (Exception e) {
+            exchange.sendResponseHeaders(500, 0);
+            try (OutputStream responseBody = exchange.getResponseBody()) {
+                String errorMessage = "Proxy error: " + e.getMessage();
+                responseBody.write(errorMessage.getBytes(StandardCharsets.UTF_8));
+            }
+            log("Error proxying request: " + e.getMessage());
         }
+    }
 
     private static void log(String message) {
         try (FileWriter writer = new FileWriter(LOG_FILE, true)) {
