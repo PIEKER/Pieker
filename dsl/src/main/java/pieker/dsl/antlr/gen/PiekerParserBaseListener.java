@@ -348,18 +348,6 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLine(PiekerParser.LineContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTable(PiekerParser.TableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTable(PiekerParser.TableContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

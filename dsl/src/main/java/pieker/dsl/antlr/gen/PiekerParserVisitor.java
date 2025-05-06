@@ -178,10 +178,4 @@ public interface PiekerParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLine(PiekerParser.LineContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#table}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTable(PiekerParser.TableContext ctx);
 }

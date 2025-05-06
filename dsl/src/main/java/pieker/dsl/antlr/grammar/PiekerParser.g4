@@ -62,5 +62,3 @@ step: STEP line (description | NEWLINE) given? when? then? ;
 beforeEach: BEFORE_EACH NEWLINE given when? then? ;
 
 line: CHAR+ ;
-
-table: TABLE_ROW+ ;

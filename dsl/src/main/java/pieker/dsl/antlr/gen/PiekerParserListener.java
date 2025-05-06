@@ -287,14 +287,4 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLine(PiekerParser.LineContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#table}.
-	 * @param ctx the parse tree
-	 */
-	void enterTable(PiekerParser.TableContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#table}.
-	 * @param ctx the parse tree
-	 */
-	void exitTable(PiekerParser.TableContext ctx);
 }
