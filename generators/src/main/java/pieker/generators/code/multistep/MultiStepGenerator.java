@@ -119,7 +119,8 @@ public class MultiStepGenerator {
         // Create MultiStepProxy.java file for current component
         final String multiStepProxyName = componentName.replace('-', '_');
         VelocityContext proxyContext = new VelocityContext();
-        proxyContext.put("port", 42690);
+        final int supervisorProxyPort = Integer.parseInt(System.getProperty("supervisorPort", "42690"));
+        proxyContext.put("port", supervisorProxyPort);
         Map<String, String> endpointJars = new HashMap<>();
         for (String fileName : fileNames) {
             fileName = fileName.replace(".java", "");
