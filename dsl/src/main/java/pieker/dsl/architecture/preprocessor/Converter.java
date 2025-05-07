@@ -14,6 +14,7 @@ import pieker.dsl.Keyword;
 import pieker.dsl.model.*;
 import pieker.dsl.model.assertions.DatabaseAssert;
 
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +25,7 @@ import static pieker.dsl.util.ArchitectureUtil.injectVariablesInString;
 public class Converter {
 
     private static final Map<String, VariableNode> GLOBAL_SCOPE = new HashMap<>();
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
     private static final RandomGen RANDOM_GEN = new RandomBoundsGen();
 
     private Converter() {}

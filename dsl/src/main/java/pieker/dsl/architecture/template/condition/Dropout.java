@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.ConditionTemplate;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 @Slf4j
@@ -14,7 +15,7 @@ public class Dropout implements ConditionTemplate {
 
     private final String name = Dropout.class.getSimpleName();
     @JsonIgnore
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
     private final float percentage;
 
     public Dropout(float percentage) {
