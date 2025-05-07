@@ -65,14 +65,6 @@ public enum Keyword {
 
     /**
      * <p>
-     * Indicates a certain scope for a given service. Can be used to explicitly manipulate endpoints.
-     * </p>
-     * <i>Example</i>: @url identifier | s-a | ["/api/v1/foo1", "/api/v1/foo2"]
-     */
-    URL("url", new UrlStrategy()),
-
-    /**
-     * <p>
      * Indicates a proxy for all connections of referenced database.<br>
      * Expects identifier as argument.
      * </p>

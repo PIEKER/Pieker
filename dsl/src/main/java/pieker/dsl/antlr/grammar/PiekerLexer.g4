@@ -49,7 +49,6 @@ REQUEST: '@request' WS+ ;
 SQL: '@sql' WS+ ;
 PASSIVE: '@passive' WS+;
 SERVICE: '@service' WS+ ;
-URL: '@url' WS+ ;
 DATABASE: '@database' WS+;
 
 // Condition Keyword

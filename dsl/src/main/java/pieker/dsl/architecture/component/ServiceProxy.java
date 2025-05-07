@@ -5,18 +5,13 @@ import lombok.Setter;
 import pieker.common.ConditionTemplate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Setter
 @Getter
 public class ServiceProxy extends ProxyComponent<ServiceProxy> {
 
     private final String service;
-    private List<String> urlList = new ArrayList<>();
-    private Map<String, List<String>> stepToUrlList = new HashMap<>();
 
     public ServiceProxy(String identifier) {
         super(identifier);
@@ -33,33 +28,16 @@ public class ServiceProxy extends ProxyComponent<ServiceProxy> {
         this.service = service;
     }
 
-    public boolean proxyAll(String step){
-        if (this.stepToUrlList.containsKey(step)){
-            return this.stepToUrlList.get(step).isEmpty();
-        } else {
-            return true;
-        }
-    }
-
     @Override
     public StepComponent copy() {
         return new ServiceProxy(this.getIdentifier(), this.service, new ArrayList<>(this.conditionList), this.enableLogs);
-    }
-
-    public void addStepWithCondition(String stepIdentifier, List<ConditionTemplate> conditionList, List<String> urlList){
-        if (this.stepToUrlList.containsKey(stepIdentifier)){
-            this.stepToUrlList.get(stepIdentifier).addAll(urlList);
-        } else {
-            this.stepToUrlList.put(stepIdentifier, urlList);
-        }
-        this.addStepWithCondition(stepIdentifier, conditionList);
     }
 
     @Override
     public ServiceProxy convertToScenarioInstance(String scenarioIdentifier, String stepIdentifier){
         this.getStepToLog().put(stepIdentifier, this.enableLogs);
         this.scenarioIdentifier = scenarioIdentifier;
-        this.addStepWithCondition(stepIdentifier, this.conditionList, this.urlList);
+        this.addStepWithCondition(stepIdentifier, this.conditionList);
         return this;
     }
 
