@@ -68,7 +68,7 @@ class ArchitectureIntegrationTest {
         final ArchitectureModel<?> model = modelGenerator.generate(DOCKER_COMPOSE_FILE, DESCRIPTION_FILE);
         final ComponentInjector<?, ?> componentInjector = ArchitectureFactory.createInjector(model);
 
-        final int newComponents = getTestPlan().getComponents().size();
+        final int newComponents = getTestPlan().getComponents().size() + 1;
         final int existingComponents = model.getAllComponents().size();
         componentInjector.injectComponents(getTestPlan());
 
