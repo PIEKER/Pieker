@@ -6,7 +6,6 @@ dependencies {
     // Internal
     implementation(project(":api"))
     implementation(project(":common"))
-    implementation(project(":generators"))
 
     // External
     implementation("org.antlr:antlr4-runtime:4.13.2")
