@@ -1,0 +1,135 @@
+package pieker.generators.code.step;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.ReferenceCountUtil;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+public class $className {
+
+    private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
+    private static final Random RANDOM = new Random();
+
+    private static final int PROXY_PORT = System.getenv("JDBC_PROXY_PORT") != null ? Integer.parseInt(System.getenv("JDBC_PROXY_PORT")) : 5433;
+    private static final String DB_HOST = System.getenv("JDBC_PROXY_DB_HOST") != null ? System.getenv("JDBC_PROXY_DB_HOST") : "localhost";
+    private static final int DB_PORT = System.getenv("JDBC_PROXY_DB_PORT") != null ? Integer.parseInt(System.getenv("JDBC_PROXY_DB_PORT")) : 5432;
+
+    #if($after != $null)
+    // --after
+    private static final long AFTER_TIME = $after;
+    private static final long BLOCKED_UNTIL = BOOT_TIMESTAMP + AFTER_TIME;
+    #end
+    #if($timeout != $null)
+    // --timeout
+    private static final long TIMEOUT = $timeout;
+    private static final long BLOCKED_TIMEOUT =  BOOT_TIMESTAMP + TIMEOUT;
+    #end
+
+    public static void main(String[] args) throws InterruptedException {
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel clientChannel) {
+                        Bootstrap dbBootstrap = new Bootstrap();
+                        dbBootstrap.group(clientChannel.eventLoop())
+                                .channel(NioSocketChannel.class)
+                                .handler(new ChannelInitializer<SocketChannel>() {
+                                    @Override
+                                    protected void initChannel(SocketChannel dbChannel) {
+                                        dbChannel.pipeline().addLast(new RelayHandler(clientChannel));
+                                    }
+                                });
+
+                        dbBootstrap.connect(DB_HOST, DB_PORT).addListener((ChannelFutureListener) future -> {
+                            if (future.isSuccess()) {
+                                Channel dbChannel = future.channel();
+                                clientChannel.pipeline().addLast(new RelayHandler(dbChannel));
+                            } else {
+                                clientChannel.close();
+                            }
+                        });
+                    }
+                });
+
+        ChannelFuture f = bootstrap.bind(PROXY_PORT).sync();
+        System.out.println("JDBC proxy started on port " + PROXY_PORT);
+        f.channel().closeFuture().sync();
+    }
+
+    static class RelayHandler extends ChannelInboundHandlerAdapter {
+        private final Channel otherChannel;
+
+        RelayHandler(Channel otherChannel) {
+            this.otherChannel = otherChannel;
+        }
+
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            if (otherChannel.isActive()) {
+
+                #if($after != $null)
+                // --after
+                if (currentMillis <= BLOCKED_UNTIL) {
+                    ReferenceCountUtil.release(msg);
+                    return;
+                }
+                #end
+
+                #if($timeout != $null)
+                // --timeout
+                if (TIMEOUT != -1 && currentMillis > BLOCKED_TIMEOUT) {
+                    ReferenceCountUtil.release(msg);
+                    return;
+                }
+                #end
+
+                #if($dropout != $null)
+                    // --dropout
+                    if (dropout($dropout)) {
+                        ReferenceCountUtil.release(msg);
+                        return;
+                    }
+                #end
+
+                #if($delay != $null)
+                // --delay
+                ctx.executor().schedule(() -> {
+                    otherChannel.writeAndFlush(msg);
+                }, $delay, TimeUnit.MILLISECONDS);
+                #else
+                otherChannel.writeAndFlush(msg);
+                #end
+            } else {
+                ReferenceCountUtil.release(msg);
+            }
+        }
+
+        @Override
+        public void channelInactive(ChannelHandlerContext ctx) {
+            if (otherChannel.isActive()) {
+                otherChannel.close();
+            }
+        }
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+            cause.printStackTrace();
+            ctx.close();
+        }
+    }
+    public static boolean dropout(double dropProbability){
+        return RANDOM.nextDouble() < dropProbability;
+    }
+}

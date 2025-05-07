@@ -8,6 +8,7 @@ import pieker.common.ScenarioProxyComponent;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.ScenarioTrafficComponent;
 import pieker.common.TrafficTemplate;
+import pieker.dsl.architecture.component.DatabaseProxy;
 import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 
@@ -21,7 +22,8 @@ import java.util.Map;
 @Slf4j
 public class StepGenerator {
 
-    private static final String PROXY_TEMPLATE_FILE = "proxyServer.vm";
+    private static final String PROXY_HTTP_TEMPLATE_FILE = "proxy/proxyHTTP.vm";
+    private static final String PROXY_DB_TEMPLATE_FILE = "proxy/proxyDB.vm";
     private static final String TRAFFIC_THREAD_TEMPLATE_FILE = "traffic/thread.vm";
     private static final String TRAFFIC_CONTAINER_TEMPLATE_FILE = "traffic/trafficContainer.vm";
     private static final String DEFAULT_FILENAME = "Default";
@@ -57,7 +59,7 @@ public class StepGenerator {
         //create empty default
         VelocityContext defaultCtx = new VelocityContext();
         defaultCtx.put(CLASS_NAME, DEFAULT_FILENAME);
-        String defaultFile = VELOCITY.fillTemplate(VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE), defaultCtx);
+        String defaultFile = VELOCITY.fillTemplate(VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE), defaultCtx);
         saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
 
         //create step files
@@ -67,7 +69,9 @@ public class StepGenerator {
                     ctx.put(CLASS_NAME, stepId);
                     ctx.put(PROXY_IDENTIFIER, stepId +"_"+ scenarioComponent.getName());
                     ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
-                    Template template = VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE);
+                    Template template = scenarioComponent instanceof DatabaseProxy ?
+                            VELOCITY.loadTemplate(PROXY_DB_TEMPLATE_FILE) :
+                            VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE);
 
                     conditionList.forEach(t -> t.addContextVariable(ctx));
                     String proxyFile = VELOCITY.fillTemplate(template, ctx);
