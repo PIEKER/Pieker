@@ -96,7 +96,7 @@ public class StepGenerator {
             for (TrafficTemplate traffic : entry.getValue()) {
                 VelocityContext ctx = new VelocityContext();
                 ctx.put(ENABLE_LOGS, traffic.isEnableLogs());
-                ctx.put(TRAFFIC_IDENTIFIER, stepId +"_"+ traffic.getIdentifier());
+                ctx.put(TRAFFIC_IDENTIFIER, stepId +"_"+ traffic.getIdentifier().replace("-", "_"));
                 traffic.addContextVariable(ctx);
                 String trafficType = (String) ctx.get("trafficType");
                 if (trafficType == null) {
