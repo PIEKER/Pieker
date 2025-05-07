@@ -83,6 +83,14 @@ public class Traffic implements StepComponent, TrafficTemplate {
     }
 
     @Override
+    public String getTarget() {
+        if (this.trafficType == null) {
+            throw new IllegalStateException("TrafficType not set.");
+        }
+        return this.trafficType.getTarget();
+    }
+
+    @Override
     public void startTraffic(String[] args){
         this.transferConditionList();
 
