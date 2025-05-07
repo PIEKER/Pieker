@@ -4,8 +4,14 @@ import java.util.List;
 
 public interface TestStep {
 
+    /**
+     * @return unique id
+     */
     String getId();
+
+    /**
+     * @return action sequence, ordered by user input
+     */
     List<TrafficTemplate> getSequence();
-    List<TrafficTemplate> getEvaluationPreparationSequence();
 
 }

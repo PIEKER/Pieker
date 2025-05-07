@@ -11,20 +11,44 @@ import java.util.Map;
  */
 public interface ScenarioTestPlan {
 
+    /**
+     * @return scenario name
+     */
     String getName();
 
+    /**
+     * @return every component used for proxying connections
+     */
     Collection<ScenarioProxyComponent> getProxyComponents();
 
+    /**
+     * @return every component used for traffic generation
+     */
     Collection<ScenarioTrafficComponent> getTrafficComponents();
 
+    /**
+     * @return every component required for test-environment
+     */
     Collection<ScenarioComponent> getComponents();
 
+    /**
+     * @return every test step id
+     */
     Collection<String> getStepIds();
 
-    TestStep getBeforeStep();
+    /**
+     * @return step containing preconditions for every test-step
+     */
+    TestStep getBeforeEachStep();
 
+    /**
+     * @return every test step in the scenario
+     */
     Collection<TestStep> getTestSteps();
 
+    /**
+     * @return Map of stepIds to a list of assertions, ordered by assertAfter attribute
+     */
     Map<String, List<Assertions>> getAssertionsMap();
 
 }

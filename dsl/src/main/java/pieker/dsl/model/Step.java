@@ -5,7 +5,6 @@ import lombok.Setter;
 import pieker.api.Assertions;
 import pieker.common.ConditionTemplate;
 import pieker.dsl.architecture.component.*;
-import pieker.dsl.model.assertions.DatabaseAssert;
 import pieker.dsl.util.comparators.STComparator;
 
 import java.util.*;
@@ -81,20 +80,11 @@ public class Step {
     }
 
     public SupervisorStep createSupervisorStep(){
-        List<SupervisorTraffic> trafficList = new ArrayList<>();
-        List<SupervisorTraffic> evaluationPreparationList = new ArrayList<>();
-        for (SupervisorTraffic t: this.filterTestComponentsByInstance(SupervisorTraffic.class)){
-            if (t.getIdentifier().startsWith(DatabaseAssert.SUPERVISOR_TRAFFIC_PREFIX)){
-                evaluationPreparationList.add(t);
-            } else {
-                trafficList.add(t);
-            }
-        }
+        List<SupervisorTraffic> trafficList = new ArrayList<>(this.filterTestComponentsByInstance(SupervisorTraffic.class));
+
         trafficList.sort(new STComparator());
-        evaluationPreparationList.sort(new STComparator());
         SupervisorStep supervisorStep = new SupervisorStep(this.id);
         supervisorStep.setTrafficList(trafficList);
-        supervisorStep.setEvaluationPreparationList(evaluationPreparationList);
         return supervisorStep;
     }
 

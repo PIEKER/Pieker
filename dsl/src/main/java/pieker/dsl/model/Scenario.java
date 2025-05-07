@@ -83,7 +83,7 @@ public class Scenario implements ScenarioTestPlan {
 
     @JsonIgnore
     @Override
-    public TestStep getBeforeStep() {
+    public TestStep getBeforeEachStep() {
         return this.beforeEach.createSupervisorStep();
     }
 

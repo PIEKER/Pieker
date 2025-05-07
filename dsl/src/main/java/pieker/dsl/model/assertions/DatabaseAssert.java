@@ -26,16 +26,16 @@ import java.util.List;
 public class DatabaseAssert extends Assert {
 
     private static final String ASSERT_PLUGIN = "Database";
-    public static final String SUPERVISOR_TRAFFIC_PREFIX = "zzz-database-assert";
     private static final String SELECT = "SELECT ";
     private static final String FROM = " FROM ";
     private static final String WHERE = " WHERE ";
     private static final String VALUE = " value: ";
+
     private final String uuid = java.util.UUID.randomUUID().toString().replace("-","_");
     private final String assertableTableName = "assert_" + this.identifier+ "_" + this.uuid;
     protected final String assertableTableQuery = "CREATE TABLE " + this.assertableTableName + " AS ";
-
     protected final String dropAssertableTableQuery = "DROP TABLE " + this.assertableTableName;
+
     protected String tableSelect;
     private String jdbcUrl;
     private String username;
@@ -66,9 +66,7 @@ public class DatabaseAssert extends Assert {
 
     @Override
     public void processAssert() {
-        Sql assertableTable = new Sql(this.identifier, this.assertableTableQuery + tableSelect);
-        String identifier = SUPERVISOR_TRAFFIC_PREFIX + java.util.UUID.randomUUID();
-        Engine.getCurrentStep().addStepComponent(identifier, new SupervisorTraffic(identifier, assertableTable));
+        // no processing required
     }
 
     private void validateValue(int line, String value){
@@ -83,13 +81,16 @@ public class DatabaseAssert extends Assert {
 
     @Override
     public void evaluate() {
+        log.debug("creating assertable Table");
+        String response = this.sendQuery(this.assertableTableQuery + tableSelect);
+        log.debug(response);
 
         this.boolList.forEach(this::evaluateBoolNode);
         this.equalsList.forEach(this::evaluateEqualsNode);
         this.nullList.forEach(this::evaluateNullNode);
 
         log.debug("drop assertable Table");
-        String response = this.sendQuery(this.dropAssertableTableQuery);
+        response = this.sendQuery(this.dropAssertableTableQuery);
         log.debug(response);
     }
 

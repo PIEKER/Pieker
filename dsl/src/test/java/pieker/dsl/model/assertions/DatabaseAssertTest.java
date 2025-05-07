@@ -64,8 +64,6 @@ class DatabaseAssertTest {
                     .replaceFirst("<\\?>", postgres.getUsername())
                 .replaceFirst("<\\?>", postgres.getPassword()))
         );
-        // simulate supervisor step
-        send(valid.assertableTableQuery + valid.tableSelect);
 
         // run evaluation
         valid.evaluate();
