@@ -7,6 +7,7 @@ import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioProxyComponent;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 public abstract class ProxyComponent<T extends ProxyComponent<T>> implements ScenarioProxyComponent, StepComponent, ScenarioComponent {
@@ -32,6 +33,24 @@ public abstract class ProxyComponent<T extends ProxyComponent<T>> implements Sce
         this.identifier = identifier;
         this.conditionList = conditionList;
         this.enableLogs = enableLogs;
+    }
+
+    @Override
+    public void addCondition(ConditionTemplate condition) {
+        List<ConditionTemplate> newConditionList = new ArrayList<>();
+        AtomicBoolean updated = new AtomicBoolean(false);
+        this.conditionList.forEach(t -> {
+            if (t.getName().equals(condition.getName())){
+                newConditionList.add(condition);
+                updated.set(true);
+            } else {
+                newConditionList.add(t);
+            }
+        });
+
+        if(!updated.get()) newConditionList.add(condition);
+
+        this.conditionList = newConditionList;
     }
 
     public void addStepWithCondition(String stepIdentifier, List<ConditionTemplate> conditionList){

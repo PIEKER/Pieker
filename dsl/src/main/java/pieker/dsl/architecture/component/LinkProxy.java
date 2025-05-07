@@ -28,24 +28,6 @@ public class LinkProxy extends ProxyComponent<LinkProxy> {
     }
 
     @Override
-    public void addCondition(ConditionTemplate condition) {
-        List<ConditionTemplate> newConditionList = new ArrayList<>();
-        AtomicBoolean updated = new AtomicBoolean(false);
-        this.conditionList.forEach(t -> {
-            if (t.getName().equals(condition.getName())){
-                newConditionList.add(condition);
-                updated.set(true);
-            } else {
-                newConditionList.add(t);
-            }
-        });
-
-        if(!updated.get()) newConditionList.add(condition);
-
-        this.conditionList = newConditionList;
-    }
-
-    @Override
     public StepComponent copy() {
         return new LinkProxy(this.getIdentifier(), this.hostA, this.hostB, new ArrayList<>(this.conditionList), this.enableLogs);
     }

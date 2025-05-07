@@ -1,5 +1,6 @@
 package pieker.dsl.architecture.preprocessor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -50,34 +51,10 @@ public class FileManager {
             String contentHashCode = Integer.toString(substring.concat(Integer.toString(0)).hashCode());
 
             if (substring.endsWith(".json")) {
-                JsonNode arrayNode = mapper.readTree(fileContent);
-
-                if (arrayNode.isArray()) {
-                    for (int i = 0; i < arrayNode.size(); i++) {
-                        String hashCode = Integer.toString(substring.concat(Integer.toString(i)).hashCode());
-                        this.hashToContentMap.putIfAbsent(hashCode, arrayNode.get(i).toString());
-
-                        if (i == index){
-                            contentHashCode = hashCode; //cache required index
-                        }
-                    }
-                } else {
-                     this.hashToContentMap.putIfAbsent(contentHashCode, arrayNode.toString());
-                }
+                contentHashCode = loadFileFromJson(substring, index, fileContent, contentHashCode);
 
             } else if (substring.endsWith(".sql")){
-                String[] statements = fileContent.split(";");
-
-                for (int i = 0; i < statements.length; i++) {
-                    String hashCode = Integer.toString(substring.concat(Integer.toString(i)).hashCode());
-                    if (statements[i].isBlank()){
-                        continue;
-                    }
-                    this.hashToContentMap.putIfAbsent(hashCode, statements[i].trim());
-                    if (i == index){
-                        contentHashCode = hashCode; //cache required index
-                    }
-                }
+                contentHashCode = loadSqlFromFile(substring, index, fileContent, contentHashCode);
             } else {
                 this.hashToContentMap.putIfAbsent(contentHashCode, fileContent);
             }
@@ -102,5 +79,39 @@ public class FileManager {
 
     public String getDataFromFileHash(String fileHash){
         return this.hashToContentMap.get(this.getHashId(fileHash));
+    }
+
+    private String loadSqlFromFile(String substring, int index, String fileContent, String contentHashCode) {
+        String[] statements = fileContent.split(";");
+
+        for (int i = 0; i < statements.length; i++) {
+            String hashCode = Integer.toString(substring.concat(Integer.toString(i)).hashCode());
+            if (statements[i].isBlank()){
+                continue;
+            }
+            this.hashToContentMap.putIfAbsent(hashCode, statements[i].trim());
+            if (i == index){
+                contentHashCode = hashCode; //cache required index
+            }
+        }
+        return contentHashCode;
+    }
+
+    private String loadFileFromJson(String substring, int index, String fileContent, String contentHashCode) throws JsonProcessingException {
+        JsonNode arrayNode = mapper.readTree(fileContent);
+
+        if (arrayNode.isArray()) {
+            for (int i = 0; i < arrayNode.size(); i++) {
+                String hashCode = Integer.toString(substring.concat(Integer.toString(i)).hashCode());
+                this.hashToContentMap.putIfAbsent(hashCode, arrayNode.get(i).toString());
+
+                if (i == index){
+                    contentHashCode = hashCode; //cache required index
+                }
+            }
+        } else {
+            this.hashToContentMap.putIfAbsent(contentHashCode, arrayNode.toString());
+        }
+        return contentHashCode;
     }
 }

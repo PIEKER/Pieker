@@ -93,7 +93,7 @@ public class Request implements Template, TrafficType {
                 }
             }
         } catch(JsonProcessingException e){
-            throw new PiekerProcessingException("unable to process file data. Invalid Json provided.");
+            throw new PiekerProcessingException("unable to process file data. Invalid Json provided: " + e.getMessage());
         }
     }
 

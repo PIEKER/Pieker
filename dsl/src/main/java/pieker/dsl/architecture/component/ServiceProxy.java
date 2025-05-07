@@ -46,24 +46,6 @@ public class ServiceProxy extends ProxyComponent<ServiceProxy> {
         return new ServiceProxy(this.getIdentifier(), this.service, new ArrayList<>(this.conditionList), this.enableLogs);
     }
 
-    @Override
-    public void addCondition(ConditionTemplate condition) {
-        List<ConditionTemplate> newConditionList = new ArrayList<>();
-        AtomicBoolean updated = new AtomicBoolean(false);
-        this.conditionList.forEach(t -> {
-            if (t.getName().equals(condition.getName())){
-                newConditionList.add(condition);
-                updated.set(true);
-            } else {
-                newConditionList.add(t);
-            }
-        });
-
-        if(!updated.get()) newConditionList.add(condition);
-
-        this.conditionList = newConditionList;
-    }
-
     public void addStepWithCondition(String stepIdentifier, List<ConditionTemplate> conditionList, List<String> urlList){
         if (this.stepToUrlList.containsKey(stepIdentifier)){
             this.stepToUrlList.get(stepIdentifier).addAll(urlList);
