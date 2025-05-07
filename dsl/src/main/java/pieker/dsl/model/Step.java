@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Assertions;
 import pieker.common.ConditionTemplate;
-import pieker.dsl.code.component.*;
+import pieker.dsl.architecture.component.*;
 import pieker.dsl.model.assertions.DatabaseAssert;
 
 import java.util.*;
@@ -91,7 +91,7 @@ public class Step {
         }
         trafficList.sort(new SupervisorTraffic.STComparator());
         evaluationPreparationList.sort(new SupervisorTraffic.STComparator());
-        SupervisorStep supervisorStep = new SupervisorStep(this.id, this.then);
+        SupervisorStep supervisorStep = new SupervisorStep(this.id);
         supervisorStep.setTrafficList(trafficList);
         supervisorStep.setEvaluationPreparationList(evaluationPreparationList);
         return supervisorStep;

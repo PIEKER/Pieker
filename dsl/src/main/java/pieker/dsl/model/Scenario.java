@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Assertions;
 import pieker.common.*;
-import pieker.dsl.code.component.*;
+import pieker.dsl.architecture.component.*;
 
 import java.util.*;
 
@@ -99,6 +99,7 @@ public class Scenario implements ScenarioTestPlan {
         for (Step step : this.stepList) {
             List<Assertions> assertionList = this.beforeEach.getEvaluationList();
             assertionList.addAll(step.getEvaluationList());
+            assertionList.sort();
             stepToAssertionsMap.put(step.getId(), assertionList);
         }
         return stepToAssertionsMap;

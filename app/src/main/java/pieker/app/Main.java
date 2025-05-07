@@ -67,13 +67,13 @@ public class Main {
         Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"), PLUGIN_MANAGER);
 
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
-            pieker.dsl.code.Engine.validate(feature);
+            pieker.dsl.architecture.Engine.validate(feature);
             log.info("Validation finished successfully.");
             return;
         }
 
         // Generate Test Plan
-        pieker.dsl.code.Engine.run(feature);
+        pieker.dsl.architecture.Engine.run(feature);
         feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
 
         if (Boolean.parseBoolean(System.getProperty("testPlanOnly", "false"))) {

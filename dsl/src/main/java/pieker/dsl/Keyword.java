@@ -1,9 +1,9 @@
 package pieker.dsl;
 
-import pieker.dsl.code.strategy.KeywordStrategy;
-import pieker.dsl.code.strategy.architecture.*;
-import pieker.dsl.code.strategy.condition.*;
-import pieker.dsl.code.strategy.general.DefStrategy;
+import pieker.dsl.architecture.strategy.KeywordStrategy;
+import pieker.dsl.architecture.strategy.component.*;
+import pieker.dsl.architecture.strategy.condition.*;
+import pieker.dsl.architecture.strategy.general.DefStrategy;
 
 /**
  * This enum matches a grammar key of PIEKER DSL.

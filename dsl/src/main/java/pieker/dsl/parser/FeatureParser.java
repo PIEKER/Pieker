@@ -276,7 +276,7 @@ public class FeatureParser extends PiekerParserBaseListener {
             if (ctxAssertAfter.line() == null || ctxAssertAfter.line().getText().trim().isEmpty()){
                 throw new PiekerDslException("invalid assertAfter detected at: " + then.getLine());
             }
-            then.setAssertAfter(Integer.parseInt(ctxAssertAfter.line().getText().trim()));
+            ass.setAssertAfter(Integer.parseInt(ctxAssertAfter.line().getText().trim()));
         }
 
         if (ctxAssert.assertBody() == null) {

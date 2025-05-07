@@ -10,10 +10,10 @@ import pieker.api.assertions.Equals;
 import pieker.api.assertions.Null;
 import pieker.api.Evaluation;
 import pieker.dsl.PiekerDslException;
-import pieker.dsl.code.Engine;
-import pieker.dsl.code.component.SupervisorTraffic;
-import pieker.dsl.code.exception.ValidationException;
-import pieker.dsl.code.template.architecture.Sql;
+import pieker.dsl.architecture.Engine;
+import pieker.dsl.architecture.component.SupervisorTraffic;
+import pieker.dsl.architecture.exception.ValidationException;
+import pieker.dsl.architecture.template.traffic.Sql;
 import pieker.dsl.util.Util;
 
 import java.util.ArrayList;

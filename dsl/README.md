@@ -22,7 +22,7 @@ some ideas, open questions and identified challenges will be added [here](#chall
 | directory                                                                   | content                                                                                                      |
 |-----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
 | [```antlr/```](src/main/java/pieker/dsl/antlr)                              | contains Gherkin grammar and the correlating generated Gherkin Parser.                                       |
-| [```code/```](src/main/java/pieker/dsl/code)                                | contains Java classes to process the PIEKER model tree to generate test code.                                |
+| [```architecture/```](src/main/java/pieker/dsl/architecture)                | contains Java classes to process the PIEKER model tree to generate test code.                                |
 | [```parser/```](src/main/java/pieker/dsl/parser)                            | contains Java classes to interpret the Gherkin resource (```.feature```) files and create runtime instances. |
 | [```model/```](src/main/java/pieker/dsl/model)                              | contains Java classes representing the PIEKER model tree.                                                    |
 | [```Main.java```](src/main/java/pieker/dsl/Main.java)                       | is the entrypoint class of this module. All module processes are orchestrated from here.                     |
@@ -107,7 +107,7 @@ injection, the dependency relationship of the reworked node is removed. If such 
 the node is added to the processing queue.
 Toposort is finished, when every node with zero dependency edges is processed. Toposort is _successfully_ finished, if there
 are no edges with a dependency reference left. For further information see 
-[VariableNode.java](./src/main/java/pieker/dsl/code/preprocessor/VariableNode.java).
+[VariableNode.java](./src/main/java/pieker/dsl/architecture/preprocessor/VariableNode.java).
 
 ### Values
 Values represent the heart of a _test-configuration_. A value can be used to define input, proxy, as well as
@@ -186,12 +186,12 @@ WHERE e.salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.depa
 
 ```
 
-### Code-Engine
-After creating a PIEKER-Model-Tree ([PMT](./src/main/java/pieker/dsl/model)), PIEKERs [Code-Engine](./src/main/java/pieker/dsl/code/Engine.java) starts 
-operating on the provided structure. In the beginning, a [Converter](./src/main/java/pieker/dsl/code/preprocessor/Converter.java) 
+### Architecture-Engine
+After creating a PIEKER-Model-Tree ([PMT](./src/main/java/pieker/dsl/model)), PIEKERs [Code-Engine](./src/main/java/pieker/dsl/architecture/Engine.java) starts 
+operating on the provided structure. In the beginning, a [Converter](./src/main/java/pieker/dsl/architecture/preprocessor/Converter.java) 
 traverses the PMT and translates variables as mentioned [here](#variables). The Converter creates a state of the PMT, 
 that is readable for validation. The Validator checks for semantic pitfalls, that were not detected by the Parser beforehand. 
-Details will be explained [here](#validator). After the [preprocessor](./src/main/java/pieker/dsl/code/preprocessor/) 
+Details will be explained [here](#validator). After the [preprocessor](./src/main/java/pieker/dsl/architecture/preprocessor/) 
 finished, the generator starts evaluating conditions of every _**test-step**_ in every _**test-scenario**_. 
 
 Before going into any details of the Code-Engines algorithm, definitions of _test-step_ and _test-scenario_ are extended.
@@ -222,7 +222,7 @@ the PIEKER DSL. `Then` nodes are used to guide an evaluator module and specify i
 
 The Code-Engine is designed to take a PMT as an input and create output depending on the provided semantics. Detailed
 (pre-)processing is managed by subclasses (Converter, Validator, ...) as mentioned before and patterns such as the 
-[strategy pattern](./src/main/java/pieker/dsl/code/strategy) and cached in [template models](./src/main/java/pieker/dsl/code/template).
+[strategy pattern](./src/main/java/pieker/dsl/architecture/strategy) and cached in [template models](./src/main/java/pieker/dsl/architecture/template).
 As an entrypoint, each PMT `step` child-node provides a method to evaluate _condition_ statements. It is to mention, the
 difference of the expression '_condition_' and '_test-conditions_' in the context of PMT and PMT-Processing. 
 The former is defined as before, whilst the latter describes only child-nodes of `When`. Each _condition_ has a 
@@ -244,17 +244,17 @@ Finally, the Engine unifies each data, creating software components with step-in
 
 The dependencies of each package involved is stated in the following diagrams:
 
-Class diagram of [pieker.dsl.code.component](./src/main/java/pieker/dsl/code/component)
+Class diagram of [pieker.dsl.architecture.component](./src/main/java/pieker/dsl/architecture/component)
 
 ![ClassDiagramm Component](./doc/images/classdiagram-component.svg)
 
 
-Class diagram of [pieker.dsl.code.template](./src/main/java/pieker/dsl/code/template)
+Class diagram of [pieker.dsl.architecture.template](./src/main/java/pieker/dsl/architecture/template)
 
 ![ClassDiagramm Template](./doc/images/classdiagramm-template.svg)
 
 
-Class diagram of [pieker.dsl.code.strategy](./src/main/java/pieker/dsl/code/strategy)
+Class diagram of [pieker.dsl.architecture.strategy](./src/main/java/pieker/dsl/architecture/strategy)
 
 ![ClassDiagramm Strategy](./doc/images/classdiagram-strategy.svg)
 
