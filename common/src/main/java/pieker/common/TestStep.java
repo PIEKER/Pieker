@@ -7,6 +7,5 @@ public interface TestStep {
     String getId();
     List<TrafficTemplate> getSequence();
     List<TrafficTemplate> getEvaluationPreparationSequence();
-    int getAssertAfter();
 
 }

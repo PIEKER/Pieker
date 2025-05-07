@@ -6,6 +6,7 @@ import lombok.Setter;
 import pieker.api.Assertions;
 import pieker.common.*;
 import pieker.dsl.architecture.component.*;
+import pieker.dsl.util.comparators.AssComparator;
 
 import java.util.*;
 
@@ -99,7 +100,7 @@ public class Scenario implements ScenarioTestPlan {
         for (Step step : this.stepList) {
             List<Assertions> assertionList = this.beforeEach.getEvaluationList();
             assertionList.addAll(step.getEvaluationList());
-            assertionList.sort();
+            assertionList.sort(new AssComparator());
             stepToAssertionsMap.put(step.getId(), assertionList);
         }
         return stepToAssertionsMap;

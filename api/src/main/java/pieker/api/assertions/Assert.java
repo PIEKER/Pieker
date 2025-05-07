@@ -15,6 +15,7 @@ public abstract class Assert implements Assertions {
 
     protected final String assertPlugin;
     protected String identifier;
+    protected int assertAfter = 0;
 
     protected final List<Bool> boolList = new ArrayList<>();
     protected final List<Equals> equalsList = new ArrayList<>();

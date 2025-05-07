@@ -6,6 +6,7 @@ import pieker.api.Assertions;
 import pieker.common.ConditionTemplate;
 import pieker.dsl.architecture.component.*;
 import pieker.dsl.model.assertions.DatabaseAssert;
+import pieker.dsl.util.comparators.STComparator;
 
 import java.util.*;
 
@@ -89,8 +90,8 @@ public class Step {
                 trafficList.add(t);
             }
         }
-        trafficList.sort(new SupervisorTraffic.STComparator());
-        evaluationPreparationList.sort(new SupervisorTraffic.STComparator());
+        trafficList.sort(new STComparator());
+        evaluationPreparationList.sort(new STComparator());
         SupervisorStep supervisorStep = new SupervisorStep(this.id);
         supervisorStep.setTrafficList(trafficList);
         supervisorStep.setEvaluationPreparationList(evaluationPreparationList);
