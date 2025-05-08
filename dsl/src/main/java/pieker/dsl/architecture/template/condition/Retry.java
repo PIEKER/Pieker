@@ -24,11 +24,11 @@ public class Retry implements ConditionTemplate {
 
     @Override
     public void addContextVariable(VelocityContext ctx) {
-        ctx.put("retry", (long) seconds*1000);
+        ctx.put("retry", (long) (seconds*1000));
     }
 
     public void performCondition(Consumer<String[]> traffic, String[] args){
-        long millis = (long) this.seconds*1000;
+        long millis = (long) (this.seconds*1000);
         long trafficUntil = System.currentTimeMillis() + millis;
         long timer = System.currentTimeMillis();
         while (timer < trafficUntil){

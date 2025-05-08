@@ -21,11 +21,11 @@ public class Delay implements ConditionTemplate {
     }
 
     public void addContextVariable(VelocityContext ctx){
-        ctx.put("delay", (long) this.seconds*1000);
+        ctx.put("delay", (long) (this.seconds*1000));
     }
 
     public void performCondition(){
-        long longDelay = (long) this.seconds*1000;
+        long longDelay = (long) (this.seconds*1000);
         if (longDelay > 0){
             try {
                 Thread.sleep(longDelay); // Pause execution for the specified time
@@ -40,4 +40,5 @@ public class Delay implements ConditionTemplate {
     public Object getValue() {
         return this.seconds;
     }
+
 }

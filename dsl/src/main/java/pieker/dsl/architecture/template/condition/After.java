@@ -22,11 +22,11 @@ public class After implements ConditionTemplate {
 
     @Override
     public void addContextVariable(VelocityContext ctx) {
-        ctx.put("after",(long) seconds*1000);
+        ctx.put("after",(long) (seconds*1000));
     }
 
     public void performCondition() {
-        long longAfter = (long) this.seconds*1000;
+        long longAfter = (long) (this.seconds*1000);
         if (longAfter > 0){
             try {
                 Thread.sleep(longAfter); // Pause execution for the specified time

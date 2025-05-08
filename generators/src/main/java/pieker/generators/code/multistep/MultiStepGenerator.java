@@ -59,7 +59,10 @@ public class MultiStepGenerator {
         for (ScenarioComponent component : scenarioComponents) {
             try {
                 List<String> dependencies = component instanceof DatabaseProxy ?
-                        List.of("dependencies/netty-transport-4.2.0.Final.jar", "dependencies/netty-common-4.2.0.Final.jar") :
+                        List.of("dependencies/netty-transport-4.2.0.Final.jar",
+                                "dependencies/netty-common-4.2.0.Final.jar",
+                                "dependencies/netty-buffer-4.1.119.Final.jar",
+                                "dependencies/netty-resolver-4.1.119.Final.jar") :
                         List.of();
 
                 generateMultiStepComponent(component.getName(), dependencies);

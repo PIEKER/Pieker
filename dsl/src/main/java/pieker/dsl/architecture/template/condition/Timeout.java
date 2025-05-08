@@ -20,7 +20,7 @@ public class Timeout implements ConditionTemplate {
     }
 
     public void addContextVariable(VelocityContext ctx){
-        ctx.put("timeout", (long) seconds*1000);
+        ctx.put("timeout", (long) (seconds*1000));
     }
 
     @Override
