@@ -29,6 +29,6 @@ public class SupervisorStep implements TestStep {
     @JsonIgnore
     @Override
     public List<TrafficTemplate> getSequence() {
-        return List.of((TrafficTemplate) this.trafficList);
+        return new ArrayList<>(this.trafficList);
     }
 }
