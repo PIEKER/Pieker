@@ -41,12 +41,12 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     }
 
     @Override
-    public void setupTestEnvironment() {
+    public void setupTestEnvironment() throws InterruptedException {
         log.info("Setting up test environment ...");
         setStatus(Status.SETUP);
         try {
             runCommand(COMPOSE_START_CMD);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             log.error("Failed to start Docker Compose system: {}", e.getMessage());
             setStatus(Status.ERROR);
         }

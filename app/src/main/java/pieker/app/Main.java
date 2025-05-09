@@ -191,6 +191,7 @@ public class Main {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             log.error("Error during test execution: {}", e.getMessage());
+            throw e;
         }
         supervisor.destroyTestEnvironment();
     }
