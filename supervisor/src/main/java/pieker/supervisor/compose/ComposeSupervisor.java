@@ -53,12 +53,12 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     }
 
     @Override
-    public void destroyTestEnvironment() {
+    public void destroyTestEnvironment() throws InterruptedException {
         log.info("Shutting down test environment ...");
         setStatus(Status.SHUTDOWN);
         try {
             runCommand(COMPOSE_STOP_CMD);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             log.error("Failed to shut down Docker Compose system: {}", e.getMessage());
             setStatus(Status.ERROR);
         }
