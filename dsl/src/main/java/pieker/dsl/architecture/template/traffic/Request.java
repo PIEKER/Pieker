@@ -30,9 +30,9 @@ public class Request implements Template, TrafficType {
     @JsonIgnore
     private String method = "GET";
     @JsonIgnore
-    private int connectionTimeout = 0;
+    private int connectionTimeout = 3000;
     @JsonIgnore
-    private int readTimeout = 0;
+    private int readTimeout = 5000;
     @JsonIgnore
     private String headers = "";
     @JsonIgnore

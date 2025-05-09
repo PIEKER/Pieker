@@ -2,24 +2,18 @@
   {
     "url": "/message",
     "method": "POST",
-    "connectionTimeout": 0,
-    "readTimeout": 0,
     "headers": {},
     "body": {"content":  "I am an important message!"}
   },
   {
     "url": "/serviceC/counter/value",
     "method": "GET",
-    "connectionTimeout": 0,
-    "readTimeout": 0,
     "headers": {},
     "body": {}
   },
   {
     "url": "/serviceC/counter/increment",
     "method": "GET",
-    "connectionTimeout": 0,
-    "readTimeout": 0,
     "headers": {},
     "body": {}
   }

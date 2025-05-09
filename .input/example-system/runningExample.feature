@@ -26,9 +26,8 @@ Feature: Example System Running Example Thesis
             @delay [service-c] | 2
             @delay db | 0.3
 
-            @times passive-get-counter | 20
-            @times passive-incr-counter | 20
-            @times passive-db | 20
+            @times [passive-get-counter, passive-incr-counter, passive-db]| 20
+
       Then:
         LogAll: [service-c, passive-get-counter, passive-db, passive-incr-counter]
 
@@ -40,5 +39,5 @@ Feature: Example System Running Example Thesis
     Step: ProxyTimeout
 
       When:
-        @timeout service-c | 7
+        @after service-c | 7
         @times passive-db | 1

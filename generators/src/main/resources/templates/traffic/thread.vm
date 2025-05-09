@@ -1,76 +1,71 @@
 Thread $trafficIdentifier = Thread.ofVirtual().start(() -> {
             String trafficIdent = "$trafficIdentifier";
-            #if ($requestUrl)
-            try {
+
+            #if ($after != $null)
+            // --after
+            Thread.sleep($after);
             #end
-                #if ($after != $null)
-                // --after
-                Thread.sleep($after);
-                #end
 
-                log("Thread " + trafficIdent + " started!");
+            log("Thread " + trafficIdent + " started!");
 
+            #if ($timeout != $null)
+            long endTime = System.currentTimeMillis() + $timeout;
+            #end
+
+            // TRAFFIC BODY
+            #if ($times != $null)
+            // -- times
+            for (int i = 0; i < $times; i++) {
+            #elseif ($retry != $null)
+            // -- retry for x seconds
+            long trafficUntil = System.currentTimeMillis() + $retry;
+            long timer = System.currentTimeMillis();
+            while (timer < trafficUntil){
+            #else
+            for (int i = 0; i < 1; i++) {
+            #end
                 #if ($timeout != $null)
-                long endTime = System.currentTimeMillis() + $timeout;
+                // TIMEOUT
+                if (System.currentTimeMillis() >= endTime) break;
                 #end
 
-                // TRAFFIC BODY
-                #if ($times != $null)
-                // -- times
-                for (int i = 0; i < $times; i++) {
-                #elseif ($retry != $null)
-                // -- retry for x seconds
-                long trafficUntil = System.currentTimeMillis() + $retry;
-                long timer = System.currentTimeMillis();
-                while (timer < trafficUntil){
-                #else
-                for (int i = 0; i < 1; i++) {
+                // -- TRAFFIC CONDITIONS
+                #if($delay != $null)
+                // --delay
+                delay($delay);
                 #end
-                    #if ($timeout != $null)
-                    // TIMEOUT
-                    if (System.currentTimeMillis() >= endTime) break;
-                    #end
 
-                    // -- TRAFFIC CONDITIONS
-                    #if($delay != $null)
-                    // --delay
-                    delay($delay);
-                    #end
+                #if($dropout != $null)
+                // --dropout
+                dropout($dropout);
+                #end
 
-                    #if($dropout != $null)
-                    // --dropout
-                    dropout($dropout);
-                    #end
+                // TRAFFIC HERE
+                ResponseTuple r = new ResponseTuple("EMPTY", 0);
+                #if ($query)
+                r = executeSQL(DB_URL, DB_USER, DB_PASS, "${query}");
+                #end
 
-                    // TRAFFIC HERE
-                    ResponseTuple r = new ResponseTuple("EMPTY", 0);
-                    #if ($query)
-                    r = executeSQL(DB_URL, DB_USER, DB_PASS, "${query}");
-                    #end
-
-                    #if ($requestUrl)
+                #if ($requestUrl)
+                try {
                     r = sendHttpRequest("$requestUrl",
                                         "$requestMethod",
                                         $requestConnTimeout, $requestReadTimeout,
                                         jsonToMap($requestHeaders),
                                         $requestBody);
-                    #end
-
-                    #if($enableLogging == true)
-                    log(trafficIdent + " - " + r.toString());
-                    #end
-
-                    #if ($retry != $null)
-                    timer = System.currentTimeMillis();
-                    #end
+                #if($enableLogging == true)
+                log(trafficIdent + " - " + r.toString());
+                #end
+                } catch (IOException e) {
+                    log("Thread" + trafficIdent + " failed due to IOException: " + e.getMessage());
+                } catch (URISyntaxException e) {
+                    log("Thread" + trafficIdent + " failed due to URISyntaxException: " + e.getMessage());
                 }
-
-                log("Thread " + trafficIdent + " finished!");
-            #if ($requestUrl)
-            } catch (IOException e) {
-                log("Thread" + trafficIdent + " failed due to IOException: " + e.getMessage());
-            } catch (URISyntaxException e) {
-                log("Thread" + trafficIdent + " failed due to URISyntaxException: " + e.getMessage());
+                #end
+                #if ($retry != $null)
+                timer = System.currentTimeMillis();
+                #end
             }
-            #end
+
+            log("Thread " + trafficIdent + " finished!");
         });

@@ -13,7 +13,7 @@ import java.util.Random;
 
 //PROXY-SERVER
 public class $className {
-    private static final String LOG_FILE = "/app/logs/proxy.log";
+    private static final String LOG_FILE = "app/logs/proxy.log";
     private static final String PROXY_IDENTIFIER = "${proxyIdentifier}";
     private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
     private static final Random RANDOM = new Random();
@@ -53,12 +53,36 @@ public class $className {
 
             #if($after != $null)
             // --after
-            if (currentMillis <= BLOCKED_UNTIL) return;
+            if (currentMillis <= BLOCKED_UNTIL){
+                log("Simulating socket disconnect (after)");
+
+                // Close the socket without sending any response headers
+                try {
+                    exchange.getRequestBody().close();
+                    exchange.getResponseBody().close();
+                    exchange.close();
+                } catch (Exception ignored) {
+                    // We expect exceptions here since we’re forcefully dropping connection
+                }
+                return;
+            }
             #end
 
             #if($timeout != $null)
             // --timeout
-            if (TIMEOUT != -1 && currentMillis > BLOCKED_TIMEOUT) return;
+            if (TIMEOUT != -1 && currentMillis > BLOCKED_TIMEOUT){
+                log("Simulating socket disconnect (timeout)");
+
+                // Close the socket without sending any response headers
+                try {
+                    exchange.getRequestBody().close();
+                    exchange.getResponseBody().close();
+                    exchange.close();
+                } catch (Exception ignored) {
+                    // We expect exceptions here since we’re forcefully dropping connection
+                }
+                return;
+            }
             #end
 
             #if($delay != $null)
@@ -93,7 +117,6 @@ public class $className {
             exchange.getRequestHeaders().forEach((key, values) ->
                     values.forEach(value -> connection.addRequestProperty(key, value))
             );
-
             // Forward request body if present
             if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
                 connection.setDoOutput(true);
