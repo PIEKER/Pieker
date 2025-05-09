@@ -6,79 +6,41 @@ Feature: Example System Running Example Thesis
   """
 
   Background:
-    @def post-message = :FILE(/example-request.json, 0)
+    @def all-sql = :FILE(/db.sql, 0)
+    @def name-sql = :FILE(/db.sql, 1)
     @def get-counter = :FILE(/example-request.json, 1)
-    @def get-allMessages = :FILE(/example-request.json, 2)
+    @def increment-counter = :FILE(/example-request.json, 2)
 
   Scenario: RunEx-A
 
     BeforeEach:
       Given:
-        @service service-a
-        @service service-b
         @service service-c
         @database db
-        @passive @request passive-get-counter | service-a | $get-counter
-      When:
-        @delay [service-a, service-b] | 2
-        @delay db | 3
 
-      Then:
-        LogAll: [service-a, service-b, service-c]
-
-    Step: Get Counter Passive
-
-      Given:
-        @link sA-sC | service-a | service-c
-
-        @passive @request post-message | service-b | $post-message
+        @passive @request passive-get-counter | service-c | $get-counter
+        @passive @request passive-incr-counter | service-c | $increment-counter
+        @passive @sql passive-db | db | $all-sql
 
       When:
-        @delay sA-sC | 5
+            @delay [service-c] | 2
+            @delay db | 0.3
 
-        @times post-message | 100
-        @delay post-message | 0.5
-      Then:
-        Assert: Log
-          Arguments: post-message
-            Bool: True | < 100
-              @times
-            Equals: True | 200
-              @status
-            Null: False
-              @content
+            @times passive-get-counter | 20
+            @times passive-incr-counter | 20
+            @times passive-db | 20
 
-    Step: Get Counter Supervisor
-
-      Given:
-        @link sA-sC | service-a | service-s
-
-        @request 1b-get-counter | service-c | $get-counter
-        @request 1a-post-message | service-b | $post-message
-        @sql  3-db-messages | db | SELECT COUNT(de.content) FROM DataEntity de
+    Step: NoDbDelay
 
       When:
-        @delay sA-sC | 10
-
-        @times 1a-post-message | 5
-        @delay 1a-post-message | 0.5
-
+        @delay db | 0
       Then:
-        LogAll: passive-get-counter
-        Assert: Log
-          After: 30
-          Arguments: 1b-get-counter
-            Bool: True | < 100
-              @times
-            Equals: True| 200
-              @status
-            Null: False
-              @content
-        Assert: Database
-          Arguments: db | SELECT * FROM DataEntity de
-              Null: False
-                de.id |
-              Equals: True | I am an important message!
-                de.content | de.id = 1
-              Bool: True | < 100
-                COUNT(de.content)|
+        LogAll: [service-c, passive-get-counter, passive-db, passive-incr-counter]
+
+    Step: ProxyTimeout
+
+      When:
+        @timeout service-c | 7
+        @times passive-db | 1
+      Then:
+        LogAll: [service-c, passive-get-counter, passive-db, passive-incr-counter]

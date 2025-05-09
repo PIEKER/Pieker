@@ -117,9 +117,13 @@ public class StepGenerator {
             }
 
             // create container file with embedded thread-code
+            List<String> trafficIdentifierList = entry.getValue().stream().map(TrafficTemplate::getIdentifier).toList();
+            trafficIdentifierList = trafficIdentifierList.stream().map(s -> s.replace("-", "_")).toList();
+            trafficIdentifierList = trafficIdentifierList.stream().map(s -> stepId + "_" + s).toList();
             Template template = VELOCITY.loadTemplate(TRAFFIC_CONTAINER_TEMPLATE_FILE);
             VelocityContext ctxTrafficContainer = new VelocityContext();
             ctxTrafficContainer.put(CLASS_NAME, stepId);
+            ctxTrafficContainer.put("trafficIdentifierList", trafficIdentifierList);
             ctxTrafficContainer.put("threadBody", threadBody.toString());
             String trafficContainerFile = VELOCITY.fillTemplate(template, ctxTrafficContainer);
             saveCodeFile(trafficContainerFile, getComponentFileName(scenarioName, scenarioComponent.getName(), stepId));

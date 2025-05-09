@@ -10,11 +10,26 @@ import org.json.JSONObject; // requires json.jar
 
 //TRAFFIC-CONTAINER
 public class $className {
-    private static final String LOG_FILE = "/app/logs/traffic.log";
+    private static final String LOG_FILE = "app/logs/traffic.log";
     private static final Random RANDOM = new Random();
+
+    private static final String SERVICE_BASE_URL = System.getenv("SERVICE_BASE_URL");
+
+    private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASS = System.getenv("DB_PASS");
 
     public static void main(String[] args) {
         ${threadBody}
+        #if ($trafficIdentifierList.size() > 0)
+        try {
+        #foreach( $trafficIdentifier in $trafficIdentifierList )
+            ${trafficIdentifier}.join();
+        #end
+        } catch (InterruptedException e) {
+            log(e.getMessage());
+        }
+        #end
     }
 
     // -- SQL
@@ -40,23 +55,36 @@ public class $className {
 
     // -- perform HTTP
     public static ResponseTuple sendHttpRequest(String urlString, String requestMethod, int connectTimeout, int readTimeout,
-                                         Map<String, String> headers, String requestBody) throws IOException, URISyntaxException {
-        URL url = new URI(urlString).toURL();
+                                                Map<String, String> headers, String requestBody) throws IOException, URISyntaxException {
+        URL url = new URI(SERVICE_BASE_URL + urlString).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         // Set request method and timeouts
         connection.setRequestMethod(requestMethod);
         connection.setConnectTimeout(connectTimeout);
         connection.setReadTimeout(readTimeout);
-        connection.setDoOutput(true);
 
         // Set headers
         for (Map.Entry<String, String> header : headers.entrySet()) {
             connection.setRequestProperty(header.getKey(), header.getValue());
         }
 
-        // Write request body if applicable
-        InputStream inputStream = getInputStream(requestBody, connection);
+        // Only set doOutput and write body for POST/PUT with a non-empty request body
+        if ((requestMethod.equalsIgnoreCase("POST") || requestMethod.equalsIgnoreCase("PUT")) && requestBody != null && !requestBody.isEmpty()) {
+            connection.setDoOutput(true);
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+
+        // Read the response
+        InputStream inputStream;
+        int responseCode = connection.getResponseCode();
+        if (responseCode >= 400) {
+            inputStream = connection.getErrorStream();
+        } else {
+            inputStream = connection.getInputStream();
+        }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
@@ -64,7 +92,7 @@ public class $className {
             while ((line = reader.readLine()) != null) {
                 response.append(line);
             }
-            return new ResponseTuple(response.toString(), connection.getResponseCode());
+            return new ResponseTuple(response.toString(), responseCode);
         }
     }
 

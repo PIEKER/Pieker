@@ -83,7 +83,8 @@ public class MultiStepGenerator {
         for (ScenarioComponent component : trafficComponents) {
             try {
                 List<String> dependencies = List.of(
-                        "dependencies/json-20250107.jar"
+                        "dependencies/json-20250107.jar",
+                        "dependencies/postgresql-42.7.5.jar"
                 );
                 log.debug("Starting to generate multi-step traffic component '{}' with dependencies: {}",
                         component.getName(), dependencies);
