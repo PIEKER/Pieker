@@ -178,7 +178,7 @@ public class Main {
     /**
      * Executes the tests using the generated test plan and architecture model.
      */
-    private static void runTests() throws InterruptedException {
+    private static void runTests() {
         if (architectureModel == null || testPlan == null) {
             log.error("Test plan or architecture model is null. Exiting...");
             System.exit(1);
@@ -190,8 +190,8 @@ public class Main {
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             log.error("Error during test execution: {}", e.getMessage());
-            throw e;
         }
         supervisor.destroyTestEnvironment();
     }

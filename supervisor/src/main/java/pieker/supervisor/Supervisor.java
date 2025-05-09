@@ -15,7 +15,7 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     /**
      * Sets up the test environment.
      */
-    void setupTestEnvironment() throws InterruptedException;
+    void setupTestEnvironment();
 
     /**
      * Executes the set test plan for the set architecture.
@@ -30,7 +30,7 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     /**
      * Shuts down the test environment.
      */
-    void destroyTestEnvironment() throws InterruptedException;
+    void destroyTestEnvironment();
 
     /**
      * @return the test plan

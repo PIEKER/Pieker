@@ -41,7 +41,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     }
 
     @Override
-    public void setupTestEnvironment() throws InterruptedException {
+    public void setupTestEnvironment() {
         log.info("Setting up test environment ...");
         setStatus(Status.SETUP);
         try {
@@ -49,11 +49,14 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
         } catch (IOException | RuntimeException e) {
             log.error("Failed to start Docker Compose system: {}", e.getMessage());
             setStatus(Status.ERROR);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Start command interrupted: {}", e.getMessage());
         }
     }
 
     @Override
-    public void destroyTestEnvironment() throws InterruptedException {
+    public void destroyTestEnvironment() {
         log.info("Shutting down test environment ...");
         setStatus(Status.SHUTDOWN);
         try {
@@ -61,6 +64,9 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
         } catch (IOException | RuntimeException e) {
             log.error("Failed to shut down Docker Compose system: {}", e.getMessage());
             setStatus(Status.ERROR);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Shutdown command interrupted: {}", e.getMessage());
         }
     }
 
@@ -207,8 +213,12 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
         HttpResponse<String> response;
         try {
             response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             log.error("Error while sending request: {}", e.getMessage());
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Request interrupted: {}", e.getMessage());
             return false;
         }
 
