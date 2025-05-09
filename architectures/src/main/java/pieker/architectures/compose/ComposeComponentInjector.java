@@ -71,7 +71,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
         // Add Supervisor Proxy Component
         ComposeService supervisorProxy = this.model.createComponent("PIEKER_PROXY_SUPERVISOR");
-        supervisorProxy.setImage("supervisor-proxy:latest");
+        supervisorProxy.setImage("supervisor-proxy:test");
         final String supervisorProxyPort = System.getProperty("supervisorPort", "42690");
         supervisorProxy.addPortMapping(supervisorProxyPort, supervisorProxyPort);
 
