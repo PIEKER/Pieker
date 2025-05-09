@@ -193,7 +193,8 @@ public class Main {
             Thread.currentThread().interrupt();
             log.error("Error during test execution: {}", e.getMessage());
         }
-        supervisor.destroyTestEnvironment();
+        supervisor.stopTestEnvironment();
+        //supervisor.destroyTestEnvironment();
     }
 
 }

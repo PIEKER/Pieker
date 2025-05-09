@@ -33,7 +33,8 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     private static final String EXECUTION_DIR = GEN_DIR + EXECUTION_NAME + File.separator;
     private static final String COMPOSE_FILE = EXECUTION_DIR + "docker-compose.yml";
     private static final String COMPOSE_START_CMD = "docker-compose -f %s up -d".formatted(COMPOSE_FILE);
-    private static final String COMPOSE_STOP_CMD = "docker-compose -f %s down".formatted(COMPOSE_FILE);
+    private static final String COMPOSE_STOP_CMD = "docker-compose -f %s stop".formatted(COMPOSE_FILE);
+    private static final String COMPOSE_DESTROY_CMD = "docker-compose -f %s down".formatted(COMPOSE_FILE);
 
     public ComposeSupervisor(ScenarioTestPlan testPlan, ComposeArchitectureModel model) {
         setTestPlan(testPlan);
@@ -56,11 +57,26 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     }
 
     @Override
+    public void stopTestEnvironment() {
+        log.info("Stopping test environment ...");
+        setStatus(Status.STOPPED);
+        try {
+            runCommand(COMPOSE_STOP_CMD);
+        } catch (IOException | RuntimeException e) {
+            log.error("Failed to stop Docker Compose system: {}", e.getMessage());
+            setStatus(Status.ERROR);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Stop command interrupted: {}", e.getMessage());
+        }
+    }
+
+    @Override
     public void destroyTestEnvironment() {
         log.info("Shutting down test environment ...");
         setStatus(Status.SHUTDOWN);
         try {
-            runCommand(COMPOSE_STOP_CMD);
+            runCommand(COMPOSE_DESTROY_CMD);
         } catch (IOException | RuntimeException e) {
             log.error("Failed to shut down Docker Compose system: {}", e.getMessage());
             setStatus(Status.ERROR);

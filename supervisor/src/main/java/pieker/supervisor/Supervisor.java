@@ -28,6 +28,11 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     void executeTestStep(String testStepId);
 
     /**
+     * Stops all components in the test environment.
+     */
+    void stopTestEnvironment();
+
+    /**
      * Shuts down the test environment.
      */
     void destroyTestEnvironment();
@@ -53,6 +58,7 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     enum Status {
         SETUP,
         RUNNING,
+        STOPPED,
         SHUTDOWN,
         ERROR,
         FINISHED,
