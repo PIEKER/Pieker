@@ -36,7 +36,7 @@ public class Main {
     private static ScenarioTestPlan testPlan;
     private static ArchitectureModel<?> architectureModel;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
         log.info("""
                         {}
@@ -178,7 +178,7 @@ public class Main {
     /**
      * Executes the tests using the generated test plan and architecture model.
      */
-    private static void runTests() {
+    private static void runTests() throws InterruptedException {
         if (architectureModel == null || testPlan == null) {
             log.error("Test plan or architecture model is null. Exiting...");
             System.exit(1);
@@ -191,6 +191,7 @@ public class Main {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             log.error("Error during test execution: {}", e.getMessage());
+            throw e;
         }
         supervisor.destroyTestEnvironment();
     }
