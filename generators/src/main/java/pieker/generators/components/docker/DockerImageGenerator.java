@@ -111,7 +111,7 @@ public final class DockerImageGenerator {
         }
 
         // Build Supervisor Proxy Image
-        final String imageId = buildImage(SUPERVISOR_PROXY_DIR, "supervisor-proxy", "latest");
+        final String imageId = buildImage(SUPERVISOR_PROXY_DIR, "supervisor-proxy", "test");
         saveImage(imageId, "supervisor-proxy", IMAGE_DIR);
     }
 
