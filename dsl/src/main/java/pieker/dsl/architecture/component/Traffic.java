@@ -45,10 +45,11 @@ public class Traffic implements StepComponent, TrafficTemplate {
         this.trafficType = trafficType;
     }
 
-    public Traffic(String identifier, TrafficType trafficType, List<ConditionTemplate> conditionList) {
+    public Traffic(String identifier, TrafficType trafficType, List<ConditionTemplate> conditionList, boolean enableLogs) {
         this.identifier = identifier;
         this.trafficType = trafficType;
         this.conditionList = conditionList;
+        this.enableLogs = enableLogs;
     }
 
     @Override
@@ -71,7 +72,7 @@ public class Traffic implements StepComponent, TrafficTemplate {
 
     @Override
     public StepComponent copy() {
-        return new Traffic(this.identifier, this.trafficType, this.conditionList);
+        return new Traffic(this.identifier, this.trafficType, this.conditionList, this.enableLogs);
     }
 
     @Override

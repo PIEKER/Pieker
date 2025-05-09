@@ -29,18 +29,16 @@ Feature: Example System Running Example Thesis
             @times passive-get-counter | 20
             @times passive-incr-counter | 20
             @times passive-db | 20
+      Then:
+        LogAll: [service-c, passive-get-counter, passive-db, passive-incr-counter]
 
     Step: NoDbDelay
 
       When:
         @delay db | 0
-      Then:
-        LogAll: [service-c, passive-get-counter, passive-db, passive-incr-counter]
 
     Step: ProxyTimeout
 
       When:
         @timeout service-c | 7
         @times passive-db | 1
-      Then:
-        LogAll: [service-c, passive-get-counter, passive-db, passive-incr-counter]
