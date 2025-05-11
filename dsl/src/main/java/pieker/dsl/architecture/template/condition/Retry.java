@@ -12,24 +12,23 @@ import java.util.function.Consumer;
 public class Retry implements ConditionTemplate {
 
     private final String name =Retry.class.getSimpleName();
-    private float seconds;
+    private final long millis;
 
     public Retry(float seconds) {
-        this.seconds = seconds;
+        this.millis = (long) (seconds*1000);
     }
 
     public Retry(int seconds) {
-        this.seconds = seconds;
+        this.millis = seconds * 1000L;
     }
 
     @Override
     public void addContextVariable(VelocityContext ctx) {
-        ctx.put("retry", (long) (seconds*1000));
+        ctx.put("retry", millis);
     }
 
     public void performCondition(Consumer<String[]> traffic, String[] args){
-        long millis = (long) (this.seconds*1000);
-        long trafficUntil = System.currentTimeMillis() + millis;
+        long trafficUntil = System.currentTimeMillis() + this.millis;
         long timer = System.currentTimeMillis();
         while (timer < trafficUntil){
             traffic.accept(args);
@@ -39,6 +38,6 @@ public class Retry implements ConditionTemplate {
 
     @Override
     public Object getValue() {
-        return this.seconds;
+        return this.millis;
     }
 }

@@ -19,7 +19,12 @@ public class RetryStrategy implements KeywordStrategy {
         this.checkArguments(args);
 
         String[] identifiers = Util.convertStringToStringArray(args[0]);
-        ConditionTemplate template = new Retry(Integer.parseInt(args[1]));
+        ConditionTemplate template;
+        if (args[1].contains(".")){
+            template = new Retry(Float.parseFloat(args[1]));
+        } else {
+            template = new Retry(Integer.parseInt(args[1]));
+        }
         Engine.getCurrentStep().addConditionTemplate(identifiers, template);
     }
 

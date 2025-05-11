@@ -10,21 +10,21 @@ import pieker.common.ConditionTemplate;
 public class Timeout implements ConditionTemplate {
 
     private final String name = Timeout.class.getSimpleName();
-    private final float seconds;
+    private final long millis;
 
     public Timeout(float seconds) {
-        this.seconds = seconds;
+        this.millis =  (long) (seconds*1000);
     }
     public Timeout(int seconds) {
-        this.seconds = seconds;
+        this.millis = seconds * 1000L;
     }
 
     public void addContextVariable(VelocityContext ctx){
-        ctx.put("timeout", (long) (seconds*1000));
+        ctx.put("timeout", millis);
     }
 
     @Override
     public Object getValue() {
-        return this.seconds;
+        return this.millis;
     }
 }

@@ -10,26 +10,25 @@ import pieker.common.ConditionTemplate;
 public class After implements ConditionTemplate {
 
     private final String name = After.class.getSimpleName();
-    private final float seconds;
+    private final long millis;
 
     public After(float seconds) {
-        this.seconds = seconds;
+        this.millis = (long) (seconds*1000);
     }
 
     public After(int seconds) {
-        this.seconds = seconds;
+        this.millis = seconds * 1000L;
     }
 
     @Override
     public void addContextVariable(VelocityContext ctx) {
-        ctx.put("after",(long) (seconds*1000));
+        ctx.put("after", this.millis);
     }
 
     public void performCondition() {
-        long longAfter = (long) (this.seconds*1000);
-        if (longAfter > 0){
+        if (this.millis > 0){
             try {
-                Thread.sleep(longAfter); // Pause execution for the specified time
+                Thread.sleep(this.millis); // Pause execution for the specified time
             } catch (InterruptedException e) {
                 log.error("exception on delay: {}", e.getMessage());
                 Thread.currentThread().interrupt();
@@ -39,6 +38,6 @@ public class After implements ConditionTemplate {
 
     @Override
     public Object getValue() {
-        return this.seconds;
+        return this.millis;
     }
 }
