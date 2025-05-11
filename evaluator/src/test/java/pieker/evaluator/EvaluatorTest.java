@@ -27,16 +27,12 @@ class EvaluatorTest {
 
     void createAssertionList(){
         StubAssert stubAssert = new StubAssert("Assert A");
-        stubAssert.setAssertAfter(3);
         this.assertionList.add(stubAssert);
         StubAssert stubAssert2 = new StubAssert("Assert B");
-        stubAssert2.setAssertAfter(1);
         this.assertionList.add(stubAssert2);
         StubAssert stubAssert3 = new StubAssert("Assert C");
-        stubAssert3.setAssertAfter(7);
         this.assertionList.add(stubAssert3);
         StubAssert stubAssert4 = new StubAssert("Assert D");
-        stubAssert4.setAssertAfter(5);
         this.assertionList.add(stubAssert4);
     }
 
