@@ -59,12 +59,12 @@ TIMES: '@times' WS+ ;
 DELAY: '@delay' WS+ ;
 DROPOUT: '@dropout' WS+ ;
 TIMEOUT: '@timeout' WS+;
+DURATION: '@duration' WS+;
 
 // Test Keyword
 THEN: 'Then:' ;
 LOG_ALL: 'LogAll:' WS+;
 ASSERT: 'Assert:';
-ASSERT_AFTER: 'After:';
 DATABASE_BLOCK: 'Database:';
 TRAFFIC_BLOCK: 'Traffic:';
 

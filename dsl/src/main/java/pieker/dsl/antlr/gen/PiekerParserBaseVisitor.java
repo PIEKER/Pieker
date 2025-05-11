@@ -123,13 +123,6 @@ public class PiekerParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAssertAfter(PiekerParser.AssertAfterContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitAssertBody(PiekerParser.AssertBodyContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

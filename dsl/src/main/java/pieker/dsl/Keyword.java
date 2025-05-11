@@ -4,6 +4,7 @@ import pieker.dsl.architecture.strategy.KeywordStrategy;
 import pieker.dsl.architecture.strategy.component.*;
 import pieker.dsl.architecture.strategy.condition.*;
 import pieker.dsl.architecture.strategy.general.DefStrategy;
+import pieker.dsl.architecture.strategy.general.DurationStrategy;
 
 /**
  * This enum matches a grammar key of PIEKER DSL.
@@ -125,6 +126,14 @@ public enum Keyword {
      * <i>Example</i>: @timeout identifier | $seconds
      */
     TIMEOUT("timeout", new TimeoutStrategy()),
+
+    /**
+     * <p>
+     * Specifies a max keep-alive time for a test-step.
+     * </p>
+     * <i>Example</i>: @duration $seconds
+     */
+    DURATION("duration", new DurationStrategy()),
 
     EMPTY("", null);
 

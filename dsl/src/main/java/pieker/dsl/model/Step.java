@@ -27,6 +27,7 @@ public class Step {
     private Then then;
 
     private boolean beforeEach = false;
+    private float duration = 4.0F;
 
     // -- PIEKER architecture attributes
     private String id;

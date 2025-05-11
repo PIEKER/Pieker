@@ -197,18 +197,6 @@ public class PiekerParserBaseListener implements PiekerParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAssertAfter(PiekerParser.AssertAfterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAssertAfter(PiekerParser.AssertAfterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterAssertBody(PiekerParser.AssertBodyContext ctx) { }
 	/**
 	 * {@inheritDoc}
