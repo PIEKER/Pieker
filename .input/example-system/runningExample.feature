@@ -23,6 +23,7 @@ Feature: Example System Running Example Thesis
         @passive @sql passive-db | db | $all-sql
 
       When:
+            @duration 10
             @delay [service-c] | 2
             @delay db | 0.3
 

@@ -6,7 +6,6 @@ import lombok.Setter;
 import pieker.api.Assertions;
 import pieker.common.*;
 import pieker.dsl.architecture.component.*;
-import pieker.dsl.util.comparators.AssComparator;
 
 import java.util.*;
 
@@ -93,6 +92,13 @@ public class Scenario implements ScenarioTestPlan {
         return new ArrayList<>(this.supervisorStepList);
     }
 
+    @Override
+    public Map<String, Long> getStepToDurationMap() {
+        Map<String, Long> stepToDurationMap = new HashMap<>();
+        this.stepList.forEach(step -> stepToDurationMap.put(step.getId(), (long) (step.getDuration() * 1000)));
+        return stepToDurationMap;
+    }
+
     @JsonIgnore
     @Override
     public Map<String, List<Assertions>> getAssertionsMap() {
@@ -100,7 +106,6 @@ public class Scenario implements ScenarioTestPlan {
         for (Step step : this.stepList) {
             List<Assertions> assertionList = this.beforeEach.getEvaluationList();
             assertionList.addAll(step.getEvaluationList());
-            assertionList.sort(new AssComparator());
             stepToAssertionsMap.put(step.getId(), assertionList);
         }
         return stepToAssertionsMap;

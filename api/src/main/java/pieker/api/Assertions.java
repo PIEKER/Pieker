@@ -36,10 +36,4 @@ public interface Assertions {
      * @return String
      */
     String getIdentifier();
-
-    /**
-     * Returns the number of seconds a test should last before initializing an evaluation
-     * @return Integer
-     */
-    int getAssertAfter();
 }

@@ -45,24 +45,21 @@ public class Evaluator {
         log.debug("Thread limit: {}", maxThreads);
 
         ExecutorService threadPool = Executors.newFixedThreadPool(maxThreads);
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(assertionList.size());
 
         CountDownLatch latch = new CountDownLatch(assertionList.size());
 
         for (Assertions assertion : assertionList) {
-            scheduler.schedule(() ->
-                threadPool.submit(() -> {
-                    try {
-                        log.info("[START] {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
-                        this.evaluateStep(assertion);
-                        log.info("[END]   {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
-                    } catch (Exception e) {
-                        log.error("Error in task {}: {}", assertion.getIdentifier(), e.getMessage(), e);
-                    } finally {
-                        latch.countDown();
-                    }
+            threadPool.submit(() -> {
+                try {
+                    log.info("[START] {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
+                    this.evaluateStep(assertion);
+                    log.info("[END]   {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
+                } catch (Exception e) {
+                    log.error("Error in task {}: {}", assertion.getIdentifier(), e.getMessage(), e);
+                } finally {
+                    latch.countDown();
                 }
-            ), assertion.getAssertAfter(), TimeUnit.SECONDS);
+            });
         }
 
         // Wait for all tasks to finish
@@ -70,7 +67,6 @@ public class Evaluator {
             try {
                 latch.await(); // Blocks until all tasks finish
                 log.info("All tasks completed. Shutting down.");
-                scheduler.shutdown();
                 threadPool.shutdown();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -80,7 +76,6 @@ public class Evaluator {
 
         try {
             threadPool.awaitTermination(timeout, TimeUnit.SECONDS);
-            scheduler.awaitTermination(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.error("Evaluation interrupted {}", e.getMessage());
             Thread.currentThread().interrupt();

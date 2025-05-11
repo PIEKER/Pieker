@@ -47,6 +47,11 @@ public interface ScenarioTestPlan {
     Collection<TestStep> getTestSteps();
 
     /**
+     * @return map of stepIds to duration (max keep-alive time for a test-step)
+     */
+    Map<String, Long> getStepToDurationMap();
+
+    /**
      * @return Map of stepIds to a list of assertions, ordered by assertAfter attribute
      */
     Map<String, List<Assertions>> getAssertionsMap();
