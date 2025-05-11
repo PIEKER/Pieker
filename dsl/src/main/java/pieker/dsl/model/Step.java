@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Assertions;
 import pieker.common.ConditionTemplate;
+import pieker.common.TestStep;
+import pieker.common.TrafficTemplate;
 import pieker.dsl.architecture.component.*;
 import pieker.dsl.util.comparators.STComparator;
 
@@ -11,7 +13,7 @@ import java.util.*;
 
 @Getter
 @Setter
-public class Step {
+public class Step implements TestStep {
     // -- PIEKER model attributes
     private final Feature feature;
     private final Scenario scenario;
@@ -31,8 +33,9 @@ public class Step {
 
     // -- PIEKER architecture attributes
     private String id;
-    private Map<String, TrafficContainer> trafficContainerMap = new HashMap<>();
     private Map<String, StepComponent> testComponentMap = new HashMap<>();
+    private Map<String, TrafficContainer> trafficContainerMap = new HashMap<>();
+    private List<SupervisorTraffic> supervisorTrafficList = new ArrayList<>();
 
     public Step(Feature feature, Scenario scenario, String name){
         this.feature = feature;
@@ -80,13 +83,10 @@ public class Step {
         }
     }
 
-    public SupervisorStep createSupervisorStep(){
+    public void createSupervisorTraffic(){
         List<SupervisorTraffic> trafficList = new ArrayList<>(this.filterTestComponentsByInstance(SupervisorTraffic.class));
-
         trafficList.sort(new STComparator());
-        SupervisorStep supervisorStep = new SupervisorStep(this.id);
-        supervisorStep.setTrafficList(trafficList);
-        return supervisorStep;
+        this.supervisorTrafficList.addAll(trafficList);
     }
 
     public void migrateBeforeEach(Step beforeEach) {
@@ -96,5 +96,10 @@ public class Step {
 
     protected List<Assertions> getEvaluationList(){
         return (this.then != null) ? this.then.getEvaluationList() : new ArrayList<>();
+    }
+
+    @Override
+    public List<TrafficTemplate> getSequence() {
+        return new ArrayList<>(this.supervisorTrafficList);
     }
 }
