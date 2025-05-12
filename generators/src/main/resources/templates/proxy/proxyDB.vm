@@ -80,24 +80,28 @@ public class $className {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             if (otherChannel.isActive()) {
+                long currentMillis = System.currentTimeMillis();
                 #if($after != $null)
                 // --after
                 if (currentMillis <= BLOCKED_UNTIL) {
-                    ReferenceCountUtil.release(msg);
+                    System.out.println("System has not reachable (after-key).");
+                    triggerJDBCSocketTimeout(ctx, msg);
                     return;
                 }
                 #end
                 #if($timeout != $null)
                 // --timeout
                 if (TIMEOUT != -1 && currentMillis > BLOCKED_TIMEOUT) {
-                    ReferenceCountUtil.release(msg);
+                    System.out.println("System timed out.");
+                    triggerJDBCSocketTimeout(ctx, msg);
                     return;
                 }
                 #end
                 #if($dropout != $null)
                     // --dropout
                     if (dropout($dropout)) {
-                        ReferenceCountUtil.release(msg);
+                        System.out.println("dropping proxy package");
+                        triggerJDBCSocketTimeout(ctx, msg);
                         return;
                     }
                 #end
@@ -127,6 +131,18 @@ public class $className {
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
             cause.printStackTrace();
             ctx.close();
+        }
+
+        private void triggerJDBCSocketTimeout(ChannelHandlerContext ctx, Object msg){
+            // Simulate timeout by delaying far beyond JDBC's default socket timeout
+            ctx.executor().schedule(() -> {
+                if (otherChannel.isActive()) {
+                    otherChannel.writeAndFlush(msg);
+                } else {
+                    ReferenceCountUtil.release(msg);
+                }
+            }, 15000, TimeUnit.MILLISECONDS); // e.g., 15 seconds delay
+            return;
         }
     }
     public static boolean dropout(double dropProbability){

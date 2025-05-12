@@ -23,9 +23,9 @@ Feature: Example System Running Example Thesis
         @passive @sql passive-db | db | $all-sql
 
       When:
-            @duration 10
-            @delay [service-c] | 2
-            @delay db | 0.3
+            @duration 20
+            @delay [service-c] | 0.5
+            @delay db | 0.1
 
             @times [passive-get-counter, passive-incr-counter, passive-db]| 20
 
@@ -40,5 +40,6 @@ Feature: Example System Running Example Thesis
     Step: ProxyTimeout
 
       When:
-        @after service-c | 7
-        @times passive-db | 1
+        @after [service-c, db] | 4
+        @timeout [service-c, db] | 18
+        @dropout service-c | 0.2

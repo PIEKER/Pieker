@@ -27,11 +27,11 @@ public class Dropout implements ConditionTemplate {
     }
 
     public void addContextVariable(VelocityContext ctx){
-        ctx.put("dropout", percentage / 100);
+        ctx.put("dropout", percentage);
     }
 
     public boolean performCondition() {
-        return RANDOM.nextDouble() < (percentage / 100);
+        return RANDOM.nextDouble() < (percentage);
     }
 
     @Override

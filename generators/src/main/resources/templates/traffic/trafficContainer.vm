@@ -41,7 +41,7 @@ public class $className {
 
             if (hasResultSet) {
                 try (ResultSet resultSet = statement.getResultSet()) {
-                    return new ResponseTuple("request size: " + resultSet.getFetchSize(), 200);
+                    return new ResponseTuple(createResultString(resultSet), 200);
                 }
             } else {
                 int affectedRows = statement.getUpdateCount();
@@ -52,6 +52,22 @@ public class $className {
             return new ResponseTuple("[SQL-ERROR] " + e.getMessage(), 400);
         }
     }
+
+    private static String createResultString(ResultSet resultSet) throws SQLException {
+            StringBuilder resultString = new StringBuilder();
+            int columnCount = resultSet.getMetaData().getColumnCount();
+
+            while (resultSet.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    resultString.append(resultSet.getString(i));
+                    if (i < columnCount) {
+                        resultString.append(", "); // Separator for columns
+                    }
+                }
+                resultString.append("|"); // New line for each row
+            }
+            return resultString.toString();
+        }
 
     // -- perform HTTP
     public static ResponseTuple sendHttpRequest(String urlString, String requestMethod, int connectTimeout, int readTimeout,
