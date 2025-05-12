@@ -10,7 +10,7 @@ import org.json.JSONObject; // requires json.jar
 
 //TRAFFIC-CONTAINER
 public class $className {
-    private static final String LOG_ROOT = "/app/logs/";
+    private static final String LOG_ROOT = "/tmp/logs/";
     private static final Random RANDOM = new Random();
 
     private static final String SERVICE_BASE_URL = System.getenv("SERVICE_BASE_URL");
@@ -20,6 +20,9 @@ public class $className {
     private static final String DB_PASS = System.getenv("DB_PASS");
 
     public static void main(String[] args) {
+        System.out.println("Can write to /app/logs: " + new File("/app/logs").canWrite());
+        System.out.println("Can write to /tmp/logs: " + new File(LOG_ROOT).canWrite());
+
         ${threadBody}
         #if ($trafficIdentifierList.size() > 0)
         try {
