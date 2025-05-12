@@ -43,3 +43,13 @@ Feature: Example System Running Example Thesis
         @after [service-c, db] | 4
         @timeout [service-c, db] | 18
         @dropout service-c | 0.2
+
+      Then:
+        Assert: Log
+          Arguments: passive-incr-counter
+          Bool: True | > 2
+            @times
+          Bool: True | == 200
+            @status @exists
+          Equals: True | Counter incremented.
+            @response @exists

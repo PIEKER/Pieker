@@ -36,4 +36,10 @@ public interface Assertions {
      * @return String
      */
     String getIdentifier();
+
+    /**
+     * Sets the stepId for the assertion. Mostly used to update before-each assertions.
+     * @param stepId
+     */
+    void setStepId(String stepId);
 }

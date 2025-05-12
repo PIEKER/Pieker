@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":architectures"))
     implementation(project(":common"))
     implementation(project(":dsl"))
+    implementation(project(":evaluator"))
     implementation(project(":generators"))
     implementation(project(":supervisor"))
     // External

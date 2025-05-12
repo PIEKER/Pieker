@@ -37,10 +37,9 @@ public class Evaluator {
      * the evaluator addresses timing challenges of assertAfter configuration.
      *
      * @param assertionList list of assertion objects
-     * @param startingTime timestamp when the test run was initiated
      * @param timeout maximum evaluation time.
      */
-    public void run(List<Assertions> assertionList, long startingTime, int timeout){
+    public void run(List<Assertions> assertionList, long timeout){
         int maxThreads = Runtime.getRuntime().availableProcessors() * 2; // or any other system-safe number
         log.debug("Thread limit: {}", maxThreads);
 
@@ -51,9 +50,9 @@ public class Evaluator {
         for (Assertions assertion : assertionList) {
             threadPool.submit(() -> {
                 try {
-                    log.info("[START] {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
+                    log.debug("[START] {}", assertion.getIdentifier());
                     this.evaluateStep(assertion);
-                    log.info("[END]   {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
+                    log.info("[FINISHED] {}", assertion.getIdentifier());
                 } catch (Exception e) {
                     log.error("Error in task {}: {}", assertion.getIdentifier(), e.getMessage(), e);
                 } finally {
@@ -80,10 +79,6 @@ public class Evaluator {
             log.error("Evaluation interrupted {}", e.getMessage());
             Thread.currentThread().interrupt();
         }
-    }
-
-    private static long secondsSince(long startMillis) {
-        return (System.currentTimeMillis() - startMillis) / 1000;
     }
 
     private void evaluateStep(Assertions ass){

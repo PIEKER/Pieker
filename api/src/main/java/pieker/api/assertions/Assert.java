@@ -14,6 +14,7 @@ import java.util.List;
 public abstract class Assert implements Assertions {
 
     protected final String assertPlugin;
+    protected String stepId;
     protected String identifier;
 
     protected final List<Bool> boolList = new ArrayList<>();
@@ -59,6 +60,16 @@ public abstract class Assert implements Assertions {
      */
     public void addNullAssertion(String isNull, String value){
         this.nullList.add(new Null(Util.parseBoolean(isNull), value));
+    }
+
+    /**
+     * Marks all Assertions as invalid, due to global error.
+     * @param message describing error
+     */
+    public void invalidateAssert(String message){
+        this.boolList.forEach(bool -> bool.setErrorMessage(message));
+        this.equalsList.forEach(equals -> equals.setErrorMessage(message));
+        this.nullList.forEach(null1 -> null1.setErrorMessage(message));
     }
 
     /**

@@ -73,11 +73,6 @@ BOOL: 'Bool:' WS+;
 EQUALS: 'Equals:' WS+;
 NULL: 'Null:' WS+;
 
-STATUS: '@status' WS+ ;
-TIME: '@time' WS+ ;
-AMOUNT: '@amount' WS+ ;
-CONTENT: '@content' WS+ ;
-
 COMMENT: NEWLINE '#' CHAR* -> channel(HIDDEN) ;
 TABLE_ROW: NEWLINE '|' CHAR+ ;
 DOC_STRING: NEWLINE '"""' .*? '"""' CHAR* NEWLINE;

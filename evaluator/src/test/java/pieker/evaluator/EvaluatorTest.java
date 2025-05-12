@@ -19,7 +19,7 @@ class EvaluatorTest {
     void testEvaluator() {
         Evaluator evaluator = new Evaluator();
         createAssertionList();
-        evaluator.run(this.assertionList, System.currentTimeMillis(), 60);
+        evaluator.run(this.assertionList, 60L);
         this.assertionList.forEach(ass -> {
             ass.getEvaluation().forEach(evaluation -> assertTrue(evaluation.isSuccess()));
         });

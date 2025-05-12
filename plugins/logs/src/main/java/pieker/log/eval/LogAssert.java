@@ -7,13 +7,20 @@ import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
 import pieker.api.assertions.Equals;
 import pieker.api.assertions.Null;
+import pieker.api.exception.ValidationException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
 public class LogAssert extends Assert {
 
     private static final String ASSERT_PLUGIN = "Log";
+    private List<String> logLines = new LinkedList<>();
 
     public LogAssert(){
         super(ASSERT_PLUGIN);
@@ -25,7 +32,26 @@ public class LogAssert extends Assert {
 
     @Override
     public void validate(int line) {
-        log.info("validate LogEvaluation");
+        log.debug("validate LogEvaluation");
+        this.boolList.forEach(bool -> {
+            String[] valueLine = bool.getValue().split(" ");
+            if (valueLine.length < 1 || !valueLine[0].startsWith("@")) {
+                throw new ValidationException("invalid valueLine detected: " + bool.getValue());
+            }
+            bool.validate(line);
+        });
+        this.equalsList.forEach(equals -> {
+            String[] valueLine = equals.getValue().split(" ");
+            if (valueLine.length < 1 || !valueLine[0].startsWith("@")) {
+                throw new ValidationException("invalid valueLine detected: " + equals.getValue());
+            }
+        });
+        this.nullList.forEach(nullNode -> {
+            String[] valueLine = nullNode.getValue().split(" ");
+            if (valueLine.length < 1 || !valueLine[0].startsWith("@")) {
+                throw new ValidationException("invalid valueLine detected: " + nullNode.getValue());
+            }
+        });
     }
 
     @Override
@@ -35,7 +61,12 @@ public class LogAssert extends Assert {
 
     @Override
     protected void evaluateBoolNode(Bool bool) {
-        log.info("evaluate BoolNode in LogEvaluation");
+        String[] valueLine = bool.getValue().split(" ");
+        if (valueLine.length < 1) {
+            bool.setErrorMessage("invalid valueLine detected: " + bool.getValue());
+        }
+        Keyword key = Keyword.valueOf(valueLine[0].substring(1).toUpperCase());
+        key.processValue(this.logLines.toArray(new String[0]));
     }
 
     @Override
@@ -50,7 +81,28 @@ public class LogAssert extends Assert {
 
     @Override
     public void evaluate() {
-        log.info("evaluate LogEvaluation");
+        log.debug("evaluate LogEvaluation");
+        String dir = System.getProperty("assertDirectory");
+        if (dir == null) {
+            log.error("System property 'assertDirectory' not set.");
+            this.invalidateAssert("System property 'assertDirectory' not set.");
+            return;
+        }
+        Path filePath =  Paths.get(dir, this.identifier +".log"); //FIXME
+        if (!Files.exists(filePath)) {
+            log.error("File does not exist: {}", filePath);
+            this.invalidateAssert("File does not exist: " + filePath);
+            return;
+        }
+        try {
+            logLines = Files.readAllLines(filePath);
+        } catch (IOException e) {
+            log.error("Error reading the file: {}", e.getMessage());
+        }
+
+        this.boolList.forEach(this::evaluateBoolNode);
+        this.equalsList.forEach(this::evaluateEqualsNode);
+        this.nullList.forEach(this::evaluateNullNode);
     }
 
     @Override

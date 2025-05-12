@@ -270,6 +270,7 @@ public class FeatureParser extends PiekerParserBaseListener {
         }
 
         Assert ass = assertPlugin.equals("Database") ? new DatabaseAssert(arguments): pluginManager.createPluginInstance(assertPlugin, arguments);
+        ass.setStepId(then.getStep().getId());
 
         if (ctxAssert.assertBody() == null) {
             throw new PiekerDslException("Assert with no body detected: " + then.getLine());

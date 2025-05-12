@@ -105,6 +105,8 @@ public class Scenario implements ScenarioTestPlan {
         Map<String, List<Assertions>> stepToAssertionsMap = new HashMap<>();
         for (Step step : this.stepList) {
             List<Assertions> assertionList = this.beforeEach.getEvaluationList();
+            // cast before-each assertions to step assertions
+            assertionList.forEach(ass -> ass.setStepId(step.getId()));
             assertionList.addAll(step.getEvaluationList());
             stepToAssertionsMap.put(step.getId(), assertionList);
         }
