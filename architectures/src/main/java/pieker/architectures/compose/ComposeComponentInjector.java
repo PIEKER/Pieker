@@ -88,8 +88,11 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         }
         switch (interfaceType) {
             case HTTP_API -> {
+                ComposeService targetService = (ComposeService) targetComponent;
                 ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
-                // TODO: Set env values of proxy for target
+                ((ComposeService) proxy).setEnvironment(Map.of(
+                        "SERVICE_BASE_URL", "http://" + targetComponent.getName() + ":" + targetService.getPorts().values().iterator().next()
+                ));
                 this.model.addLink(HttpApiLink.createForProxy(proxy, targetComponent));
             }
             case STORAGE, UNSUPPORTED -> {/*TODO*/}
