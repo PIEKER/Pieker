@@ -10,7 +10,7 @@ import org.json.JSONObject; // requires json.jar
 
 //TRAFFIC-CONTAINER
 public class $className {
-    private static final String LOG_FILE = "app/logs/traffic.log";
+    private static final String LOG_ROOT = "app/logs/";
     private static final Random RANDOM = new Random();
 
     private static final String SERVICE_BASE_URL = System.getenv("SERVICE_BASE_URL");
@@ -27,7 +27,7 @@ public class $className {
             ${trafficIdentifier}.join();
         #end
         } catch (InterruptedException e) {
-            log(e.getMessage());
+            log("${trafficIdentifier}", e.getMessage());
         }
         #end
     }
@@ -137,10 +137,18 @@ public class $className {
         return map;
     }
 
-    private static void log(String message) {
-        try (FileWriter writer = new FileWriter(LOG_FILE, true)) {
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            writer.write(timestamp + " - " + message + System.lineSeparator());
+    private static void log(String filename, String message) {
+        try {
+            File logFile = new File(LOG_ROOT + filename + ".log");
+            File parentDir = logFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs(); // Create parent directories if they don't exist
+            }
+
+            try (FileWriter writer = new FileWriter(logFile, true)) {
+                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                writer.write(timestamp + " - " + message + System.lineSeparator());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

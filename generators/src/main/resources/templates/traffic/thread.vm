@@ -6,7 +6,7 @@ Thread $trafficIdentifier = Thread.ofVirtual().start(() -> {
             Thread.sleep($after);
             #end
 
-            log(trafficIdent + " started!");
+            log(trafficIdent, trafficIdent + " started!");
 
             #if ($timeout != $null)
             long endTime = System.currentTimeMillis() + $timeout;
@@ -54,18 +54,18 @@ Thread $trafficIdentifier = Thread.ofVirtual().start(() -> {
                                         jsonToMap($requestHeaders),
                                         $requestBody);
                 } catch (IOException e) {
-                    log(trafficIdent + " failed due to IOException: " + e.getMessage());
+                    log(trafficIdent, trafficIdent + " failed due to IOException: " + e.getMessage());
                 } catch (URISyntaxException e) {
-                    log(trafficIdent + " failed due to URISyntaxException: " + e.getMessage());
+                    log(trafficIdent, trafficIdent + " failed due to URISyntaxException: " + e.getMessage());
                 }
                 #end
                 #if($enableLogging == true)
-                if (r.statusCode != 0) log(trafficIdent + " - " + r.toString());
+                if (r.statusCode != 0) log(trafficIdent, trafficIdent + " - " + r.toString());
                 #end
                 #if ($retry != $null)
                 timer = System.currentTimeMillis();
                 #end
             }
 
-            log("Thread " + trafficIdent + " finished!");
+            log(trafficIdent, trafficIdent + " finished!");
         });
