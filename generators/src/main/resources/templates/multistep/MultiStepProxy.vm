@@ -1,12 +1,7 @@
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpExchange;
-
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 
 public class $proxyName {
 
@@ -15,16 +10,48 @@ public class $proxyName {
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress($port), 0);
         #foreach($endpoint in $endpoints)
-            server.createContext("$endpoint", exchange -> {
-                if ("GET".equals(exchange.getRequestMethod())) {
-                    if (currentProcess != null) currentProcess.destroy();
-                    currentProcess = new ProcessBuilder("java", "-jar", "$endpointJars.get($endpoint)").start();
-                    exchange.sendResponseHeaders(200, 0);
-                }
-                exchange.close();
-            });
+        server.createContext("$endpoint", exchange -> {
+            handleRequest(exchange, "$endpointJars.get($endpoint)");
+        });
         #end
+
         server.start();
+        System.out.println("Server started on port 42690");
+    }
+
+    private static void handleRequest(com.sun.net.httpserver.HttpExchange exchange, String jarName) {
+        try {
+            if ("GET".equals(exchange.getRequestMethod())) {
+                if (currentProcess != null) currentProcess.destroy();
+
+                try {
+                    currentProcess = new ProcessBuilder("java", "-jar", jarName).start();
+                    sendResponse(exchange, 200, "Successfully started: " + jarName);
+                    System.out.println("Started JAR: " + jarName);
+                } catch (Exception e) {
+                    System.out.println("Failed to start: " + jarName);
+                    sendResponse(exchange, 500, "Failed to start: " + jarName + "\nError: " + e.getMessage());
+                }
+            } else {
+                sendResponse(exchange, 405, "Method Not Allowed");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            exchange.close();
+        }
+    }
+
+    private static void sendResponse(com.sun.net.httpserver.HttpExchange exchange, int statusCode, String responseText) {
+        try {
+            byte[] responseBytes = responseText.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(statusCode, responseBytes.length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(responseBytes);
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

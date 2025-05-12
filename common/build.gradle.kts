@@ -8,6 +8,6 @@ dependencies {
     implementation("org.json:json:20250107")
 
     testImplementation("org.postgresql:postgresql:42.7.5")
-    testImplementation("org.testcontainers:junit-jupiter:1.20.6")
-    testImplementation("org.testcontainers:postgresql:1.20.6")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.0")
+    testImplementation("org.testcontainers:postgresql:1.21.0")
 }
