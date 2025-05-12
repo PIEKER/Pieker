@@ -1,9 +1,10 @@
 package pieker.dsl;
 
-import pieker.dsl.code.strategy.KeywordStrategy;
-import pieker.dsl.code.strategy.architecture.*;
-import pieker.dsl.code.strategy.condition.*;
-import pieker.dsl.code.strategy.general.DefStrategy;
+import pieker.dsl.architecture.strategy.KeywordStrategy;
+import pieker.dsl.architecture.strategy.component.*;
+import pieker.dsl.architecture.strategy.condition.*;
+import pieker.dsl.architecture.strategy.general.DefStrategy;
+import pieker.dsl.architecture.strategy.general.DurationStrategy;
 
 /**
  * This enum matches a grammar key of PIEKER DSL.
@@ -62,14 +63,6 @@ public enum Keyword {
      * <i>Example</i>: @service s-a
      */
     SERVICE("service", new ServiceStrategy()),
-
-    /**
-     * <p>
-     * Indicates a certain scope for a given service. Can be used to explicitly manipulate endpoints.
-     * </p>
-     * <i>Example</i>: @url identifier | s-a | ["/api/v1/foo1", "/api/v1/foo2"]
-     */
-    URL("url", new UrlStrategy()),
 
     /**
      * <p>
@@ -133,6 +126,14 @@ public enum Keyword {
      * <i>Example</i>: @timeout identifier | $seconds
      */
     TIMEOUT("timeout", new TimeoutStrategy()),
+
+    /**
+     * <p>
+     * Specifies a max keep-alive time for a test-step.
+     * </p>
+     * <i>Example</i>: @duration $seconds
+     */
+    DURATION("duration", new DurationStrategy()),
 
     EMPTY("", null);
 

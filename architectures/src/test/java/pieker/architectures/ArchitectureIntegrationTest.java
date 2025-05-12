@@ -68,7 +68,7 @@ class ArchitectureIntegrationTest {
         final ArchitectureModel<?> model = modelGenerator.generate(DOCKER_COMPOSE_FILE, DESCRIPTION_FILE);
         final ComponentInjector<?, ?> componentInjector = ArchitectureFactory.createInjector(model);
 
-        final int newComponents = getTestPlan().getComponents().size();
+        final int newComponents = getTestPlan().getComponents().size() + 1;
         final int existingComponents = model.getAllComponents().size();
         componentInjector.injectComponents(getTestPlan());
 
@@ -85,8 +85,8 @@ class ArchitectureIntegrationTest {
         final String dslFilePath = "../.input/example-system/runningExample.feature";
         final String dslResourceDirectory = "../.input/example-system/resources";
         Feature feature = pieker.dsl.Main.parse(dslFilePath, dslResourceDirectory);
-        pieker.dsl.code.Engine.validate(feature);
-        pieker.dsl.code.Engine.run(feature);
+        pieker.dsl.architecture.Engine.validate(feature);
+        pieker.dsl.architecture.Engine.run(feature);
         return feature.getScenarioTestPlanList().getFirst();
     }
 

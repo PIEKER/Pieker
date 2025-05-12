@@ -36,5 +36,4 @@ public interface Assertions {
      * @return String
      */
     String getIdentifier();
-
 }

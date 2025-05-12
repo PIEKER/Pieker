@@ -8,6 +8,7 @@ import pieker.common.ScenarioProxyComponent;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.ScenarioTrafficComponent;
 import pieker.common.TrafficTemplate;
+import pieker.dsl.architecture.component.DatabaseProxy;
 import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 
@@ -21,12 +22,15 @@ import java.util.Map;
 @Slf4j
 public class StepGenerator {
 
-    private static final String PROXY_TEMPLATE_FILE = "proxyServer.vm";
+    private static final String PROXY_HTTP_TEMPLATE_FILE = "proxy/proxyHTTP.vm";
+    private static final String PROXY_DB_TEMPLATE_FILE = "proxy/proxyDB.vm";
     private static final String TRAFFIC_THREAD_TEMPLATE_FILE = "traffic/thread.vm";
     private static final String TRAFFIC_CONTAINER_TEMPLATE_FILE = "traffic/trafficContainer.vm";
     private static final String DEFAULT_FILENAME = "Default";
     private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
     private static final String CLASS_NAME = "className";
+    private static final String TRAFFIC_IDENTIFIER = "trafficIdentifier";
+    private static final String PROXY_IDENTIFIER = "proxyIdentifier";
     private static final String ENABLE_LOGS = "enableLogging";
     private static final VelocityTemplateProcessor VELOCITY = new VelocityTemplateProcessor(OUTPUT_DIR);
 
@@ -55,16 +59,19 @@ public class StepGenerator {
         //create empty default
         VelocityContext defaultCtx = new VelocityContext();
         defaultCtx.put(CLASS_NAME, DEFAULT_FILENAME);
-        String defaultFile = VELOCITY.fillTemplate(VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE), defaultCtx);
+        String defaultFile = VELOCITY.fillTemplate(VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE), defaultCtx);
         saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
 
         //create step files
-        Map<String, List<pieker.common.Template>> stepConditionMap = scenarioComponent.getStepToConditionMap();
+        Map<String, List<pieker.common.ConditionTemplate>> stepConditionMap = scenarioComponent.getStepToConditionMap();
         stepConditionMap.forEach((stepId, conditionList) -> {
                     VelocityContext ctx = new VelocityContext();
                     ctx.put(CLASS_NAME, stepId);
+                    ctx.put(PROXY_IDENTIFIER, stepId +"_"+ scenarioComponent.getName());
                     ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
-                    Template template = VELOCITY.loadTemplate(PROXY_TEMPLATE_FILE);
+                    Template template = scenarioComponent instanceof DatabaseProxy ?
+                            VELOCITY.loadTemplate(PROXY_DB_TEMPLATE_FILE) :
+                            VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE);
 
                     conditionList.forEach(t -> t.addContextVariable(ctx));
                     String proxyFile = VELOCITY.fillTemplate(template, ctx);
@@ -93,6 +100,7 @@ public class StepGenerator {
             for (TrafficTemplate traffic : entry.getValue()) {
                 VelocityContext ctx = new VelocityContext();
                 ctx.put(ENABLE_LOGS, traffic.isEnableLogs());
+                ctx.put(TRAFFIC_IDENTIFIER, stepId +"_"+ traffic.getIdentifier().replace("-", "_"));
                 traffic.addContextVariable(ctx);
                 String trafficType = (String) ctx.get("trafficType");
                 if (trafficType == null) {
@@ -109,9 +117,13 @@ public class StepGenerator {
             }
 
             // create container file with embedded thread-code
+            List<String> trafficIdentifierList = entry.getValue().stream().map(TrafficTemplate::getIdentifier).toList();
+            trafficIdentifierList = trafficIdentifierList.stream().map(s -> s.replace("-", "_")).toList();
+            trafficIdentifierList = trafficIdentifierList.stream().map(s -> stepId + "_" + s).toList();
             Template template = VELOCITY.loadTemplate(TRAFFIC_CONTAINER_TEMPLATE_FILE);
             VelocityContext ctxTrafficContainer = new VelocityContext();
             ctxTrafficContainer.put(CLASS_NAME, stepId);
+            ctxTrafficContainer.put("trafficIdentifierList", trafficIdentifierList);
             ctxTrafficContainer.put("threadBody", threadBody.toString());
             String trafficContainerFile = VELOCITY.fillTemplate(template, ctxTrafficContainer);
             saveCodeFile(trafficContainerFile, getComponentFileName(scenarioName, scenarioComponent.getName(), stepId));

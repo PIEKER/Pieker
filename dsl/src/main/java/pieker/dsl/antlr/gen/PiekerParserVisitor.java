@@ -101,12 +101,6 @@ public interface PiekerParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssert(PiekerParser.AssertContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PiekerParser#assertAfter}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssertAfter(PiekerParser.AssertAfterContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PiekerParser#assertBody}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -178,10 +172,4 @@ public interface PiekerParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLine(PiekerParser.LineContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PiekerParser#table}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTable(PiekerParser.TableContext ctx);
 }

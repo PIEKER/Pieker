@@ -34,6 +34,7 @@ Feature: Example System Running Example Thesis
         @passive @request post-message | service-b | $post-message
 
       When:
+        @duration 10
         @delay sA-sC | 5
 
         @times post-message | 100
@@ -66,7 +67,6 @@ Feature: Example System Running Example Thesis
       Then:
         LogAll: passive-get-counter
         Assert: Log
-          After: 30
           Arguments: 1b-get-counter
             Bool: True | < 100
               @times

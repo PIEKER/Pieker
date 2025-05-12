@@ -158,16 +158,6 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 */
 	void exitAssert(PiekerParser.AssertContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PiekerParser#assertAfter}.
-	 * @param ctx the parse tree
-	 */
-	void enterAssertAfter(PiekerParser.AssertAfterContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#assertAfter}.
-	 * @param ctx the parse tree
-	 */
-	void exitAssertAfter(PiekerParser.AssertAfterContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link PiekerParser#assertBody}.
 	 * @param ctx the parse tree
 	 */
@@ -287,14 +277,4 @@ public interface PiekerParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLine(PiekerParser.LineContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PiekerParser#table}.
-	 * @param ctx the parse tree
-	 */
-	void enterTable(PiekerParser.TableContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PiekerParser#table}.
-	 * @param ctx the parse tree
-	 */
-	void exitTable(PiekerParser.TableContext ctx);
 }

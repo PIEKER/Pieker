@@ -10,6 +10,7 @@ import java.util.List;
 public class StubAssert extends Assert{
     
     private static final String ASSERT_PLUGIN = "";
+    private final List<Evaluation> evaluationList = List.of(new StubEvaluation(), new StubEvaluation());
 
     public StubAssert(){
         super(ASSERT_PLUGIN);
@@ -21,37 +22,38 @@ public class StubAssert extends Assert{
 
     @Override
     public void validate(int line) {
-        log.debug("validate StubAssert");
+        log.debug("validate StubAssert {}", this.identifier);
     }
 
     @Override
     public void processAssert() {
-        log.debug("process StubAssert");
+        log.debug("process StubAssert {}", this.identifier);
     }
 
     @Override
     protected void evaluateBoolNode(Bool bool) {
-        log.debug("evaluate BoolNode in StubAssert");
+        log.debug("evaluate BoolNode in StubAssert {}", this.identifier);
     }
 
     @Override
     protected void evaluateEqualsNode(Equals equals) {
-        log.debug("evaluate Equals in StubAssert");
+        log.debug("evaluate Equals in StubAssert {}", this.identifier);
     }
 
     @Override
     protected void evaluateNullNode(Null nuLL) {
-        log.debug("evaluate Null in StubAssert");
+        log.debug("evaluate Null in StubAssert {}", this.identifier);
     }
 
     @Override
     public void evaluate() {
-        log.debug("evaluate StubAssert");
+        log.debug("evaluate StubAssert {}", this.identifier);
+        this.evaluationList.forEach(evaluation -> evaluation.evaluate("no-args"));
     }
 
     @Override
     public List<Evaluation> getEvaluation() {
-        return List.of();
+        return this.evaluationList;
     }
 
     @Override
@@ -62,5 +64,30 @@ public class StubAssert extends Assert{
     @Override
     public void setupConnectionParam(JSONObject cpJson) {
         log.debug("no setup required.");
+    }
+
+    private static class StubEvaluation implements Evaluation{
+
+        private boolean evaluated = false;
+
+        @Override
+        public String getAssertType() {
+            return "Stub";
+        }
+
+        @Override
+        public boolean isSuccess() {
+            return evaluated;
+        }
+
+        @Override
+        public String getErrorMessage() {
+            return "no error possible on stub";
+        }
+
+        @Override
+        public void evaluate(String arg) {
+            this.evaluated = true;
+        }
     }
 }

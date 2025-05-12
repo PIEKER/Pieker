@@ -37,16 +37,15 @@ scenarioScope: (DEF line NEWLINE)+ ;
 
 given: GIVEN (description | NEWLINE) givenCondition+;
 givenCondition: givenKey line? NEWLINE?;
-givenKey: PASSIVE? REQUEST | PASSIVE? SQL | URL | LINK | SERVICE | DATABASE;
+givenKey: PASSIVE? REQUEST | PASSIVE? SQL | LINK | SERVICE | DATABASE;
 
 when: WHEN (description | NEWLINE) whenCondition+;
 whenCondition: whenKey line NEWLINE? ;
-whenKey: AFTER | RETRY | TIMES| DELAY | DROPOUT | TIMEOUT | DEF ;
+whenKey: AFTER | RETRY | TIMES| DELAY | DROPOUT | TIMEOUT | DEF | DURATION;
 
 then: THEN (description | NEWLINE) logAll? assert* ;
 logAll: LOG_ALL line NEWLINE? ;
-assert: ASSERT line NEWLINE assertAfter? arguments? assertBody ;
-assertAfter: ASSERT_AFTER line NEWLINE;
+assert: ASSERT line NEWLINE arguments? assertBody ;
 assertBody: (assertBool | assertEquals | assertNull)+ ;
 arguments: ARGUMENTS line NEWLINE;
 assertBool: boolHeader line NEWLINE?;
@@ -58,9 +57,7 @@ nullHeader: NULL line NEWLINE ;
 
 description: DOC_STRING;
 
-step: STEP line (description | NEWLINE) given when? then? ;
+step: STEP line (description | NEWLINE) given? when? then? ;
 beforeEach: BEFORE_EACH NEWLINE given when? then? ;
 
 line: CHAR+ ;
-
-table: TABLE_ROW+ ;

@@ -28,11 +28,9 @@ public class Given extends Condition{
         }
 
         // Creating Component Proxies
-        List<Entry> urlEntryList = this.getEntriesByKey(Keyword.URL);
         List<Entry> serviceEntryList = this.getEntriesByKey(Keyword.SERVICE);
         List<Entry> databaseEntryList = this.getEntriesByKey(Keyword.DATABASE);
-        if (!(urlEntryList.isEmpty() && serviceEntryList.isEmpty() && databaseEntryList.isEmpty())){
-            urlEntryList.forEach(Entry::processEntry);
+        if (!(serviceEntryList.isEmpty() && databaseEntryList.isEmpty())){
             serviceEntryList.forEach(Entry::processEntry);
             databaseEntryList.forEach(Entry::processEntry);
         }

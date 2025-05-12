@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
+import pieker.dsl.architecture.component.DatabaseProxy;
 import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 import pieker.generators.util.FileSystemUtils;
@@ -57,7 +58,14 @@ public class MultiStepGenerator {
     public static void generateMultiStepProxies(Collection<ScenarioComponent> scenarioComponents) throws CodeGenerationException {
         for (ScenarioComponent component : scenarioComponents) {
             try {
-                generateMultiStepComponent(component.getName(), null);
+                List<String> dependencies = component instanceof DatabaseProxy ?
+                        List.of("dependencies/netty-transport-4.2.0.Final.jar",
+                                "dependencies/netty-common-4.2.0.Final.jar",
+                                "dependencies/netty-buffer-4.1.119.Final.jar",
+                                "dependencies/netty-resolver-4.1.119.Final.jar") :
+                        List.of();
+
+                generateMultiStepComponent(component.getName(), dependencies);
             } catch (IOException | InterruptedException e) {
                 log.error("Error generating multi-step proxy for component '{}'", component.getName(), e);
                 throw new CodeGenerationException(e.getMessage());
@@ -75,7 +83,8 @@ public class MultiStepGenerator {
         for (ScenarioComponent component : trafficComponents) {
             try {
                 List<String> dependencies = List.of(
-                        "dependencies/json-20250107.jar"
+                        "dependencies/json-20250107.jar",
+                        "dependencies/postgresql-42.7.5.jar"
                 );
                 log.debug("Starting to generate multi-step traffic component '{}' with dependencies: {}",
                         component.getName(), dependencies);
@@ -114,7 +123,8 @@ public class MultiStepGenerator {
         // Create MultiStepProxy.java file for current component
         final String multiStepProxyName = componentName.replace('-', '_');
         VelocityContext proxyContext = new VelocityContext();
-        proxyContext.put("port", 42690);
+        final int supervisorProxyPort = Integer.parseInt(System.getProperty("supervisorPort", "42690"));
+        proxyContext.put("port", supervisorProxyPort);
         Map<String, String> endpointJars = new HashMap<>();
         for (String fileName : fileNames) {
             fileName = fileName.replace(".java", "");

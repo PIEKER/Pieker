@@ -1,6 +1,6 @@
 package pieker.dsl;
 
-import pieker.dsl.code.Engine;
+import pieker.dsl.architecture.Engine;
 import pieker.dsl.model.Feature;
 import pieker.dsl.parser.FeatureParser;
 

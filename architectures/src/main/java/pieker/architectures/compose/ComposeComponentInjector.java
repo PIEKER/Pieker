@@ -69,6 +69,12 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             }
         }
 
+        // Add Supervisor Proxy Component
+        ComposeService supervisorProxy = this.model.createComponent("PIEKER_PROXY_SUPERVISOR");
+        supervisorProxy.setImage("supervisor-proxy:test");
+        final String supervisorProxyPort = System.getProperty("supervisorPort", "42690");
+        supervisorProxy.addPortMapping(supervisorProxyPort, supervisorProxyPort);
+
         if (!this.model.validate()) {
             throw new ComponentInjectionException("Model is invalid after injecting components. Check inputs.");
         }
@@ -83,7 +89,6 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         switch (interfaceType) {
             case HTTP_API -> {
                 ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
-                ((ComposeService) proxy).addPortMappings(Map.of("80", "80", "42690", "42690"));
                 // TODO: Set env values of proxy for target
                 this.model.addLink(HttpApiLink.createForProxy(proxy, targetComponent));
             }
@@ -105,7 +110,6 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         this.model.addLink(proxyToTargetLink);
         final String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
         final String targetUrlValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getUrlVarName());
-        proxyComponent.addPortMappings(Map.of("80", "80", "42690", "42690"));
 
         if (existingLink.getPortVarName() != null && sourcePortVarValue != null) {
             proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getPortVarName(), sourcePortVarValue));

@@ -1,11 +1,12 @@
 package pieker.dsl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Assertions;
 import pieker.common.*;
-import pieker.dsl.code.component.*;
+import pieker.dsl.architecture.component.*;
 
 import java.util.*;
 
@@ -33,7 +34,6 @@ public class Scenario implements ScenarioTestPlan {
     List<LinkProxy> linkProxyList = new ArrayList<>();
     List<ServiceProxy> serviceProxyList = new ArrayList<>();
     List<DatabaseProxy> databaseProxyList = new ArrayList<>();
-    List<SupervisorStep> supervisorStepList = new ArrayList<>();
 
     public Scenario(Feature feature, String name){
         this.feature = feature;
@@ -82,14 +82,21 @@ public class Scenario implements ScenarioTestPlan {
 
     @JsonIgnore
     @Override
-    public TestStep getBeforeStep() {
-        return this.beforeEach.createSupervisorStep();
+    public TestStep getBeforeEachStep() {
+        return this.beforeEach;
     }
 
     @JsonIgnore
     @Override
     public Collection<TestStep> getTestSteps() {
-        return new ArrayList<>(this.supervisorStepList);
+        return new ArrayList<>(this.stepList);
+    }
+
+    @Override
+    public Map<String, Long> getStepToDurationMap() {
+        Map<String, Long> stepToDurationMap = new HashMap<>();
+        this.stepList.forEach(step -> stepToDurationMap.put(step.getId(), (long) (step.getDuration() * 1000)));
+        return stepToDurationMap;
     }
 
     @JsonIgnore
@@ -103,4 +110,14 @@ public class Scenario implements ScenarioTestPlan {
         }
         return stepToAssertionsMap;
     }
+
+    // used by jackson to generate TestPlan JSON
+    @JsonProperty("stepToSequenceMap")
+    public Map<String, List<TrafficTemplate>> getStepToSequenceMap() {
+        Map<String, List<TrafficTemplate>> stepToSequenceMap = new HashMap<>();
+        stepToSequenceMap.put("beforeEach", this.beforeEach.getSequence());
+        this.stepList.forEach(step -> stepToSequenceMap.put(step.getId(), step.getSequence()));
+        return stepToSequenceMap;
+    }
+
 }

@@ -3,15 +3,17 @@ package pieker.dsl.model;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Assertions;
-import pieker.dsl.code.component.*;
-import pieker.common.Template;
-import pieker.dsl.model.assertions.DatabaseAssert;
+import pieker.common.ConditionTemplate;
+import pieker.common.TestStep;
+import pieker.common.TrafficTemplate;
+import pieker.dsl.architecture.component.*;
+import pieker.dsl.util.comparators.STComparator;
 
 import java.util.*;
 
 @Getter
 @Setter
-public class Step {
+public class Step implements TestStep {
     // -- PIEKER model attributes
     private final Feature feature;
     private final Scenario scenario;
@@ -27,11 +29,13 @@ public class Step {
     private Then then;
 
     private boolean beforeEach = false;
+    private float duration = 4.0F;
 
     // -- PIEKER architecture attributes
     private String id;
-    private Map<String, TrafficContainer> trafficContainerMap = new HashMap<>();
     private Map<String, StepComponent> testComponentMap = new HashMap<>();
+    private Map<String, TrafficContainer> trafficContainerMap = new HashMap<>();
+    private List<SupervisorTraffic> supervisorTrafficList = new ArrayList<>();
 
     public Step(Feature feature, Scenario scenario, String name){
         this.feature = feature;
@@ -52,7 +56,7 @@ public class Step {
         this.testComponentMap.put(identifier, stepComponent);
     }
 
-    public void addTemplate(String[] identifiers, Template template){
+    public void addConditionTemplate(String[] identifiers, ConditionTemplate template){
         for (String identifier : identifiers){
             this.testComponentMap.get(identifier).addCondition(template);
         }
@@ -79,22 +83,10 @@ public class Step {
         }
     }
 
-    public SupervisorStep createSupervisorStep(){
-        List<SupervisorTraffic> trafficList = new ArrayList<>();
-        List<SupervisorTraffic> evaluationPreparationList = new ArrayList<>();
-        for (SupervisorTraffic t: this.filterTestComponentsByInstance(SupervisorTraffic.class)){
-            if (t.getIdentifier().startsWith(DatabaseAssert.SUPERVISOR_TRAFFIC_PREFIX)){
-                evaluationPreparationList.add(t);
-            } else {
-                trafficList.add(t);
-            }
-        }
-        trafficList.sort(new SupervisorTraffic.STComparator());
-        evaluationPreparationList.sort(new SupervisorTraffic.STComparator());
-        SupervisorStep supervisorStep = new SupervisorStep(this.id, this.then);
-        supervisorStep.setTrafficList(trafficList);
-        supervisorStep.setEvaluationPreparationList(evaluationPreparationList);
-        return supervisorStep;
+    public void createSupervisorTraffic(){
+        List<SupervisorTraffic> trafficList = new ArrayList<>(this.filterTestComponentsByInstance(SupervisorTraffic.class));
+        trafficList.sort(new STComparator());
+        this.supervisorTrafficList.addAll(trafficList);
     }
 
     public void migrateBeforeEach(Step beforeEach) {
@@ -104,5 +96,10 @@ public class Step {
 
     protected List<Assertions> getEvaluationList(){
         return (this.then != null) ? this.then.getEvaluationList() : new ArrayList<>();
+    }
+
+    @Override
+    public List<TrafficTemplate> getSequence() {
+        return new ArrayList<>(this.supervisorTrafficList);
     }
 }
