@@ -10,7 +10,7 @@ import org.json.JSONObject; // requires json.jar
 
 //TRAFFIC-CONTAINER
 public class $className {
-    private static final String LOG_ROOT = "app/logs/";
+    private static final String LOG_ROOT = "/app/logs/";
     private static final Random RANDOM = new Random();
 
     private static final String SERVICE_BASE_URL = System.getenv("SERVICE_BASE_URL");
