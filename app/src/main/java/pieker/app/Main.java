@@ -37,7 +37,11 @@ public class Main {
 
     private static ScenarioTestPlan testPlan;
     private static ArchitectureModel<?> architectureModel;
-    private static final long assertTimeout = Long.parseLong(System.getProperty("assertTimeout", "30000"));
+    private static final String DSL_FILE_PATH = System.getProperty("dslFilePath");
+    private static final String DSL_RESOURCE_DIRECTORY = System.getProperty("dslResourceDirectory");
+    private static final String ARCHITECTURE_FILE_PATH = System.getProperty("architectureFile");
+    private static final String INTERFACE_DESCRIPTION_FILE_PATH = System.getProperty("interfaceDescriptionFile");
+    private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
 
     public static void main(String[] args) throws IOException {
 
@@ -55,12 +59,12 @@ public class Main {
                              assertTimeout:              {}
                         """,
                 PIEKER_LOGO,
-                System.getProperty("dslFilePath"),
-                System.getProperty("dslResourceDirectory"),
-                System.getProperty("architectureFile"),
-                System.getProperty("interfaceDescriptionFile"),
+                DSL_FILE_PATH,
+                DSL_RESOURCE_DIRECTORY,
+                ARCHITECTURE_FILE_PATH,
+                INTERFACE_DESCRIPTION_FILE_PATH,
                 PLUGIN_MANAGER,
-                assertTimeout
+                ASSERT_TIMEOUT
         );
 
         // Check setup
@@ -73,7 +77,7 @@ public class Main {
         preprocessing();
 
         // Test Execution
-        //runTests();
+        runTests();
 
         // Evaluation
         evaluate();
@@ -86,15 +90,15 @@ public class Main {
      */
     private static boolean checkSetup() {
         boolean isValid = true;
-        if (System.getProperty("dslFilePath") == null) {
+        if (DSL_FILE_PATH == null) {
             log.error("No DSL file path provided. Please set the 'dslFilePath' property.");
             isValid = false;
         }
-        if (System.getProperty("architectureFile") == null) {
+        if (ARCHITECTURE_FILE_PATH == null) {
             log.error("No architecture file path provided. Please set the 'architectureFile' property.");
             isValid = false;
         }
-        if (System.getProperty("interfaceDescriptionFile") == null) {
+        if (INTERFACE_DESCRIPTION_FILE_PATH == null) {
             log.error("No interface description file path provided. Please set the 'interfaceDescriptionFile' property.");
             isValid = false;
         }
@@ -108,7 +112,7 @@ public class Main {
      */
     private static void preprocessing() throws IOException {
         // Parse DSL
-        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"), PLUGIN_MANAGER);
+        Feature feature = pieker.dsl.Main.parse(DSL_FILE_PATH, DSL_RESOURCE_DIRECTORY, PLUGIN_MANAGER);
 
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
             pieker.dsl.architecture.Engine.validate(feature);
@@ -161,8 +165,8 @@ public class Main {
 
         // Generate Test Environment
         log.info("Starting test architecture generation...");
-        final Path architectureFilePath = Path.of(System.getProperty("architectureFile"));
-        final Path interfaceDescriptionFilePath = Path.of(System.getProperty("interfaceDescriptionFile"));
+        final Path architectureFilePath = Path.of(ARCHITECTURE_FILE_PATH);
+        final Path interfaceDescriptionFilePath = Path.of(INTERFACE_DESCRIPTION_FILE_PATH);
         final ModelGenerator<?> modelGenerator = ArchitectureFactory.createGenerator(architectureFilePath);
         final ArchitectureModel<?> model = modelGenerator.generate(architectureFilePath, interfaceDescriptionFilePath);
         final ComponentInjector<?, ?> componentInjector = ArchitectureFactory.createInjector(model);
@@ -203,7 +207,7 @@ public class Main {
         }
 
         supervisor.stopTestEnvironment();
-        //supervisor.destroyTestEnvironment();
+        supervisor.destroyTestEnvironment();
     }
 
     private static void evaluate(){
@@ -211,7 +215,7 @@ public class Main {
         testPlan.getStepIds().forEach(sId ->
             evaluator.run(
                     testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
-                    assertTimeout
+                    ASSERT_TIMEOUT
             )
         );
     }
