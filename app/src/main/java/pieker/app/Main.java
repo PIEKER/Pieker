@@ -36,7 +36,7 @@ public class Main {
     private static ScenarioTestPlan testPlan;
     private static ArchitectureModel<?> architectureModel;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
 
         log.info("""
                         {}
@@ -185,14 +185,18 @@ public class Main {
         }
         System.setProperty("scenarioName", testPlan.getName());
         Supervisor<?> supervisor = SupervisorFactory.createSupervisor(testPlan, architectureModel);
+
         supervisor.setupTestEnvironment();
+
         supervisor.executeTests();
+
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("Error during test execution: {}", e.getMessage());
         }
+
         supervisor.stopTestEnvironment();
         //supervisor.destroyTestEnvironment();
     }

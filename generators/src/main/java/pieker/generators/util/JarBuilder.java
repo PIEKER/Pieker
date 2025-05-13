@@ -177,7 +177,7 @@ public final class JarBuilder {
 
         // Clean up
         Files.delete(manifestFile.toPath());
-        deleteClassFiles(buildDirPath);
+        FileSystemUtils.deleteContents(buildDirPath);
     }
 
     /**
@@ -188,7 +188,7 @@ public final class JarBuilder {
     private static void deleteClassFiles(String directoryPath) {
         File dir = new File(directoryPath);
         if (dir.exists() && dir.isDirectory()) {
-            for (File file : Objects.requireNonNull(dir.listFiles((d, name) -> name.endsWith(".class")))) {
+            for (File file : Objects.requireNonNull(dir.listFiles((_, name) -> name.endsWith(".class")))) {
                 if (!file.delete()) {
                     log.error("Failed to delete file: {}", file.getAbsolutePath());
                 }
