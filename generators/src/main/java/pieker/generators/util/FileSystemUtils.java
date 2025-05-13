@@ -131,10 +131,8 @@ public final class FileSystemUtils {
         for (File file : files) {
             if (file.isDirectory()) {
                 deleteContents(String.valueOf(file));
-                file.delete();
-            } else {
-                file.delete();
             }
+            if (!file.delete()) throw new RuntimeException("Failed to delete file: " + file.getAbsolutePath());
         }
     }
 
