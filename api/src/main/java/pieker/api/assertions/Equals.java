@@ -28,5 +28,8 @@ public class Equals implements Evaluation {
     @Override
     public void evaluate(String arg) {
         this.success = this.isEqual == arg.trim().equals(this.expected.trim());
+        if (!this.success){
+            this.errorMessage = "Expected: " + this.expected + " but got: " + arg;
+        }
     }
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,18 +40,21 @@ public class LogAssert extends Assert {
                 throw new ValidationException("invalid valueLine detected: " + bool.getValue());
             }
             bool.validate(line);
+            this.validateKeyword(valueLine);
         });
         this.equalsList.forEach(equals -> {
             String[] valueLine = equals.getValue().split(" ");
             if (valueLine.length < 1 || !valueLine[0].startsWith("@")) {
                 throw new ValidationException("invalid valueLine detected: " + equals.getValue());
             }
+           this.validateKeyword(valueLine);
         });
         this.nullList.forEach(nullNode -> {
             String[] valueLine = nullNode.getValue().split(" ");
             if (valueLine.length < 1 || !valueLine[0].startsWith("@")) {
                 throw new ValidationException("invalid valueLine detected: " + nullNode.getValue());
             }
+            this.validateKeyword(valueLine);
         });
     }
 
@@ -64,19 +68,46 @@ public class LogAssert extends Assert {
         String[] valueLine = bool.getValue().split(" ");
         if (valueLine.length < 1) {
             bool.setErrorMessage("invalid valueLine detected: " + bool.getValue());
+            return;
         }
         Keyword key = Keyword.valueOf(valueLine[0].substring(1).toUpperCase());
-        key.processValue(this.logLines.toArray(new String[0]));
+        key.processValue(
+                bool,
+                this.formatArgsToCharakterKeys(Arrays.copyOfRange(valueLine, 1, valueLine.length)),
+                this.logLines.toArray(new String[0])
+        );
     }
 
     @Override
     protected void evaluateEqualsNode(Equals equals) {
-        log.info("evaluate Equals in LogEvaluation");
+        log.debug("evaluate Equals in LogEvaluation");
+        String[] valueLine = equals.getValue().split(" ");
+        if (valueLine.length < 1) {
+            equals.setErrorMessage("invalid valueLine detected: " + equals.getValue());
+            return;
+        }
+        Keyword key = Keyword.valueOf(valueLine[0].substring(1).toUpperCase());
+        key.processValue(
+                equals,
+                this.formatArgsToCharakterKeys(Arrays.copyOfRange(valueLine, 1, valueLine.length)),
+                this.logLines.toArray(new String[0])
+        );
     }
 
     @Override
     protected void evaluateNullNode(Null nuLL) {
-        log.info("evaluate Null in LogEvaluation");
+        log.debug("evaluate Null in LogEvaluation");
+        String[] valueLine = nuLL.getValue().split(" ");
+        if (valueLine.length < 1) {
+            nuLL.setErrorMessage("invalid valueLine detected: " + nuLL.getValue());
+            return;
+        }
+        Keyword key = Keyword.valueOf(valueLine[0].substring(1).toUpperCase());
+        key.processValue(
+                nuLL,
+                this.formatArgsToCharakterKeys(Arrays.copyOfRange(valueLine, 1, valueLine.length)),
+                this.logLines.toArray(new String[0])
+        );
     }
 
     @Override
@@ -118,5 +149,26 @@ public class LogAssert extends Assert {
     @Override
     public void setupConnectionParam(JSONObject cpJson) {
         log.info("setup ConnectionParam in LogEvaluation");
+    }
+
+    private void validateKeyword(String[] valueLine){
+        try{
+            Keyword key = Keyword.valueOf(valueLine[0].substring(1).toUpperCase());
+            key.validate(this.formatArgsToCharakterKeys(Arrays.copyOfRange(valueLine, 1, valueLine.length)));
+        } catch (IllegalArgumentException _){
+            throw new ValidationException("invalid keyword detected: " + valueLine[0]);
+        }
+    }
+
+    private String[] formatArgsToCharakterKeys(String[] args){
+        List<String> characterKeys = new LinkedList<>();
+        for (String arg : args) {
+            try {
+                characterKeys.add(arg.substring(1).toUpperCase());
+            } catch (IllegalArgumentException _) {
+                log.warn("Invalid argument {} for keyword exists.", arg);
+            }
+        }
+        return characterKeys.toArray(new String[0]);
     }
 }

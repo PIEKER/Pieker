@@ -54,6 +54,9 @@ public class Bool implements Evaluation {
             JexlContext context = new MapContext();
             boolean result = (Boolean) jexlExpression.evaluate(context);
             this.success = this.boolType == result;
+            if (!this.success){
+                this.errorMessage = "Expression failed: " + this.boolType + " != " + result + " for expression: " + arg + " " + expression;
+            }
         } catch (JexlException e){
             this.errorMessage = "Unable to evaluate boolean because of JexlException: " + e.getMessage();
         }

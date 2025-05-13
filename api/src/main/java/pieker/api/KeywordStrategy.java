@@ -3,10 +3,16 @@ package pieker.api;
 public interface KeywordStrategy {
 
     /**
+     * Validates the provided arguments.
+     * @param args String[]
+     */
+    void validate(String[] args);
+
+    /**
      * Processes a value-string and returns assertable value
      *
      * @param args String
-     * @return assertable String
      */
-    String processValue(String[] args);
+    void processValue(Evaluation evaluation, String[] args, String[] logs);
+
 }

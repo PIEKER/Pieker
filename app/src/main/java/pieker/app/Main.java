@@ -8,6 +8,7 @@ import pieker.architectures.model.ArchitectureModel;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.plugin.PluginManager;
 import pieker.dsl.model.Feature;
+import pieker.evaluator.Evaluator;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
 import pieker.generators.components.docker.DockerImageGenerator;
@@ -17,6 +18,7 @@ import pieker.supervisor.SupervisorFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 @Slf4j
 public class Main {
@@ -35,6 +37,7 @@ public class Main {
 
     private static ScenarioTestPlan testPlan;
     private static ArchitectureModel<?> architectureModel;
+    private static final long assertTimeout = Long.parseLong(System.getProperty("assertTimeout", "30000"));
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -49,13 +52,15 @@ public class Main {
                              Architecture file:          {},
                              Interface description file: {},
                              Installed Plugins:          {},
+                             assertTimeout:              {}
                         """,
                 PIEKER_LOGO,
                 System.getProperty("dslFilePath"),
                 System.getProperty("dslResourceDirectory"),
                 System.getProperty("architectureFile"),
                 System.getProperty("interfaceDescriptionFile"),
-                PLUGIN_MANAGER
+                PLUGIN_MANAGER,
+                assertTimeout
         );
 
         // Check setup
@@ -68,10 +73,10 @@ public class Main {
         preprocessing();
 
         // Test Execution
-        runTests();
+        //runTests();
 
         // Evaluation
-        // TODO
+        evaluate();
     }
 
     /**
@@ -195,6 +200,16 @@ public class Main {
         }
         supervisor.stopTestEnvironment();
         //supervisor.destroyTestEnvironment();
+    }
+
+    private static void evaluate(){
+        Evaluator evaluator = new Evaluator(); //TODO pass connection parameters
+        testPlan.getStepIds().forEach(sId ->
+            evaluator.run(
+                    testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
+                    assertTimeout
+            )
+        );
     }
 
 }
