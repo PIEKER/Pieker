@@ -114,4 +114,26 @@ public final class FileSystemUtils {
         }
     }
 
+    /**
+     * Deletes all contents of a directory, including subdirectories and files.
+     *
+     * @param dirPath path to the directory to delete contents from
+     */
+    public static void deleteContents(String dirPath) {
+        File directory = new File(dirPath);
+        if (!directory.exists() || !directory.isDirectory()) {
+            throw new IllegalArgumentException("Provided file is not a valid directory.");
+        }
+
+        File[] files = directory.listFiles();
+        if (files == null) return;
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                deleteContents(String.valueOf(file));
+            }
+            if (!file.delete()) throw new RuntimeException("Failed to delete file: " + file.getAbsolutePath());
+        }
+    }
+
 }
