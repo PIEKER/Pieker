@@ -102,14 +102,16 @@ public final class DockerImageGenerator {
             log.debug("Building image for component {} at {}", componentName, buildContextPath);
             // Build Docker image with name "<componentName>:<scenarioName>"
             final String imageId = buildImage(buildContextPath, componentName, System.getProperty("scenarioName", "latest"));
-            // Save Docker image to file
-            log.debug("Saving image {} for component {} to file", imageId, componentName);
-            saveImage(imageId, componentName, IMAGE_DIR);
+            // Save Docker image to file, if enabled
+            if (System.getProperty("saveDockerImages", "false").equals("true")) {
+                log.debug("Saving image {} for component {} to file", imageId, componentName);
+                saveImage(imageId, componentName, IMAGE_DIR);
+            }
         }
 
         // Build Supervisor Proxy Image
         final String imageId = buildImage(SUPERVISOR_PROXY_DIR, "supervisor-proxy", "test");
-        saveImage(imageId, "supervisor-proxy", IMAGE_DIR);
+        if (System.getProperty("saveDockerImages", "false").equals("true")) saveImage(imageId, "supervisor-proxy", IMAGE_DIR);
     }
 
     /**
