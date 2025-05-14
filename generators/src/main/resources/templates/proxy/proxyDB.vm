@@ -15,9 +15,7 @@ public class $className {
     private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
     private static final Random RANDOM = new Random();
 
-    private static final int PROXY_PORT = System.getenv("JDBC_PROXY_PORT") != null ? Integer.parseInt(System.getenv("JDBC_PROXY_PORT")) : 5433;
-    private static final String DB_HOST = System.getenv("JDBC_PROXY_DB_HOST") != null ? System.getenv("JDBC_PROXY_DB_HOST") : "localhost";
-    private static final int DB_PORT = System.getenv("JDBC_PROXY_DB_PORT") != null ? Integer.parseInt(System.getenv("JDBC_PROXY_DB_PORT")) : 5432;
+    private static final String PROXY_TARGET = System.getenv("JDBC_PROXY_TARGET");
 
     #if($after != $null)
     // --after
@@ -31,6 +29,11 @@ public class $className {
     #end
 
     public static void main(String[] args) throws InterruptedException {
+        String[] hostPortArray = PROXY_TARGET.split(":");
+        assert hostPortArray.length == 2;
+        String host = hostPortArray[0];
+        Integer port = Integer.parseInt(hostPortArray[1]);
+
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -51,7 +54,7 @@ public class $className {
                                 });
 
                         clientChannel.config().setAutoRead(false); // Pause reading from client
-                        dbBootstrap.connect(DB_HOST, DB_PORT).addListener((ChannelFutureListener) future -> {
+                        dbBootstrap.connect(host, port).addListener((ChannelFutureListener) future -> {
                             if (future.isSuccess()) {
                                 Channel dbChannel = future.channel();
                                 dbChannel.pipeline().addLast(new RelayHandler(clientChannel));
@@ -65,8 +68,8 @@ public class $className {
                     }
                 });
 
-        ChannelFuture f = bootstrap.bind(PROXY_PORT).sync();
-        System.out.println("JDBC proxy started on port " + PROXY_PORT);
+        ChannelFuture f = bootstrap.bind(port).sync();
+        System.out.println("JDBC proxy started on port " + port);
         f.channel().closeFuture().sync();
     }
 
