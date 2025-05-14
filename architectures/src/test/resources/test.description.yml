@@ -7,7 +7,7 @@ components:
       - type: HTTP_API
         target: "serviceC"
         targetUrlEnv: "SERVICE_C_URL"
-      - type: STORAGE
+      - type: JDBC
         target: "db"
         usernameEnv: "DB_USERNAME"
         passwordEnv: "DB_PASSWORD"
