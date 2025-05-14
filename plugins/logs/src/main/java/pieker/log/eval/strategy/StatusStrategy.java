@@ -41,7 +41,7 @@ public class StatusStrategy implements KeywordStrategy {
     @Override
     public void processValue(Evaluation evaluation, String[] args, String[] logs) {
         Pattern pattern = Pattern.compile("REQUEST-STATUS\\{[1-5]\\d{2}}");
-        CharacterKey key = Util.getStatusKey(args);
+        CharacterKey key = Util.getQuantifier(args);
         for (String log : logs) {
             Matcher matcher = pattern.matcher(log);
             if (matcher.find()) {

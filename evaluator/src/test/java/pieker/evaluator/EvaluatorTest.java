@@ -2,7 +2,7 @@ package pieker.evaluator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 import pieker.api.assertions.StubAssert;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 class EvaluatorTest {
 
-    List<Assertions> assertionList = new ArrayList<>();
+    List<Assertion> assertionList = new ArrayList<>();
 
     @Test
     void testEvaluator() {

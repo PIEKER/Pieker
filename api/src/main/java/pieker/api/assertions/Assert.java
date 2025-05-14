@@ -1,24 +1,37 @@
 package pieker.api.assertions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.assertions.util.Util;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
 @Setter
-public abstract class Assert implements Assertions {
+public abstract class Assert implements Assertion {
 
+    @JsonIgnore
     protected final String assertPlugin;
+    @JsonIgnore
     protected String stepId;
+
     protected String identifier;
 
+    @JsonIgnore
+    private Map<String, Map<String, File>> fileMap = new HashMap<>();
+
+    @JsonIgnore
     protected final List<Bool> boolList = new ArrayList<>();
+    @JsonIgnore
     protected final List<Equals> equalsList = new ArrayList<>();
+    @JsonIgnore
     protected final List<Null> nullList = new ArrayList<>();
 
     protected Assert(String assertPlugin, String identifier){

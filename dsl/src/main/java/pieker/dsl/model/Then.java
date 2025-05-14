@@ -3,7 +3,7 @@ package pieker.dsl.model;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.assertions.Assert;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 import pieker.api.assertions.StubAssert;
 import pieker.dsl.architecture.component.StepComponent;
 import pieker.dsl.architecture.exception.PiekerProcessingException;
@@ -61,7 +61,7 @@ public class Then {
         this.assertList.forEach(Assert::processAssert);
     }
 
-    protected List<Assertions> getEvaluationList(){
+    protected List<Assertion> getEvaluationList(){
         return new ArrayList<>(this.assertList);
     }
 }

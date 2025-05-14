@@ -41,6 +41,7 @@ public class Main {
     private static final String DSL_RESOURCE_DIRECTORY = System.getProperty("dslResourceDirectory");
     private static final String ARCHITECTURE_FILE_PATH = System.getProperty("architectureFile");
     private static final String INTERFACE_DESCRIPTION_FILE_PATH = System.getProperty("interfaceDescriptionFile");
+    private static final String GEN_DIR = System.getProperty("genDir");
     private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
 
     public static void main(String[] args) throws IOException {
@@ -176,7 +177,7 @@ public class Main {
 
         if (System.getProperty("skipFileGeneration", "false").equals("false")) {
             log.info("Finished test architecture generation. Storing results...");
-            final String filePath = System.getProperty("genDir") + File.separator + System.getProperty("scenarioName") + File.separator + "docker-compose.yml";
+            final String filePath = GEN_DIR + File.separator + System.getProperty("scenarioName") + File.separator + "docker-compose.yml";
             model.saveToFile(filePath);
         }
 
@@ -212,12 +213,14 @@ public class Main {
 
     private static void evaluate(){
         Evaluator evaluator = new Evaluator(); //TODO pass connection parameters
+        evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty("scenarioName"), ".log");
         testPlan.getStepIds().forEach(sId ->
             evaluator.run(
                     testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
                     ASSERT_TIMEOUT
             )
         );
+        evaluator.generateResultJson(testPlan);
     }
 
 }

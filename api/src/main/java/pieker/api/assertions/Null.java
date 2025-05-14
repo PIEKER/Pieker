@@ -1,5 +1,6 @@
 package pieker.api.assertions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Evaluation;
@@ -8,10 +9,12 @@ import pieker.api.Evaluation;
 @Getter
 public class Null implements Evaluation {
 
+    @JsonIgnore
     private final boolean isNull;
-    private String value;
     private boolean success = false;
     private String errorMessage = "";
+    @JsonIgnore
+    private String value;
 
     public Null(boolean isNull, String value) {
         this.isNull = isNull;
@@ -21,7 +24,12 @@ public class Null implements Evaluation {
 
     @Override
     public String getAssertType() {
-        return this.getClass().getSimpleName();
+        return "assert" + (this.isNull? "" : "Not") + "Equals";
+    }
+
+    @Override
+    public String getAssertExpression() {
+        return "(" + this.value + ") == " + (isNull ? "null" : "not null");
     }
 
     @Override

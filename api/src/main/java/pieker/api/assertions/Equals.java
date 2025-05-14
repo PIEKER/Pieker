@@ -1,5 +1,6 @@
 package pieker.api.assertions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Evaluation;
@@ -8,11 +9,14 @@ import pieker.api.Evaluation;
 @Getter
 public class Equals implements Evaluation {
 
+    @JsonIgnore
     private boolean isEqual;
-    private String expected;
-    private String value;
     private boolean success = false;
     private String errorMessage = "";
+    @JsonIgnore
+    private String expected;
+    @JsonIgnore
+    private String value;
 
     public Equals(boolean isEqual, String expected, String value) {
         this.isEqual = isEqual;
@@ -22,7 +26,11 @@ public class Equals implements Evaluation {
 
     @Override
     public String getAssertType() {
-        return this.getClass().getSimpleName();
+        return "assert" + (this.isEqual? "" : "Not") + "Equals";
+    }
+    @Override
+    public String getAssertExpression() {
+        return "(" + this.value + ") == " + this.expected;
     }
 
     @Override
