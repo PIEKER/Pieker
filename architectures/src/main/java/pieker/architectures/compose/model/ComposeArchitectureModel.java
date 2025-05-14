@@ -94,7 +94,7 @@ public class ComposeArchitectureModel extends AbstractArchitectureModel<ComposeC
      */
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("version", this.version);
+        if (this.version != null && !this.version.isBlank()) map.put("version", this.version);
         putIfNotEmpty(map, "services", this.getComposeServices());
         putIfNotEmpty(map, "volumes", this.getComposeVolumes());
         putIfNotEmpty(map, "networks", this.getComposeNetworks());
