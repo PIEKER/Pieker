@@ -1,19 +1,23 @@
 package pieker.log.eval;
 
+import lombok.extern.slf4j.Slf4j;
+import pieker.api.Evaluation;
 import pieker.api.KeywordStrategy;
 import pieker.log.eval.strategy.ResponseStrategy;
 import pieker.log.eval.strategy.StatusStrategy;
 import pieker.log.eval.strategy.TimesStrategy;
 
+@Slf4j
 public enum Keyword {
+
+    EMPTY("", null),
 
     TIMES("times", new TimesStrategy()),
 
     STATUS("status", new StatusStrategy()),
 
-    RESPONSE("response", new ResponseStrategy()),
+    RESPONSE("response", new ResponseStrategy());
 
-    EMPTY("", null);
 
     private final String key;
     private final KeywordStrategy strategy;
@@ -23,8 +27,20 @@ public enum Keyword {
         this.strategy = strategy;
     }
 
-    public String processValue(String[] args) {
-        return strategy.processValue(args);
+    public void processValue(Evaluation evaluation, String[] args, String[] logs) {
+        if(this.strategy == null){
+            log.warn("processValue called on empty keyword ({}). Returning empty string (\"\").", this.key);
+            return;
+        }
+        strategy.processValue(evaluation, args, logs);
+    }
+
+    public void validate(String[] args){
+        if(this.strategy == null){
+            log.warn("validation called on empty keyword.");
+            return;
+        }
+        strategy.validate(args);
     }
 
     @Override

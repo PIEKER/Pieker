@@ -2,9 +2,11 @@ package pieker.api;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
-public interface Assertions {
+public interface Assertion {
 
     /**
      * Checks for the requirement of additional connection parameter.
@@ -17,7 +19,13 @@ public interface Assertions {
      *
      * @param cpJson JSONObject
      */
-    void setupConnectionParam(JSONObject cpJson);
+    void setConnectionParam(JSONObject cpJson);
+
+    /**
+     * Sets a fileMap mapping a suffix to a map of filenames to file objects.
+     * @param fileMap suffix -> filename -> file
+     */
+    void setFileMap(Map<String, Map<String, File>> fileMap);
 
     /**
      * Entrypoint for evaluating an assertion

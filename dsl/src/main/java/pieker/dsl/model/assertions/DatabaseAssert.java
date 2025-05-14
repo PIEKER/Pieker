@@ -167,7 +167,7 @@ public class DatabaseAssert extends Assert {
     }
 
     @Override
-    public void setupConnectionParam(JSONObject cpJson) {
+    public void setConnectionParam(JSONObject cpJson) {
         this.jdbcUrl = cpJson.getString("targetUrlEnv");
         this.username = cpJson.getString("usernameEnv");
         this.password = cpJson.getString("passwordEnv");

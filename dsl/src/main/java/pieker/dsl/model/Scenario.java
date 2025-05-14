@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 import pieker.common.*;
 import pieker.dsl.architecture.component.*;
 
@@ -101,10 +101,10 @@ public class Scenario implements ScenarioTestPlan {
 
     @JsonIgnore
     @Override
-    public Map<String, List<Assertions>> getAssertionsMap() {
-        Map<String, List<Assertions>> stepToAssertionsMap = new HashMap<>();
+    public Map<String, List<Assertion>> getAssertionsMap() {
+        Map<String, List<Assertion>> stepToAssertionsMap = new HashMap<>();
         for (Step step : this.stepList) {
-            List<Assertions> assertionList = this.beforeEach.getEvaluationList();
+            List<Assertion> assertionList = this.beforeEach.getEvaluationList();
             // cast before-each assertions to step assertions
             assertionList.forEach(ass -> ass.setStepId(step.getId()));
             assertionList.addAll(step.getEvaluationList());

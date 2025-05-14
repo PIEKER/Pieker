@@ -2,7 +2,7 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 import pieker.common.ConditionTemplate;
 import pieker.common.TestStep;
 import pieker.common.TrafficTemplate;
@@ -94,7 +94,7 @@ public class Step implements TestStep {
         beforeEach.testComponentMap.forEach((k,v) -> this.testComponentMap.put(k, v.copy()));
     }
 
-    protected List<Assertions> getEvaluationList(){
+    protected List<Assertion> getEvaluationList(){
         return (this.then != null) ? this.then.getEvaluationList() : new ArrayList<>();
     }
 
