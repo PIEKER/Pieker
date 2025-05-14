@@ -79,7 +79,11 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
                                     ComposeService sourceService = (ComposeService) source;
                                     JdbcLink<ComposeComponent> jdbcLink = new JdbcLink<>(source, target);
                                     putIfNotNullOrEmpty(jdbcLink.sourceRelatedEnvironmentVariables, "URL_VAR", jdbcDesc.getTargetUrlEnv());
+                                    putIfNotNullOrEmpty(jdbcLink.sourceRelatedEnvironmentVariables, "USER_VAR", jdbcDesc.getUsernameEnv());
+                                    putIfNotNullOrEmpty(jdbcLink.sourceRelatedEnvironmentVariables, "PASS_VAR", jdbcDesc.getPasswordEnv());
                                     jdbcLink.setJdbcUrl(sourceService.getEnvironmentValue(jdbcDesc.getTargetUrlEnv()));
+                                    jdbcLink.setUsername(sourceService.getEnvironmentValue(jdbcDesc.getUsernameEnv()));
+                                    jdbcLink.setPassword(sourceService.getEnvironmentValue(jdbcDesc.getPasswordEnv()));
                                     links.add(jdbcLink);
                                     break;
                                 default:
