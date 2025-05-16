@@ -28,7 +28,6 @@ public class JdbcLink<C extends Component> extends Link<C> implements ComponentL
     private String jdbcUrl;
     private String username;
     private String password;
-    private String databaseName;
 
     public JdbcLink(C source, C target) {
         this.setSourceComponent(source);
@@ -78,6 +77,11 @@ public class JdbcLink<C extends Component> extends Link<C> implements ComponentL
 
     public String getJdbcPort() {
         return getHostAndPort(this.jdbcUrl)[1];
+    }
+
+    public String getDatabaseName() {
+        String[] parts = this.jdbcUrl.split("/");
+        return parts.length > 1 ? parts[parts.length - 1] : null;
     }
 
     /**

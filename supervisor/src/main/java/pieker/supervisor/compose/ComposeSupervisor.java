@@ -54,6 +54,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             Thread.currentThread().interrupt();
             log.error("Start command interrupted: {}", e.getMessage());
         }
+        sleep(5000); // Sleep for 5 seconds to allow the system to start
     }
 
     @Override
@@ -174,7 +175,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
 
     private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link<ComposeComponent> link) {
         switch (link) {
-            case HttpLink<ComposeComponent> httpLink -> {
+            case HttpLink<ComposeComponent> _ -> {
                 ComposeService service = (ComposeService) component;
                 // FIXME: Implement to handle port properly (multiple port mappings, etc.)
                 trafficTemplate.startTraffic(new String[]{

@@ -37,6 +37,15 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
     @Override
     public void injectComponents(ScenarioTestPlan testPlan) throws ComponentInjectionException {
+
+        // Add Supervisor Proxy Component
+        ComposeService supervisorProxy = this.model.createComponent("PIEKER_PROXY_SUPERVISOR");
+        supervisorProxy.setImage("supervisor-proxy:test");
+        final String supervisorProxyPort = System.getProperty("supervisorPort", "42690");
+        supervisorProxy.addPortMapping(supervisorProxyPort, supervisorProxyPort);
+        supervisorProxy.updateEnvironment(this.model.getSupervisorDatabaseInfo().orElse(Map.of()));
+
+        // Add Test Components
         for (ScenarioComponent scenarioComponent : testPlan.getComponents()) {
             ComposeComponent targetComponent = this.model.getComponent(scenarioComponent.getTarget()).orElseThrow();
 
@@ -81,12 +90,6 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
                 }
             }
         }
-
-        // Add Supervisor Proxy Component
-        ComposeService supervisorProxy = this.model.createComponent("PIEKER_PROXY_SUPERVISOR");
-        supervisorProxy.setImage("supervisor-proxy:test");
-        final String supervisorProxyPort = System.getProperty("supervisorPort", "42690");
-        supervisorProxy.addPortMapping(supervisorProxyPort, supervisorProxyPort);
 
         if (!this.model.validate()) {
             throw new ComponentInjectionException("Model is invalid after injecting components. Check inputs.");
