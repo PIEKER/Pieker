@@ -24,6 +24,7 @@ public class ComposeService extends Service implements ComposeComponent, Environ
 
     private List<String> dependsOn;
     private Map<String, String> ports = new HashMap<>();
+    private Map<String, String> volumes = new HashMap<>();
     private String build;
     private List<String> networks;
     private List<String> configs;
@@ -48,6 +49,9 @@ public class ComposeService extends Service implements ComposeComponent, Environ
         putIfNotNullOrEmpty(attributeMap, "ports", this.ports.entrySet().stream()
                 .map(e -> e.getKey() + ":" + e.getValue())
                 .toList());
+        putIfNotNullOrEmpty(attributeMap, "volumes", this.volumes.entrySet().stream()
+                .map(e -> e.getKey() + ":" + e.getValue())
+                .toList());
         putIfNotNullOrEmpty(attributeMap, "build", this.build);
         putIfNotNullOrEmpty(attributeMap, "networks", this.networks);
         putIfNotNullOrEmpty(attributeMap, "configs", this.configs);
@@ -63,5 +67,9 @@ public class ComposeService extends Service implements ComposeComponent, Environ
 
     public void addPortMappings(Map<String, String> mappings) {
         this.ports.putAll(mappings);
+    }
+
+    public void addVolume(String localDir, String containerDir) {
+        this.volumes.put(localDir, containerDir);
     }
 }

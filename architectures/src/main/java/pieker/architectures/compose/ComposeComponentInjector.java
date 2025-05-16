@@ -14,6 +14,7 @@ import pieker.architectures.model.Link;
 import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,11 @@ import java.util.Map;
 public class ComposeComponentInjector extends AbstractComponentInjector<ComposeArchitectureModel, ComposeComponent>
         implements ComponentInjector<ComposeArchitectureModel, ComposeComponent> {
 
+    private static final String EXECUTION_NAME = System.getProperty("scenarioName");
+    private static final String PROJECT_ROOT = System.getProperty("projectRoot");
+    private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir", "../.gen/");
+    private static final String LOG_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "logs" + File.separator;
+
     public ComposeComponentInjector(ComposeArchitectureModel model) {
         this.setModel(model);
     }
@@ -35,6 +41,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             ComposeComponent targetComponent = this.model.getComponent(scenarioComponent.getTarget()).orElseThrow();
 
             ComposeService newComponent = this.model.createComponent(scenarioComponent.getName());
+            newComponent.addVolume(LOG_DIR, "/tmp/logs");
 
             List<Link<ComposeComponent>> linksToUpdate = new ArrayList<>();
             if (scenarioComponent.getSource() == null || scenarioComponent.getSource().isBlank()) {
