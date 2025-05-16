@@ -200,18 +200,11 @@ public class Main {
         }
         System.setProperty("scenarioName", testPlan.getName());
         Supervisor<?> supervisor = SupervisorFactory.createSupervisor(testPlan, architectureModel);
-
+        // Start Test Environment
         supervisor.setupTestEnvironment();
-
+        // Run Test Steps
         supervisor.executeTests();
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Error during test execution: {}", e.getMessage());
-        }
-
+        // Shutdown Test Environment
         supervisor.stopTestEnvironment();
         supervisor.destroyTestEnvironment();
     }

@@ -119,7 +119,8 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     @Override
     public void executeTests() {
         for (String testStepId : getTestPlan().getStepIds()) {
-            executeTestStep(testStepId);
+            final long testDurationMs = getTestPlan().getStepToDurationMap().get(testStepId);
+            executeTestStep(testStepId, testDurationMs);
         }
 
         if (getStatus() != Status.ERROR) {
@@ -128,7 +129,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     }
 
     @Override
-    public void executeTestStep(String testStepId) {
+    public void executeTestStep(String testStepId, long duration) {
 
         if (getStatus() == Status.ERROR) {
             return;
@@ -151,6 +152,8 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             beforeEachStep.getSequence();
         }
 
+        sleep(500); // Sleep for 0.5 seconds to allow for component behavior changes
+
         // Execute actual test step
         log.info("Starting test sequence...");
         for (TrafficTemplate trafficTemplate : testStep.getSequence()) {
@@ -163,10 +166,10 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
                 log.warn("No link found for target component: {}", trafficTemplate.getTarget());
                 continue;
             }
-
             handleComposeTraffic(trafficTemplate, component, link);
-
         }
+
+        sleep(duration); // Sleep for the duration of the test step
     }
 
     private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link<ComposeComponent> link) {
@@ -244,6 +247,20 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
         }
 
         return true;
+    }
+
+    /**
+     * Sleeps for the specified duration.
+     *
+     * @param duration the duration to sleep in milliseconds
+     */
+    private void sleep(long duration) {
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Error while waiting for test execution to finish: {}", e.getMessage());
+        }
     }
 
 }

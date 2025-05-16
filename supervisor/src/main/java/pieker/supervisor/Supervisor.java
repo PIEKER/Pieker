@@ -23,9 +23,12 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     void executeTests();
 
     /**
+     * Executes a test step with the given id and duration.
+     *
      * @param testStepId id of the test step to be executed
+     * @param duration   duration of the test step in milliseconds
      */
-    void executeTestStep(String testStepId);
+    void executeTestStep(String testStepId, long duration);
 
     /**
      * Stops all components in the test environment.
