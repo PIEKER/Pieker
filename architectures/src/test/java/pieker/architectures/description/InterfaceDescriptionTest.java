@@ -24,7 +24,7 @@ class InterfaceDescriptionTest {
         assertEquals("serviceA", architectureDescription.getComponents().getFirst().getName());
         assertEquals(2, architectureDescription.getComponents().getFirst().getDependencies().size());
         assertEquals("serviceC", architectureDescription.getComponents().getFirst().getDependencies().getFirst().getTarget());
-        assertEquals(ComponentLink.LinkType.HTTP_API, architectureDescription.getComponents().getFirst().getDependencies().getFirst().getType());
+        assertEquals(ComponentLink.LinkType.HTTP, architectureDescription.getComponents().getFirst().getDependencies().getFirst().getType());
     }
 
 }

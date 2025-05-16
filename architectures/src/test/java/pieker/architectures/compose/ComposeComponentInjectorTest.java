@@ -1,7 +1,7 @@
 package pieker.architectures.compose;
 
 import org.junit.jupiter.api.Test;
-import pieker.architectures.common.model.HttpApiLink;
+import pieker.architectures.common.model.HttpLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeService;
 
@@ -21,7 +21,7 @@ class ComposeComponentInjectorTest {
         final ComposeService a = new ComposeService("a");
         a.setEnvironment(new HashMap<>(Map.of("I", "1")));
         final ComposeService b = new ComposeService("b");
-        final HttpApiLink l = new HttpApiLink(a, b);
+        final HttpLink l = new HttpLink(a, b);
         model.addComponents(List.of(a, b));
         model.addLink(l);
 

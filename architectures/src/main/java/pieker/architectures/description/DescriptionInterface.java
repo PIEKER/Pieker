@@ -16,7 +16,7 @@ import pieker.architectures.model.ComponentLink;
         property = "interfaceType"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = DescriptionInterface.HttpApiInterface.class, name = "HTTP_API"),
+        @JsonSubTypes.Type(value = DescriptionInterface.HttpInterface.class, name = "HTTP"),
         @JsonSubTypes.Type(value = DescriptionInterface.JdbcInterface.class, name = "JDBC"),
         @JsonSubTypes.Type(value = DescriptionInterface.DatabaseInterface.class, name = "DATABASE")
 })
@@ -27,8 +27,8 @@ public class DescriptionInterface {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class HttpApiInterface extends DescriptionInterface {
-        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.HTTP_API;
+    public static class HttpInterface extends DescriptionInterface {
+        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.HTTP;
     }
 
     @Getter

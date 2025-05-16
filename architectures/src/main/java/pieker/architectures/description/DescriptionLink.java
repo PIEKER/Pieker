@@ -21,7 +21,7 @@ import java.util.List;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = DescriptionLink.HttpApiLink.class, name = "HTTP_API"),
+        @JsonSubTypes.Type(value = DescriptionLink.HttpLink.class, name = "HTTP"),
         @JsonSubTypes.Type(value = DescriptionLink.JdbcLink.class, name = "JDBC")
 })
 public class DescriptionLink {
@@ -32,8 +32,8 @@ public class DescriptionLink {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class HttpApiLink extends DescriptionLink {
-        private final ComponentLink.LinkType type = ComponentLink.LinkType.HTTP_API;
+    public static class HttpLink extends DescriptionLink {
+        private final ComponentLink.LinkType type = ComponentLink.LinkType.HTTP;
         private String targetUrlEnv;  // Name of environment variable for target URL
         private String targetHostEnv;  // Name of environment variable for target host
         private String targetPortEnv;  // Name of environment variable for target port

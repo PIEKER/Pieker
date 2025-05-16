@@ -2,9 +2,9 @@ components:
 
   - name: "service-a"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
     dependencies:
-      - type: HTTP_API
+      - type: HTTP
         target: "service-c"
         targetUrlEnv: COUNTER_URL
       - type: JDBC
@@ -15,7 +15,7 @@ components:
 
   - name: "service-b"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
     dependencies:
       - type: JDBC
         target: "db"
@@ -25,7 +25,7 @@ components:
 
   - name: "service-c"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
 
   - name: "db"
     provides:

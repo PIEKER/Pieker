@@ -3,7 +3,7 @@ package pieker.architectures.compose.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pieker.architectures.ArchitectureFactory;
-import pieker.architectures.common.model.HttpApiLink;
+import pieker.architectures.common.model.HttpLink;
 import pieker.architectures.compose.ComposeModelGenerator;
 import pieker.architectures.model.Link;
 
@@ -33,20 +33,20 @@ class ComposeArchitectureModelTest {
 
     @Test
     void testLinks() {
-        final HttpApiLink httpApiLink = new HttpApiLink(this.composeService, this.composeService);
+        final HttpLink httpLink = new HttpLink(this.composeService, this.composeService);
 
-        this.composeArchitectureModel.addLink(httpApiLink);
+        this.composeArchitectureModel.addLink(httpLink);
 
         assertNotNull(this.composeArchitectureModel.getLinks());
         assertEquals(1, this.composeArchitectureModel.getLinks().size());
-        assertTrue(this.composeArchitectureModel.getLinks().contains(httpApiLink));
-        assertEquals(httpApiLink, this.composeArchitectureModel.getLinksForSource(this.composeService).getFirst());
-        assertEquals(httpApiLink, this.composeArchitectureModel.getLinksForTarget(this.composeService).getFirst());
+        assertTrue(this.composeArchitectureModel.getLinks().contains(httpLink));
+        assertEquals(httpLink, this.composeArchitectureModel.getLinksForSource(this.composeService).getFirst());
+        assertEquals(httpLink, this.composeArchitectureModel.getLinksForTarget(this.composeService).getFirst());
 
         assertTrue(this.composeArchitectureModel.validate());
 
-        Link clonedLink = httpApiLink.clone();
-        assertInstanceOf(HttpApiLink.class, clonedLink);
+        Link clonedLink = httpLink.clone();
+        assertInstanceOf(HttpLink.class, clonedLink);
     }
 
     @Test

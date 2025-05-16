@@ -1,7 +1,7 @@
 package pieker.supervisor.compose;
 
 import lombok.extern.slf4j.Slf4j;
-import pieker.architectures.common.model.HttpApiLink;
+import pieker.architectures.common.model.HttpLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
 import pieker.architectures.compose.model.ComposeService;
@@ -141,7 +141,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Test step not found: " + testStepId));
 
-        log.info("Changing PIEKER component behavior ...");
+        log.info("Changing PIEKER component behavior...");
         setComponentBehaviorForTestStep(testStepId);
         log.info("Executing test step: {}", testStepId);
 
@@ -174,7 +174,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
 
     private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link<ComposeComponent> link) {
         switch (link) {
-            case HttpApiLink<ComposeComponent> apiLink -> {
+            case HttpLink<ComposeComponent> httpLink -> {
                 ComposeService service = (ComposeService) component;
                 // FIXME: Implement to handle port properly (multiple port mappings, etc.)
                 trafficTemplate.startTraffic(new String[]{

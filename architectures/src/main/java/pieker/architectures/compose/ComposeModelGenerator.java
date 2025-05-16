@@ -1,7 +1,7 @@
 package pieker.architectures.compose;
 
 import lombok.extern.slf4j.Slf4j;
-import pieker.architectures.common.model.HttpApiLink;
+import pieker.architectures.common.model.HttpLink;
 import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.compose.model.*;
 import pieker.architectures.description.InterfaceDescription;
@@ -68,12 +68,12 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
                         model.getComponent(descriptionLink.getTarget()).ifPresent(target -> {
                             // ... and create a new link between the source and target components of the corresponding type
                             switch (descriptionLink) {
-                                case DescriptionLink.HttpApiLink apiDesc:
-                                    HttpApiLink<ComposeComponent> httpApiLink = new HttpApiLink<>(source, target);
-                                    putIfNotNullOrEmpty(httpApiLink.sourceRelatedEnvironmentVariables, "URL_VAR", apiDesc.getTargetUrlEnv());
-                                    putIfNotNullOrEmpty(httpApiLink.sourceRelatedEnvironmentVariables, "HOST_VAR", apiDesc.getTargetHostEnv());
-                                    putIfNotNullOrEmpty(httpApiLink.sourceRelatedEnvironmentVariables, "PORT_VAR", apiDesc.getTargetPortEnv());
-                                    links.add(httpApiLink);
+                                case DescriptionLink.HttpLink httpDesc:
+                                    HttpLink<ComposeComponent> httpLink = new HttpLink<>(source, target);
+                                    putIfNotNullOrEmpty(httpLink.sourceRelatedEnvironmentVariables, "URL_VAR", httpDesc.getTargetUrlEnv());
+                                    putIfNotNullOrEmpty(httpLink.sourceRelatedEnvironmentVariables, "HOST_VAR", httpDesc.getTargetHostEnv());
+                                    putIfNotNullOrEmpty(httpLink.sourceRelatedEnvironmentVariables, "PORT_VAR", httpDesc.getTargetPortEnv());
+                                    links.add(httpLink);
                                     break;
                                 case DescriptionLink.JdbcLink jdbcDesc:
                                     ComposeService sourceService = (ComposeService) source;

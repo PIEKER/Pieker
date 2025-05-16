@@ -1,7 +1,7 @@
 package pieker.architectures.compose;
 
 import lombok.NoArgsConstructor;
-import pieker.architectures.common.model.HttpApiLink;
+import pieker.architectures.common.model.HttpLink;
 import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
@@ -60,10 +60,10 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
             // Connect proxy to target
             switch (linksToUpdate.getFirst().getType()) {
-                case HTTP_API -> connectHttpApiProxyToTarget(
+                case HTTP -> connectHttpApiProxyToTarget(
                         newComponent,
                         (ComposeService) targetComponent,
-                        (HttpApiLink<ComposeComponent>) linksToUpdate.getFirst()
+                        (HttpLink<ComposeComponent>) linksToUpdate.getFirst()
                 );
                 case JDBC -> connectJdbcProxyToTarget(
                         newComponent,
@@ -75,7 +75,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             // Connect sources to proxy
             for (Link<ComposeComponent> link : linksToUpdate) {
                 switch (link.getType()) {
-                    case HTTP_API -> injectHttpApiProxy(newComponent, (HttpApiLink<ComposeComponent>) link);
+                    case HTTP -> injectHttpApiProxy(newComponent, (HttpLink<ComposeComponent>) link);
                     case JDBC -> injectJdbcProxy(newComponent, (JdbcLink<ComposeComponent>) link);
                     case TCP, UNSUPPORTED -> {/*TODO*/}
                 }
@@ -100,13 +100,13 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             throw new ComponentInjectionException("Provided component type is null for target component: %s".formatted(targetComponent.getName()));
         }
         switch (interfaceType) {
-            case HTTP_API -> {
+            case HTTP -> {
                 ComposeService targetService = (ComposeService) targetComponent;
                 ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
                 ((ComposeService) proxy).setEnvironment(Map.of(
                         "SERVICE_BASE_URL", "http://" + targetComponent.getName() + ":" + targetService.getPorts().values().iterator().next()
                 ));
-                this.model.addLink(HttpApiLink.createForProxy(proxy, targetComponent));
+                this.model.addLink(HttpLink.createForProxy(proxy, targetComponent));
             }
             case DATABASE, JDBC -> {
                 // TODO: Handle different protocols for link-supertypes independently
@@ -135,9 +135,9 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
      * @param existingLink    Arbitrary existing link to the target component that shall be proxied
      */
     private void connectHttpApiProxyToTarget(ComposeService proxyComponent, ComposeService targetComponent,
-                                             HttpApiLink<ComposeComponent> existingLink) {
+                                             HttpLink<ComposeComponent> existingLink) {
         proxyComponent.setImage(proxyComponent.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
-        HttpApiLink<ComposeComponent> proxyToTargetLink = HttpApiLink.createForProxy(proxyComponent, targetComponent);
+        HttpLink<ComposeComponent> proxyToTargetLink = HttpLink.createForProxy(proxyComponent, targetComponent);
         this.model.addLink(proxyToTargetLink);
         final String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
         final String targetUrlValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getUrlVarName());
@@ -180,7 +180,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
      * @param proxyComponent Proxy component
      * @param existingLink   Existing HTTP API link
      */
-    private void injectHttpApiProxy(ComposeService proxyComponent, HttpApiLink<ComposeComponent> existingLink) {
+    private void injectHttpApiProxy(ComposeService proxyComponent, HttpLink<ComposeComponent> existingLink) {
         ComposeService sourceComponent = (ComposeService) existingLink.getSourceComponent();
         if (existingLink.getHostVarName() != null && existingLink.getPortVarName() != null) {
             sourceComponent.updateEnvironment(Map.of(existingLink.getHostVarName(), proxyComponent.getName()));

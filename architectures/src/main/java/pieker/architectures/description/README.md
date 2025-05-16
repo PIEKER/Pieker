@@ -11,9 +11,9 @@ components:
 
   - name: "service-a"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
     dependencies:
-      - type: HTTP_API
+      - type: HTTP
         target: "service-b"
         targetUrlEnv: TARGET_URL
       - type: JDBC
@@ -22,7 +22,7 @@ components:
 
   - name: "service-b"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
     dependencies:
       - type: JDBC
         target: "db"
@@ -32,12 +32,12 @@ components:
 The interface description file consists of a list of `components`. Each component has a `name`, that equals its name 
 in the architecture model defined by e.g. the Docker Compose YAML and can have an interface that the component itself 
 `provides` to other components with a given `interfaceType` as well as a list of `links` to other components. Each link 
-has at least a `type` and a `target` component. The type specifies the kind of connection, e.g. `HTTP_API` or `JDBC` 
+has at least a `type` and a `target` component. The type specifies the kind of connection, e.g. `HTTP` or `JDBC` 
 (defined in [ComponentLink.LinkType](../model/ComponentLink.java)), and the target is the name of the component that the
 link points to. Links are unidirectional, i.e. if a connection is bidirectional, two connections must be defined for 
 each component.
 
-Additionally, each link type has specific properties that must be defined. For example, an `HTTP_API` link must have at 
+Additionally, each link type has specific properties that must be defined. For example, an `HTTP` link must have at 
 least the name of the environment variable that contains the URL of the target component (`targetUrlEnv`).
 
 ## Object Structure

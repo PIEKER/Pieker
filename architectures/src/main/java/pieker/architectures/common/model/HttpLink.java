@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class HttpApiLink<C extends Component> extends Link<C> implements ComponentLink {
+public class HttpLink<C extends Component> extends Link<C> implements ComponentLink {
 
     /**
      * Map of names of environment variables related to the API link in the source component. These are used to identify
@@ -30,10 +30,10 @@ public class HttpApiLink<C extends Component> extends Link<C> implements Compone
     private int targetPort;
     private List<String> targetEndpoints;
 
-    public HttpApiLink(C source, C target) {
+    public HttpLink(C source, C target) {
         this.setSourceComponent(source);
         this.setTargetComponent(target);
-        this.setType(LinkType.HTTP_API);
+        this.setType(LinkType.HTTP);
         this.targetEndpoints = new ArrayList<>();
         this.sourceRelatedEnvironmentVariables = new HashMap<>();
         this.sourceRelatedEnvironmentVariables.put("HOST_VAR", null);
@@ -41,26 +41,26 @@ public class HttpApiLink<C extends Component> extends Link<C> implements Compone
         this.sourceRelatedEnvironmentVariables.put("URL_VAR", null);
     }
 
-    public HttpApiLink(C source, C target, String url) {
+    public HttpLink(C source, C target, String url) {
         this(source, target);
         this.url = url;
     }
 
-    public HttpApiLink(C source, C target, String targetHost, int targetPort) {
+    public HttpLink(C source, C target, String targetHost, int targetPort) {
         this(source, target);
         this.targetHost = targetHost;
         this.targetPort = targetPort;
     }
 
     /**
-     * Creates a new HttpApiLink with default values for a proxy component.
+     * Creates a new HttpLink with default values for a proxy component.
      *
      * @param proxy  Proxy component
      * @param target Target component
-     * @return HttpApiLink between the proxy and target components
+     * @return HttpLink between the proxy and target components
      */
-    public static <C extends Component> HttpApiLink<C> createForProxy(C proxy, C target) {
-        HttpApiLink<C> link = new HttpApiLink<>(proxy, target);
+    public static <C extends Component> HttpLink<C> createForProxy(C proxy, C target) {
+        HttpLink<C> link = new HttpLink<>(proxy, target);
         link.sourceRelatedEnvironmentVariables.put("HOST_VAR", "TARGET-PROXY-HOST");
         link.sourceRelatedEnvironmentVariables.put("PORT_VAR", "TARGET-PROXY-PORT");
         link.sourceRelatedEnvironmentVariables.put("URL_VAR", "TARGET-PROXY-URL");

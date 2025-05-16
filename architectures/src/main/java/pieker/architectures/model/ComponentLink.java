@@ -23,7 +23,7 @@ public interface ComponentLink extends Cloneable {
     @NoArgsConstructor
     enum LinkType {
         // Communication-related links
-        HTTP_API,
+        HTTP,
         TCP,
         // Storage-related links
         DATABASE,

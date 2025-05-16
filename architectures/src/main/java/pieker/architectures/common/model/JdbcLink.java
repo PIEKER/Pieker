@@ -41,11 +41,11 @@ public class JdbcLink<C extends Component> extends Link<C> implements ComponentL
     }
 
     /**
-     * Creates a new HttpApiLink with default values for a proxy component.
+     * Creates a new JdbcLink with default values for a proxy component.
      *
      * @param proxy  Proxy component
      * @param target Target component
-     * @return HttpApiLink between the proxy and target components
+     * @return JdbcLink between the proxy and target components
      */
     public static <C extends Component> JdbcLink<C> createForProxy(C proxy, C target) {
         JdbcLink<C> link = new JdbcLink<>(proxy, target);
