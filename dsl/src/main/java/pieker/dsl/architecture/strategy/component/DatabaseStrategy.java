@@ -6,6 +6,7 @@ import pieker.dsl.architecture.component.DatabaseProxy;
 import pieker.dsl.architecture.exception.ValidationException;
 import pieker.dsl.architecture.preprocessor.Validator;
 import pieker.dsl.architecture.strategy.KeywordStrategy;
+import pieker.dsl.util.Util;
 
 @Slf4j
 public class DatabaseStrategy implements KeywordStrategy {
@@ -13,17 +14,22 @@ public class DatabaseStrategy implements KeywordStrategy {
     public void process(String[] args) {
         log.debug("processing DATABASE node...");
         this.checkArguments(args);
-
-        DatabaseProxy databaseProxy = new DatabaseProxy(args[0]);
-        Engine.getCurrentStep().addStepComponent(databaseProxy.getIdentifier(), databaseProxy);
-        log.debug("added database-proxy for database '{}' in step '{}'", args[0], Engine.getCurrentStep().getName());
+        String[] identifiers = Util.convertStringToStringArray(args[0]);
+        for (String identifier : identifiers){
+            DatabaseProxy databaseProxy = new DatabaseProxy(identifier);
+            Engine.getCurrentStep().addStepComponent(databaseProxy.getIdentifier(), databaseProxy);
+            log.debug("added database-proxy for database '{}' in step '{}'", identifier, Engine.getCurrentStep().getName());
+        }
     }
 
     @Override
     public void validate(String[] args) {
         this.checkArguments(args);
-        Validator.updateIdentifierSet(args[0]);
-        Validator.updateComponentSet(args[0]);
+        String[] identifiers = Util.convertStringToStringArray(args[0]);
+        for (String identifier : identifiers){
+            Validator.updateIdentifierSet(identifier);
+            Validator.updateComponentSet(identifier);
+        }
     }
 
     private void checkArguments(String[] args){

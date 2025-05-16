@@ -6,7 +6,6 @@ import pieker.common.ConditionTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @Setter
