@@ -36,7 +36,7 @@ public final class DockerImageGenerator {
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir", "../.gen/");
     private static final String CODE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "code" + File.separator;
     private static final String IMAGE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "images" + File.separator;
-    private static final String SUPERVISOR_PROXY_DIR = PROJECT_ROOT + File.separator + "supervisor/src/main/java/pieker/supervisor/proxy";
+    private static final String SUPERVISOR_PROXY_DIR = PROJECT_ROOT + File.separator + "supervisor/src/main/java/pieker/supervisor/compose/proxy";
     // Templates
     private static final String DOCKERFILE_TEMPLATE = "docker/ProxyDockerfile.vm";
     private static final String DOCKERFILE_MINIMAL_TEMPLATE = "docker/ProxyDockerfileMinimal.vm";

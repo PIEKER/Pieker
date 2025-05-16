@@ -10,6 +10,8 @@ components:
       - type: JDBC
         target: "db"
         targetUrlEnv: SPRING_DATASOURCE_URL
+        usernameEnv: SPRING_DATASOURCE_USERNAME
+        passwordEnv: SPRING_DATASOURCE_PASSWORD
 
   - name: "service-b"
     provides:
@@ -18,6 +20,8 @@ components:
       - type: JDBC
         target: "db"
         targetUrlEnv: SPRING_DATASOURCE_URL
+        usernameEnv: SPRING_DATASOURCE_USERNAME
+        passwordEnv: SPRING_DATASOURCE_PASSWORD
 
   - name: "service-c"
     provides:

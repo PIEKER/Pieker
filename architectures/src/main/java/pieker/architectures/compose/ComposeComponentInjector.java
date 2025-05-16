@@ -103,7 +103,6 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             }
             case DATABASE, JDBC -> {
                 // TODO: Handle different protocols for link-supertypes independently
-                ComposeService targetService = (ComposeService) targetComponent;
                 List<Link<ComposeComponent>> links = this.model.getLinksForTarget(targetComponent);
                 if (links.isEmpty()) {
                     throw new ComponentInjectionException("No links found for target component: %s".formatted(targetComponent.getName()));
@@ -111,7 +110,9 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
                 JdbcLink<ComposeComponent> existingLink = (JdbcLink<ComposeComponent>) links.getFirst();
                 ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
                 ((ComposeService) proxy).setEnvironment(Map.of(
-                        "JDBC_PROXY_TARGET", existingLink.getJdbcHost() + ":" + existingLink.getJdbcPort()
+                        "DB_URL", existingLink.getJdbcUrl(),
+                        "DB_USER", existingLink.getUsername(),
+                        "DB_PASS", existingLink.getPassword()
                 ));
                 this.model.addLink(JdbcLink.createForProxy(proxy, targetComponent));
             }
@@ -157,11 +158,12 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         proxyComponent.setImage(proxyComponent.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
         JdbcLink<ComposeComponent> proxyToTargetLink = JdbcLink.createForProxy(proxyComponent, targetComponent);
         proxyToTargetLink.setJdbcUrl(existingLink.getJdbcUrl());
+        proxyToTargetLink.setUsername(existingLink.getUsername());
+        proxyToTargetLink.setPassword(existingLink.getPassword());
         this.model.addLink(proxyToTargetLink);
-        final String targetUrlValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getUrlVarName());
 
-        if (existingLink.getUrlVarName() != null && targetUrlValue != null) {
-            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getUrlVarName(), targetUrlValue));
+        if (existingLink.getUrlVarName() != null) {
+            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getUrlVarName(), existingLink.getJdbcHost() + ":" + existingLink.getJdbcPort()));
         }
     }
 

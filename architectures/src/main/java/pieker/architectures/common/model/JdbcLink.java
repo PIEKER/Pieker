@@ -21,11 +21,14 @@ public class JdbcLink<C extends Component> extends Link<C> implements ComponentL
      * which environment variables may need to be updated if a new Component/Link is added to the architecture model.
      *
      * <li>URL_VAR: Name of environment variable that sets the target JDBC-URL</li>
+     * <li>USER_VAR: Name of environment variable that sets the target username</li>
+     * <li>PASS_VAR: Name of environment variable that sets the target password</li>
      */
     public Map<String, String> sourceRelatedEnvironmentVariables;
     private String jdbcUrl;
     private String username;
     private String password;
+    private String databaseName;
 
     public JdbcLink(C source, C target) {
         this.setSourceComponent(source);
@@ -33,6 +36,8 @@ public class JdbcLink<C extends Component> extends Link<C> implements ComponentL
         this.setType(LinkType.JDBC);
         this.sourceRelatedEnvironmentVariables = new HashMap<>();
         this.sourceRelatedEnvironmentVariables.put("URL_VAR", null);
+        this.sourceRelatedEnvironmentVariables.put("USER_VAR", null);
+        this.sourceRelatedEnvironmentVariables.put("PASS_VAR", null);
     }
 
     /**
@@ -45,6 +50,8 @@ public class JdbcLink<C extends Component> extends Link<C> implements ComponentL
     public static <C extends Component> JdbcLink<C> createForProxy(C proxy, C target) {
         JdbcLink<C> link = new JdbcLink<>(proxy, target);
         link.sourceRelatedEnvironmentVariables.put("URL_VAR", "JDBC_PROXY_TARGET");
+        link.sourceRelatedEnvironmentVariables.put("USER_VAR", "DB_USER");
+        link.sourceRelatedEnvironmentVariables.put("PASS_VAR", "DB_PASS");
         return link;
     }
 
@@ -55,6 +62,14 @@ public class JdbcLink<C extends Component> extends Link<C> implements ComponentL
 
     public String getUrlVarName() {
         return this.sourceRelatedEnvironmentVariables.get("URL_VAR");
+    }
+
+    public String getUserVarName() {
+        return this.sourceRelatedEnvironmentVariables.get("USER_VAR");
+    }
+
+    public String getPassVarName() {
+        return this.sourceRelatedEnvironmentVariables.get("PASS_VAR");
     }
 
     public String getJdbcHost() {
