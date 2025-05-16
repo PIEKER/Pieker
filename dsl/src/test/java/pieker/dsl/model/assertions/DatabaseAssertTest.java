@@ -1,6 +1,7 @@
 package pieker.dsl.model.assertions;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,20 +54,7 @@ class DatabaseAssertTest {
 
     @Test
     void testDatabaseAssert(){
-        DatabaseAssert valid = getValidTestObject();
-        valid.setupConnectionParam(new JSONObject("""
-                {
-                    "targetUrlEnv": "<?>",
-                    "usernameEnv": "<?>",
-                    "passwordEnv": "<?>"
-                }
-                """.replaceFirst("<\\?>", postgres.getJdbcUrl())
-                    .replaceFirst("<\\?>", postgres.getUsername())
-                .replaceFirst("<\\?>", postgres.getPassword()))
-        );
-
-        // run evaluation
-        valid.evaluate();
+        DatabaseAssert valid = getDatabaseAssert();
         List<Evaluation> evaluationList = valid.getEvaluation();
 
         evaluationList.forEach(evaluation -> assertTrue(evaluation.isSuccess()));
@@ -103,6 +91,24 @@ class DatabaseAssertTest {
         invalid.evaluate();
         evaluationList = invalid.getEvaluation();
         evaluationList.forEach(evaluation -> assertFalse(evaluation.isSuccess()));
+    }
+
+    private @NotNull DatabaseAssert getDatabaseAssert() {
+        DatabaseAssert valid = getValidTestObject();
+        valid.setConnectionParam(new JSONObject("""
+                {
+                    "targetUrlEnv": "<?>",
+                    "usernameEnv": "<?>",
+                    "passwordEnv": "<?>"
+                }
+                """.replaceFirst("<\\?>", postgres.getJdbcUrl())
+                    .replaceFirst("<\\?>", postgres.getUsername())
+                .replaceFirst("<\\?>", postgres.getPassword()))
+        );
+
+        // run evaluation
+        valid.evaluate();
+        return valid;
     }
 
     DatabaseAssert getEmptyDatabaseAssert(){

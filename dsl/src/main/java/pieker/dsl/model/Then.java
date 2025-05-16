@@ -3,7 +3,7 @@ package pieker.dsl.model;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.assertions.Assert;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 import pieker.api.assertions.StubAssert;
 import pieker.dsl.architecture.component.StepComponent;
 import pieker.dsl.architecture.exception.PiekerProcessingException;
@@ -21,7 +21,6 @@ public class Then {
     private int line;
     private String description;
 
-    int assertAfter = 0;
     private final List<Assert> assertList = new ArrayList<>();
     private List<String> logAllList = new ArrayList<>();
 
@@ -58,10 +57,16 @@ public class Then {
             else throw new PiekerProcessingException("unknown component identifier provided. Logging could not be enabled");
         });
 
+        this.assertList.forEach(ass -> {
+            if (ass instanceof StubAssert) return;
+            if (stepComponentMap.containsKey(ass.getIdentifier())) stepComponentMap.get(ass.getIdentifier()).enableLogging();
+            else throw new PiekerProcessingException("unknown component identifier provided. Logging could not be enabled");
+        });
+
         this.assertList.forEach(Assert::processAssert);
     }
 
-    protected List<Assertions> getEvaluationList(){
+    protected List<Assertion> getEvaluationList(){
         return new ArrayList<>(this.assertList);
     }
 }

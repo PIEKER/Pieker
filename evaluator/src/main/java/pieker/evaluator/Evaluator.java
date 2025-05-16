@@ -1,10 +1,16 @@
 package pieker.evaluator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
+import pieker.common.ScenarioTestPlan;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +20,9 @@ import java.util.concurrent.*;
 @Slf4j
 public class Evaluator {
 
+    private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
     private Map<String, JSONObject> componentMap = new HashMap<>();
+    private Map<String, Map<String, File>> fileMap = new HashMap<>();
 
     public Evaluator(){}
 
@@ -32,28 +40,31 @@ public class Evaluator {
         this.componentMap.put(identifier, component);
     }
 
+    public void preprocessFiles(String path, String fileSuffix){
+        this.fileMap.put(fileSuffix, this.collectFiles(new File(path), fileSuffix));
+    }
+
     /**
      * Runs a concurrent evaluation of a provided assertion list. Depending on the systems-available thread count,
      * the evaluator addresses timing challenges of assertAfter configuration.
      *
      * @param assertionList list of assertion objects
-     * @param startingTime timestamp when the test run was initiated
      * @param timeout maximum evaluation time.
      */
-    public void run(List<Assertions> assertionList, long startingTime, int timeout){
-        int maxThreads = Runtime.getRuntime().availableProcessors() * 2; // or any other system-safe number
+    public void run(List<Assertion> assertionList, long timeout){
+        int maxThreads = Runtime.getRuntime().availableProcessors();
         log.debug("Thread limit: {}", maxThreads);
 
         ExecutorService threadPool = Executors.newFixedThreadPool(maxThreads);
 
         CountDownLatch latch = new CountDownLatch(assertionList.size());
 
-        for (Assertions assertion : assertionList) {
+        for (Assertion assertion : assertionList) {
             threadPool.submit(() -> {
                 try {
-                    log.info("[START] {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
+                    log.debug("[START] {}", assertion.getIdentifier());
                     this.evaluateStep(assertion);
-                    log.info("[END]   {} at {}s", assertion.getIdentifier(), secondsSince(startingTime));
+                    log.info("[FINISHED] {}", assertion.getIdentifier());
                 } catch (Exception e) {
                     log.error("Error in task {}: {}", assertion.getIdentifier(), e.getMessage(), e);
                 } finally {
@@ -82,16 +93,50 @@ public class Evaluator {
         }
     }
 
-    private static long secondsSince(long startMillis) {
-        return (System.currentTimeMillis() - startMillis) / 1000;
+    public void generateResultJson(ScenarioTestPlan scenario){
+        ObjectMapper om = new ObjectMapper();
+        try {
+            String path = OUTPUT_DIR + scenario.getName();
+            Files.createDirectories(Path.of(path));
+
+            // Convert an object to a JSON file
+            om.writerWithDefaultPrettyPrinter().writeValue(
+                    new File(path, "result.json"), scenario.getAssertionsMap());
+            log.info("JSON file created successfully for {}!", scenario.getName());
+        } catch (IOException e) {
+            log.error("unable to create JSON file for {}. Error: {}", scenario.getName(), e.getMessage());
+        }
     }
 
-    private void evaluateStep(Assertions ass){
-
-        if (ass.requiresConnectionParam()) {
-            ass.setupConnectionParam(this.componentMap.get(ass.getIdentifier()));
+    private Map<String, File> collectFiles(File directory, String fileSuffix){
+        Map<String, File> logFiles = new HashMap<>();
+        if (directory == null || !directory.exists()) {
+            log.info("Directory does not exist.");
+            return logFiles;
         }
 
+        File[] files = directory.listFiles();
+        if (files == null) return logFiles;
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                logFiles.putAll(collectFiles(file, fileSuffix));
+            } else if (file.getName().toLowerCase().endsWith(fileSuffix)) {
+                logFiles.put(file.getName(), file);
+            }
+        }
+
+        return logFiles;
+    }
+
+    private void evaluateStep(Assertion ass){
+
+        if (ass.requiresConnectionParam()) {
+            ass.setConnectionParam(this.componentMap.get(ass.getIdentifier()));
+        }
+
+        ass.setFileMap(this.fileMap);
         ass.evaluate();
     }
+
 }

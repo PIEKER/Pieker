@@ -1,6 +1,6 @@
 package pieker.common;
 
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,6 +54,6 @@ public interface ScenarioTestPlan {
     /**
      * @return Map of stepIds to a list of assertions, ordered by assertAfter attribute
      */
-    Map<String, List<Assertions>> getAssertionsMap();
+    Map<String, List<Assertion>> getAssertionsMap();
 
 }

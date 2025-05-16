@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pieker.architectures.model.ComponentLink;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,29 +16,33 @@ import java.util.List;
         property = "interfaceType"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = DescriptionInterface.HttpApiInterface.class, name = "HTTP_API"),
-        @JsonSubTypes.Type(value = DescriptionInterface.StorageInterface.class, name = "STORAGE")
+        @JsonSubTypes.Type(value = DescriptionInterface.HttpInterface.class, name = "HTTP"),
+        @JsonSubTypes.Type(value = DescriptionInterface.JdbcInterface.class, name = "JDBC"),
+        @JsonSubTypes.Type(value = DescriptionInterface.DatabaseInterface.class, name = "DATABASE")
 })
 public class DescriptionInterface {
 
-    private ComponentLink.LinkType interfaceType;
-    private String host;
-    private int port;
-    private String url;
+    public ComponentLink.LinkType interfaceType;
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class HttpApiInterface extends DescriptionInterface {
-        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.HTTP_API;
-        private List<String> endpoints;
+    public static class HttpInterface extends DescriptionInterface {
+        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.HTTP;
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class StorageInterface extends DescriptionInterface {
-        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.STORAGE;
+    public static class JdbcInterface extends DescriptionInterface {
+        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.JDBC;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class DatabaseInterface extends DescriptionInterface {
+        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.DATABASE;
     }
 
 }

@@ -60,4 +60,4 @@ description: DOC_STRING;
 step: STEP line (description | NEWLINE) given? when? then? ;
 beforeEach: BEFORE_EACH NEWLINE given when? then? ;
 
-line: CHAR+ ;
+line: CHAR* (CHAR+ | whenKey+) CHAR*;

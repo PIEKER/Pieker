@@ -63,9 +63,10 @@ Pieker
 
 ### Prerequisites
 
-- Java 23
-- Gradle (8.12)
+- Java 23 or newer
+- Gradle (8.14)
 - Git
+- Docker
 
 ### Installation
 
@@ -81,8 +82,8 @@ Build executables: `./gradlew assemble`
 
 To use PIEKER with Docker Compose based systems you need:
 
-  - Java 23 (JRE)
-  - Docker
+  - Java 23 or 24 (JRE) installed
+  - Docker Demon running
 
 In the [`gradle.properties`](./gradle.properties) file set the required input properties to match your system. Required 
 are at least:
@@ -93,8 +94,7 @@ are at least:
 
 You can run PIEKER with the following command:
 
-`./gradlew :app:run` (Alternatively run the [main class](app/src/main/java/pieker/app/Main.java) of the [`app`](app/) 
-module in your IDE manually)
+`./gradlew :app:run`
 
 It is recommended to clear the `genDir` specified in the [`gradle.properties`](./gradle.properties) before every run.
 
@@ -163,7 +163,7 @@ environment.
 - [x] Define and implement DSL for test specification
 - [x] Automatic generation of test code from DSL
 - [x] Automatic injection of test code into test containers and architectures
-- [ ] _Automatic deployment of a test environment_
+- [x] Automatic deployment of a test environment
 - [ ] _Automatic test execution and evaluation_
 - [ ] First prototype for testing Docker Compose architectures
 - [ ] First release for Docker Compose architectures

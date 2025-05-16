@@ -20,9 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class is responsible for generating Docker images for the components defined in a test plan.
@@ -38,7 +36,7 @@ public final class DockerImageGenerator {
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir", "../.gen/");
     private static final String CODE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "code" + File.separator;
     private static final String IMAGE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "images" + File.separator;
-    private static final String SUPERVISOR_PROXY_DIR = PROJECT_ROOT + File.separator + "supervisor/src/main/java/pieker/supervisor/proxy";
+    private static final String SUPERVISOR_PROXY_DIR = PROJECT_ROOT + File.separator + "supervisor/src/main/java/pieker/supervisor/compose/proxy";
     // Templates
     private static final String DOCKERFILE_TEMPLATE = "docker/ProxyDockerfile.vm";
     private static final String DOCKERFILE_MINIMAL_TEMPLATE = "docker/ProxyDockerfileMinimal.vm";
@@ -79,23 +77,22 @@ public final class DockerImageGenerator {
         log.info("Generating image for {} components", componentNames.size());
         log.debug("Components: {}", componentNames);
 
-        final List<Path> proxyJARs = FileSystemUtils.getJARsInDir(CODE_DIR)
-                .stream()
-                .filter(jar -> componentNames.contains(jar.getFileName()
-                        .toString()
-                        .replace(".jar", "")))
-                .toList();
+        for (String componentName : componentNames) {
+            final List<Path> componentJARs = FileSystemUtils.getJARsInDir(CODE_DIR + File.separator + componentName + File.separator + "jars");
+            log.debug("For component '{}' found {} JARs: {}", componentName, componentJARs.size(), componentJARs.stream().map(Path::getFileName).toList());
 
-        log.debug("Found {} JARs: {}", proxyJARs.size(), proxyJARs.stream().map(Path::getFileName).toList());
+            Map<String, String> jarPaths = new HashMap<>();
+            for (final Path componentJAR : componentJARs) {
+                jarPaths.put("jars/" + componentJAR.getFileName().toString(), componentJAR.getFileName().toString());
+            }
+            final String mainJarPath = "jars/" + componentName + ".jar";
+            jarPaths.put(mainJarPath, "app.jar");
 
-        // Generate Dockerfiles for each component
-        for (Path proxyJar : proxyJARs) {
-            final String componentName = proxyJar.getFileName().toString().replace(".jar", "");
             final String dockerFilePath = CODE_DIR + componentName + File.separator;
             final VelocityContext context = new VelocityContext();
-            context.put("jarPath", "jars/" + proxyJar.getFileName());
+            context.put("jarPaths", jarPaths);
             final String templatePath = MINIMAL_IMAGE ? DOCKERFILE_MINIMAL_TEMPLATE : DOCKERFILE_TEMPLATE;
-            log.debug("Generating {}Dockerfile for {} at {}", MINIMAL_IMAGE ? "minimal " : "", proxyJar.getFileName(), dockerFilePath);
+            log.debug("Generating {}Dockerfile for {} at {}", MINIMAL_IMAGE ? "minimal " : "", componentName, dockerFilePath);
             TEMPLATE_PROCESSOR.processTemplate(templatePath, context, "Dockerfile", dockerFilePath);
         }
 
@@ -105,14 +102,16 @@ public final class DockerImageGenerator {
             log.debug("Building image for component {} at {}", componentName, buildContextPath);
             // Build Docker image with name "<componentName>:<scenarioName>"
             final String imageId = buildImage(buildContextPath, componentName, System.getProperty("scenarioName", "latest"));
-            // Save Docker image to file
-            log.debug("Saving image {} for component {} to file", imageId, componentName);
-            saveImage(imageId, componentName, IMAGE_DIR);
+            // Save Docker image to file, if enabled
+            if (System.getProperty("saveDockerImages", "false").equals("true")) {
+                log.debug("Saving image {} for component {} to file", imageId, componentName);
+                saveImage(imageId, componentName, IMAGE_DIR);
+            }
         }
 
         // Build Supervisor Proxy Image
         final String imageId = buildImage(SUPERVISOR_PROXY_DIR, "supervisor-proxy", "test");
-        saveImage(imageId, "supervisor-proxy", IMAGE_DIR);
+        if (System.getProperty("saveDockerImages", "false").equals("true")) saveImage(imageId, "supervisor-proxy", IMAGE_DIR);
     }
 
     /**

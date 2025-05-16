@@ -1,23 +1,37 @@
 package pieker.api.assertions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.assertions.util.Util;
-import pieker.api.Assertions;
+import pieker.api.Assertion;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
 @Setter
-public abstract class Assert implements Assertions {
+public abstract class Assert implements Assertion {
 
+    @JsonIgnore
     protected final String assertPlugin;
+    @JsonIgnore
+    protected String stepId;
+
     protected String identifier;
 
+    @JsonIgnore
+    private Map<String, Map<String, File>> fileMap = new HashMap<>();
+
+    @JsonIgnore
     protected final List<Bool> boolList = new ArrayList<>();
+    @JsonIgnore
     protected final List<Equals> equalsList = new ArrayList<>();
+    @JsonIgnore
     protected final List<Null> nullList = new ArrayList<>();
 
     protected Assert(String assertPlugin, String identifier){
@@ -59,6 +73,16 @@ public abstract class Assert implements Assertions {
      */
     public void addNullAssertion(String isNull, String value){
         this.nullList.add(new Null(Util.parseBoolean(isNull), value));
+    }
+
+    /**
+     * Marks all Assertions as invalid, due to global error.
+     * @param message describing error
+     */
+    public void invalidateAssert(String message){
+        this.boolList.forEach(bool -> bool.setErrorMessage(message));
+        this.equalsList.forEach(equals -> equals.setErrorMessage(message));
+        this.nullList.forEach(null1 -> null1.setErrorMessage(message));
     }
 
     /**

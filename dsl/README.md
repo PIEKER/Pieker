@@ -33,37 +33,36 @@ some ideas, open questions and identified challenges will be added [here](#chall
 ## DSL
 The DSL is designed to support Behaviour Driven Development. That means a test step can be defined using ``Given``, ``When``
 and ``Then`` keywords. However, the scope of each keyword is slightly adapted in favour to the aim of this tool. 
-Each section of a Gherkin (``.feature``) file is explained in the code example below. In the following, subsections of the
-Gherking file are declared as:
+In the following, subsections of the Gherking file are declared as:
 - _test-configuration_: includes the whole file, starting on the 'feature' node
-- _test-run_: includes a single section beginning with a 'scenario' node. (A _test-configuration_ can contain multiple _test-runs_)
-- _test-step_: includes a single section beginning with a 'step' node. (A _test-run_ can contain multiple _test-steps_)
+- _test-scenario_: includes a single section beginning with a 'scenario' node. (A _test-configuration_ can contain multiple _test-scenarios_)
+- _test-step_: includes a single section beginning with a 'step' node. (A _test-scenario_ can contain multiple _test-steps_)
 
 The idea is to allow a single configuration file but multiple run possibilities. Further, an integration test can be 
-defined by including _test-runs_ via an enable flag or else.
+defined by including _test-scenarios_ via an enable flag or else.
 A detailed example of the PIEKER DSL is located [here](./src/main/resources/dsl/example.feature).
 
 ### Parser
 
-A brief overview of the [```.dsl/parse```](./src/main/java/pieker/dsl/parser) directory and its dependencies is documented
+A brief overview of the [```.dsl/parser```](./src/main/java/pieker/dsl/parser) directory and its dependencies is documented
 [here](./doc/images/classdiagram-dsl.svg). The parsing algorithm itself is documented [here](./doc/images/sequenzdiagramm-main-entry.svg).
 
 In general the idea of the parsing algorithm is, to construct a traversable model-hierarchy. This hierarchy represents a Gherkin file
 as accessible runtime Java classes. Its root node is the [Feature](./src/main/java/pieker/dsl/model/Feature.java) class. Walking
 sub-nodes of each model, allows the developer to access specific characteristics and implement further processing. As displayed
 in the parsing-sequence-diagram, the [FeatureParser](./src/main/java/pieker/dsl/parser/FeatureParser.java) orchestrates the construction
-of the Pieker-Model-Tree (PMT). It provides an API method, requiring only a file-path along with a root node object. Calling the API, the
-parser begins to initiate setup instances, meaning to load a Gherkin file and construct an AST based on 
+of the Pieker-Model-Tree (PMT). Calling the Main class of the DSL package, the
+parser begins to initiate setup instances. That means to load a Gherkin file and construct an AST based on 
 ANTLR [grammar](./src/main/java/pieker/dsl/antlr/grammar) and [generated code](./src/main/java/pieker/dsl/antlr/gen). Depending on, whether 
 the setup detects major syntax issues, violating the defined grammar, the parser continues to walk the AST translating all relevant
 data to the provided root node object, the PMT. Due to the inheritance relationship of the FeatureParser class to the 
 [PiekerParserBaseListener](./src/main/java/pieker/dsl/antlr/gen/PiekerParserBaseListener.java) as shown in the class diagram, the parser
-implements node-specific 'Listener Methods'. Such methods are called by ParseTreeWalker, a dependency class of ANTLR, allowing to
-implement the required translation behaviour. For example, entering a 'scenario' node, the parser retrieves meta-data and links the newly
+implements node-specific 'Listener Methods'. Such methods are called by a ParseTreeWalker, a dependency class of ANTLR, allowing to
+implement the required translation behavior. For example, entering a 'scenario' node, the parser retrieves meta-data and links the newly
 created object with its predecessor node. Tracking of predecessor nodes requires caching information of the latest node, a walker 
 has visited. To balance caching and processing, only 'feature', 'scenario' and 'step' nodes have listener methods. Each 
 node following a 'step', such as 'given' 'when' and 'then', are handled directly after entering the correlating 'step' 
-node. As a result only the 'feature' latest 'scenario' node , needs to be cached to add corresponding links. The walker 
+node. As a result only the 'feature's latest 'scenario' node , needs to be cached to add corresponding links. The walker 
 uses depth-first-search supporting the implementation. Therefore, each 'step' processed, is rightfully linked to its 
 predecessor 'scenario'.
 
@@ -79,7 +78,7 @@ Any leading or trailing spaces are handled. The value can be referenced using a 
 ```
 There are three ways to define variables among a _test-configuration_. First,
 the user can configure global variables. Every 'feature' node contains an optional 'background' node. This node can be used
-to define data that applies to every _test-run_ in the _test-configuration_. Therefore, every variable defined in this node
+to define data that applies to every _test-scenario_ in the _test-configuration_. Therefore, every variable defined in this node
 is always accessible. Second, the user may define data directly following to the 'scenario' node, making it usable for
 every _test-step_ linked to the 'scenario' node. At last, some variables may be declared in a _test-step_ directly. Meeting the
 requirements of BDD, they are allowed in a 'when' section only. Again, only the nodes linked to the 'step' node can access
@@ -111,10 +110,10 @@ are no edges with a dependency reference left. For further information see
 
 ### Values
 Values represent the heart of a _test-configuration_. A value can be used to define input, proxy, as well as
-output data. To allow broad possibilities of how a test can be specified PIEKER supports different ways of 
-using values. The first and most obvious way is to set an atomic number or json directly into the DSL. However, values
+output data. To allow broad possibilities of how a test can be specified, PIEKER supports different ways of 
+using values. The first and most obvious way is to set an atomic number or json directly in the DSL. However, values
 such as request json can be large and complex, leading to decreased readability of a test configuration. Further, a test 
-may require random data. To address these issues PIEKER uses PIEKER functions.  
+may require random data. To address these issues PIEKER uses self implemented functions.  
 
 #### Automatic Value Generation
 To create a unique test-setup using a single DSL file, PIEKER allows a limited amount of automatic value generation. 
@@ -192,9 +191,9 @@ operating on the provided structure. In the beginning, a [Converter](./src/main/
 traverses the PMT and translates variables as mentioned [here](#variables). The Converter creates a state of the PMT, 
 that is readable for validation. The Validator checks for semantic pitfalls, that were not detected by the Parser beforehand. 
 Details will be explained [here](#validator). After the [preprocessor](./src/main/java/pieker/dsl/architecture/preprocessor/) 
-finished, the generator starts evaluating conditions of every _**test-step**_ in every _**test-scenario**_. 
+finishes, the generator starts evaluating conditions of every _**test-step**_ in every _**test-scenario**_. 
 
-Before going into any details of the Code-Engines algorithm, definitions of _test-step_ and _test-scenario_ are extended.
+Before going into any details of the Engines algorithm, definitions of _test-step_ and _test-scenario_ are extended.
 In [PIEKER DSL](#pieker---dsl) _test-step_ and _test-scenario_ are bound to syntactical properties of the domain-specific
 language. Subsequently, a _test-step_ describes a single state of a software-test. A _test-step_ consists of an 
 architectural description (`Given`), related but optional test-conditions (`When`) and monitored characteristics (`Then`). 
@@ -205,7 +204,6 @@ keywords vary, representing different architectural and code specific properties
 node contains information about an automatic-generated test-component. Possibilities are:
 - Proxy (Service/Database):
   - `@service $identifier`
-  - `@url $args` (IMPORTANT: `url` and `service` are exclusive iff they have the same service identifier)
   - `@database $identifier`
 - Supervisor
   - `@request $args`
@@ -220,9 +218,9 @@ _**test-conditions**_. A _test-condition_ is located in a `When` node, describin
 Each condition is mapped to their template model, implementing a conditions' semantic, along with any defined meta-data from 
 the PIEKER DSL. `Then` nodes are used to guide an evaluator module and specify information to monitor for any proxy component.
 
-The Code-Engine is designed to take a PMT as an input and create output depending on the provided semantics. Detailed
-(pre-)processing is managed by subclasses (Converter, Validator, ...) as mentioned before and patterns such as the 
-[strategy pattern](./src/main/java/pieker/dsl/architecture/strategy) and cached in [template models](./src/main/java/pieker/dsl/architecture/template).
+The Engine is designed to take a PMT as an input and create output depending on the provided semantics. Detailed
+(pre-)processing is managed by subclasses (Converter, Validator, ...) as mentioned before and a pattern called 
+[strategy pattern](./src/main/java/pieker/dsl/architecture/strategy) to cache data in [template models](./src/main/java/pieker/dsl/architecture/template).
 As an entrypoint, each PMT `step` child-node provides a method to evaluate _condition_ statements. It is to mention, the
 difference of the expression '_condition_' and '_test-conditions_' in the context of PMT and PMT-Processing. 
 The former is defined as before, whilst the latter describes only child-nodes of `When`. Each _condition_ has a 
@@ -240,7 +238,7 @@ strategy package implements node-specific processing methods to create both arch
 to its tree-structural design the PMT is also traversed using DFS, allowing the Engine to generate a collection of Proxies
 and Traffics, implied by the PMT nodes. At first, each node processing leads to a single proxy or traffic instance. 
 However, some PMT nodes may reference the same component, only changing its characteristics throughout a _test-scenario_.
-Finally, the Engine unifies each data, creating software components with step-individual behavior.
+Finally, the Engine unifies every container related data, creating software components with step-individual behavior.
 
 The dependencies of each package involved is stated in the following diagrams:
 

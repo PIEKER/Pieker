@@ -8,6 +8,7 @@ import pieker.architectures.model.ArchitectureModel;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.plugin.PluginManager;
 import pieker.dsl.model.Feature;
+import pieker.evaluator.Evaluator;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
 import pieker.generators.components.docker.DockerImageGenerator;
@@ -17,6 +18,7 @@ import pieker.supervisor.SupervisorFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 @Slf4j
 public class Main {
@@ -36,7 +38,16 @@ public class Main {
     private static ScenarioTestPlan testPlan;
     private static ArchitectureModel<?> architectureModel;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    private static final String PROJECT_ROOT = System.getProperty("projectRoot");
+    private static final String DSL_FILE_PATH = PROJECT_ROOT + System.getProperty("dslFilePath");
+    private static final String DSL_RESOURCE_DIRECTORY = PROJECT_ROOT + System.getProperty("dslResourceDirectory");
+    private static final String ARCHITECTURE_FILE_PATH = PROJECT_ROOT + System.getProperty("architectureFile");
+    private static final String INTERFACE_DESCRIPTION_FILE_PATH = PROJECT_ROOT + System.getProperty("interfaceDescriptionFile");
+    private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir");
+
+    private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
+
+    public static void main(String[] args) throws IOException {
 
         log.info("""
                         {}
@@ -49,13 +60,15 @@ public class Main {
                              Architecture file:          {},
                              Interface description file: {},
                              Installed Plugins:          {},
+                             assertTimeout:              {}
                         """,
                 PIEKER_LOGO,
-                System.getProperty("dslFilePath"),
-                System.getProperty("dslResourceDirectory"),
-                System.getProperty("architectureFile"),
-                System.getProperty("interfaceDescriptionFile"),
-                PLUGIN_MANAGER
+                DSL_FILE_PATH,
+                DSL_RESOURCE_DIRECTORY,
+                ARCHITECTURE_FILE_PATH,
+                INTERFACE_DESCRIPTION_FILE_PATH,
+                PLUGIN_MANAGER,
+                ASSERT_TIMEOUT
         );
 
         // Check setup
@@ -67,11 +80,16 @@ public class Main {
         // Parse DSL, Architecture and Interface description files, generate test code, test components, and test environment
         preprocessing();
 
+        if (System.getProperty("runTests", "true").equals("false")) {
+            log.info("Skipping test execution as per configuration.");
+            System.exit(0);
+        }
+
         // Test Execution
         runTests();
 
         // Evaluation
-        // TODO
+        evaluate();
     }
 
     /**
@@ -81,15 +99,15 @@ public class Main {
      */
     private static boolean checkSetup() {
         boolean isValid = true;
-        if (System.getProperty("dslFilePath") == null) {
+        if (DSL_FILE_PATH == null) {
             log.error("No DSL file path provided. Please set the 'dslFilePath' property.");
             isValid = false;
         }
-        if (System.getProperty("architectureFile") == null) {
+        if (ARCHITECTURE_FILE_PATH == null) {
             log.error("No architecture file path provided. Please set the 'architectureFile' property.");
             isValid = false;
         }
-        if (System.getProperty("interfaceDescriptionFile") == null) {
+        if (INTERFACE_DESCRIPTION_FILE_PATH == null) {
             log.error("No interface description file path provided. Please set the 'interfaceDescriptionFile' property.");
             isValid = false;
         }
@@ -103,7 +121,7 @@ public class Main {
      */
     private static void preprocessing() throws IOException {
         // Parse DSL
-        Feature feature = pieker.dsl.Main.parse(System.getProperty("dslFilePath"), System.getProperty("dslResourceDirectory"), PLUGIN_MANAGER);
+        Feature feature = pieker.dsl.Main.parse(DSL_FILE_PATH, DSL_RESOURCE_DIRECTORY, PLUGIN_MANAGER);
 
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
             pieker.dsl.architecture.Engine.validate(feature);
@@ -156,8 +174,8 @@ public class Main {
 
         // Generate Test Environment
         log.info("Starting test architecture generation...");
-        final Path architectureFilePath = Path.of(System.getProperty("architectureFile"));
-        final Path interfaceDescriptionFilePath = Path.of(System.getProperty("interfaceDescriptionFile"));
+        final Path architectureFilePath = Path.of(ARCHITECTURE_FILE_PATH);
+        final Path interfaceDescriptionFilePath = Path.of(INTERFACE_DESCRIPTION_FILE_PATH);
         final ModelGenerator<?> modelGenerator = ArchitectureFactory.createGenerator(architectureFilePath);
         final ArchitectureModel<?> model = modelGenerator.generate(architectureFilePath, interfaceDescriptionFilePath);
         final ComponentInjector<?, ?> componentInjector = ArchitectureFactory.createInjector(model);
@@ -167,7 +185,7 @@ public class Main {
 
         if (System.getProperty("skipFileGeneration", "false").equals("false")) {
             log.info("Finished test architecture generation. Storing results...");
-            final String filePath = System.getProperty("genDir") + File.separator + System.getProperty("scenarioName") + File.separator + "docker-compose.yml";
+            final String filePath = GEN_DIR + File.separator + System.getProperty("scenarioName") + File.separator + "docker-compose.yml";
             model.saveToFile(filePath);
         }
 
@@ -185,16 +203,25 @@ public class Main {
         }
         System.setProperty("scenarioName", testPlan.getName());
         Supervisor<?> supervisor = SupervisorFactory.createSupervisor(testPlan, architectureModel);
+        // Start Test Environment
         supervisor.setupTestEnvironment();
+        // Run Test Steps
         supervisor.executeTests();
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Error during test execution: {}", e.getMessage());
-        }
+        // Shutdown Test Environment
         supervisor.stopTestEnvironment();
-        //supervisor.destroyTestEnvironment();
+        supervisor.destroyTestEnvironment();
+    }
+
+    private static void evaluate(){
+        Evaluator evaluator = new Evaluator(); //TODO pass connection parameters
+        evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty("scenarioName"), ".log");
+        testPlan.getStepIds().forEach(sId ->
+            evaluator.run(
+                    testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
+                    ASSERT_TIMEOUT
+            )
+        );
+        evaluator.generateResultJson(testPlan);
     }
 
 }

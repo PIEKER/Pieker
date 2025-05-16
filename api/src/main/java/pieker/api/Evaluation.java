@@ -2,9 +2,30 @@ package pieker.api;
 
 public interface Evaluation {
 
+    /**
+     * @return assert string depending on the DSL configuration
+     */
     String getAssertType();
+
+    /**
+     * @return the DSL value and expression into a single String.
+     */
+    String getAssertExpression();
+
+    /**
+     * @return true if evaluation was successful, false otherwise
+     */
     boolean isSuccess();
+
+    /**
+     * @return error message, if evaluation fails
+     */
     String getErrorMessage();
+
+    /**
+     * Entrypoint for triggering an evaluation.
+     * @param arg processed value, ready for testing
+     */
     void evaluate(String arg);
 
 }

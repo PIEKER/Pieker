@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.model.AbstractArchitectureModel;
 import pieker.architectures.model.ArchitectureModel;
 
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents a Docker Compose architecture model.
@@ -94,7 +96,7 @@ public class ComposeArchitectureModel extends AbstractArchitectureModel<ComposeC
      */
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("version", this.version);
+        if (this.version != null && !this.version.isBlank()) map.put("version", this.version);
         putIfNotEmpty(map, "services", this.getComposeServices());
         putIfNotEmpty(map, "volumes", this.getComposeVolumes());
         putIfNotEmpty(map, "networks", this.getComposeNetworks());
@@ -134,5 +136,23 @@ public class ComposeArchitectureModel extends AbstractArchitectureModel<ComposeC
     @Override
     protected ComposeService createComponentInstance(String name) {
         return new ComposeService(name);
+    }
+
+    public Optional<Map<String, String>> getSupervisorDatabaseInfo() {
+        JdbcLink<ComposeComponent> databaseLink = getLinks().stream()
+                .filter(link -> link instanceof JdbcLink)
+                .map(link -> (JdbcLink<ComposeComponent>) link)
+                .findFirst()
+                .orElse(null);
+        if (databaseLink == null) {
+            return Optional.empty();
+        }
+        Map<String, String> databaseInfo = new HashMap<>();
+        databaseInfo.put("DB_USER", databaseLink.getUsername());
+        databaseInfo.put("DB_PASS", databaseLink.getPassword());
+        databaseInfo.put("DB_HOST", databaseLink.getJdbcHost());
+        databaseInfo.put("DB_PORT", databaseLink.getJdbcPort());
+
+        return Optional.of(databaseInfo);
     }
 }

@@ -13,7 +13,7 @@ import java.util.Random;
 
 //PROXY-SERVER
 public class $className {
-    private static final String LOG_FILE = "app/logs/proxy.log";
+    private static final String LOG_ROOT = "/tmp/logs/";
     private static final String PROXY_IDENTIFIER = "${proxyIdentifier}";
     private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
     private static final Random RANDOM = new Random();
@@ -174,9 +174,17 @@ public class $className {
     }
 
     private static void log(String message) {
-        try (FileWriter writer = new FileWriter(LOG_FILE, true)) {
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            writer.write(timestamp + " - " + message + System.lineSeparator());
+        try {
+            File logFile = new File(LOG_ROOT + PROXY_IDENTIFIER + ".log");
+            File parentDir = logFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs(); // Create parent directories if they don't exist
+            }
+
+            try (FileWriter writer = new FileWriter(logFile, true)) {
+                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                writer.write(timestamp + " - " + message + System.lineSeparator());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

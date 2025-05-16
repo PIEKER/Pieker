@@ -98,7 +98,9 @@ public class Engine {
     }
 
     private static void createSupervisorTraffic(Scenario scenario) {
-        scenario.getBeforeEach().createSupervisorTraffic();
+        if (scenario.getBeforeEach() != null){
+            scenario.getBeforeEach().createSupervisorTraffic();
+        }
         scenario.getStepList().forEach(Step::createSupervisorTraffic);
     }
 

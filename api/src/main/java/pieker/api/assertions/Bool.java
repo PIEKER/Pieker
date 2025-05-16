@@ -1,5 +1,6 @@
 package pieker.api.assertions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.jexl3.*;
@@ -12,8 +13,11 @@ import pieker.api.Evaluation;
 @Getter
 public class Bool implements Evaluation {
 
+    @JsonIgnore
     private final boolean boolType;
+    @JsonIgnore
     private String expression;
+    @JsonIgnore
     private String value;
     private boolean success = false;
     private String errorMessage = "";
@@ -44,7 +48,7 @@ public class Bool implements Evaluation {
 
     @Override
     public String getAssertType() {
-        return this.getClass().getSimpleName();
+        return "assert" + (this.boolType ? "True" : "False");
     }
 
     public void evaluate(String arg){
@@ -54,8 +58,19 @@ public class Bool implements Evaluation {
             JexlContext context = new MapContext();
             boolean result = (Boolean) jexlExpression.evaluate(context);
             this.success = this.boolType == result;
+            if (!this.success){
+                this.errorMessage = "Expression failed: " + this.boolType + " != " + result + " for expression: " + arg + " " + expression;
+            }
         } catch (JexlException e){
             this.errorMessage = "Unable to evaluate boolean because of JexlException: " + e.getMessage();
         }
+    }
+
+    /**
+     * @return the DSL value and expression into a single String.
+     */
+    public String getAssertExpression(){
+        // only used for result JSON
+        return "(" + this.value + ") " + this.expression;
     }
 }

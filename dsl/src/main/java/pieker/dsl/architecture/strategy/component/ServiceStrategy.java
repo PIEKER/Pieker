@@ -6,6 +6,7 @@ import pieker.dsl.architecture.component.ServiceProxy;
 import pieker.dsl.architecture.exception.ValidationException;
 import pieker.dsl.architecture.preprocessor.Validator;
 import pieker.dsl.architecture.strategy.KeywordStrategy;
+import pieker.dsl.util.Util;
 
 @Slf4j
 public class ServiceStrategy implements KeywordStrategy {
@@ -13,16 +14,22 @@ public class ServiceStrategy implements KeywordStrategy {
     public void process(String[] args) {
         log.debug("processing SERVICE node...");
         this.checkArguments(args);
-        ServiceProxy serviceProxy = new ServiceProxy(args[0]);
-        Engine.getCurrentStep().addStepComponent(serviceProxy.getIdentifier(), serviceProxy);
-        log.debug("added service-proxy for service '{}' in step '{}'", args[0], Engine.getCurrentStep().getName());
+        String[] identifiers = Util.convertStringToStringArray(args[0]);
+        for (String identifier : identifiers){
+            ServiceProxy serviceProxy = new ServiceProxy(identifier);
+            Engine.getCurrentStep().addStepComponent(serviceProxy.getIdentifier(), serviceProxy);
+            log.debug("added service-proxy for service '{}' in step '{}'", identifier, Engine.getCurrentStep().getName());
+        }
     }
 
     @Override
     public void validate(String[] args) {
         this.checkArguments(args);
-        Validator.updateIdentifierSet(args[0]);
-        Validator.updateComponentSet(args[0]);
+        String[] identifiers = Util.convertStringToStringArray(args[0]);
+        for (String identifier : identifiers){
+            Validator.updateIdentifierSet(identifier);
+            Validator.updateComponentSet(identifier);
+        }
 
     }
 

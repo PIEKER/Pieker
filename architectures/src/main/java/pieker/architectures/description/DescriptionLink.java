@@ -10,7 +10,7 @@ import pieker.architectures.model.ComponentLink;
 import java.util.List;
 
 /**
- * Pieker Interface Description link class. Each link resembles a link between two components in the architecture model.
+ * PIEKER Interface Description link class. Each link resembles a link between two components in the architecture model.
  */
 @Getter
 @Setter
@@ -21,8 +21,8 @@ import java.util.List;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = DescriptionLink.HttpApiLink.class, name = "HTTP_API"),
-        @JsonSubTypes.Type(value = DescriptionLink.StorageLink.class, name = "STORAGE")
+        @JsonSubTypes.Type(value = DescriptionLink.HttpLink.class, name = "HTTP"),
+        @JsonSubTypes.Type(value = DescriptionLink.JdbcLink.class, name = "JDBC")
 })
 public class DescriptionLink {
 
@@ -32,8 +32,8 @@ public class DescriptionLink {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class HttpApiLink extends DescriptionLink {
-        private final ComponentLink.LinkType type = ComponentLink.LinkType.HTTP_API;
+    public static class HttpLink extends DescriptionLink {
+        private final ComponentLink.LinkType type = ComponentLink.LinkType.HTTP;
         private String targetUrlEnv;  // Name of environment variable for target URL
         private String targetHostEnv;  // Name of environment variable for target host
         private String targetPortEnv;  // Name of environment variable for target port
@@ -43,8 +43,8 @@ public class DescriptionLink {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class StorageLink extends DescriptionLink {
-        private final ComponentLink.LinkType type = ComponentLink.LinkType.STORAGE;
+    public static class JdbcLink extends DescriptionLink {
+        private final ComponentLink.LinkType type = ComponentLink.LinkType.JDBC;
         private String targetUrlEnv;  // Name of environment variable for target URL
         private String usernameEnv;  // Name of environment variable for username
         private String passwordEnv;  // Name of environment variable for password

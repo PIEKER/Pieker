@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   service-a:
-    build: ./service-A
+    image: service_a
     ports:
       - "8081:8080"
     environment:
@@ -15,7 +15,7 @@ services:
       - db
 
   service-b:
-    build: ./service-B
+    image: service_b
     ports:
       - "8082:8080"
     environment:
@@ -26,7 +26,7 @@ services:
       - db
 
   service-c:
-    build: ./service-C
+    image: service_c
     ports:
       - "8083:8080"
 

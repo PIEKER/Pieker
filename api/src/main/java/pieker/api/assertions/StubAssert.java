@@ -62,7 +62,7 @@ public class StubAssert extends Assert{
     }
 
     @Override
-    public void setupConnectionParam(JSONObject cpJson) {
+    public void setConnectionParam(JSONObject cpJson) {
         log.debug("no setup required.");
     }
 
@@ -73,6 +73,10 @@ public class StubAssert extends Assert{
         @Override
         public String getAssertType() {
             return "Stub";
+        }
+        @Override
+        public String getAssertExpression() {
+            return "no expression possible on stub";
         }
 
         @Override

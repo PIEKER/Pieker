@@ -1,7 +1,8 @@
 package pieker.architectures.compose;
 
 import lombok.extern.slf4j.Slf4j;
-import pieker.architectures.common.model.HttpApiLink;
+import pieker.architectures.common.model.HttpLink;
+import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.compose.model.*;
 import pieker.architectures.description.InterfaceDescription;
 import pieker.architectures.description.DescriptionComponent;
@@ -67,15 +68,23 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
                         model.getComponent(descriptionLink.getTarget()).ifPresent(target -> {
                             // ... and create a new link between the source and target components of the corresponding type
                             switch (descriptionLink) {
-                                case DescriptionLink.HttpApiLink apiDesc:
-                                    HttpApiLink<ComposeComponent> newLink = new HttpApiLink<>(source, target);
-                                    putIfNotNullOrEmpty(newLink.sourceRelatedEnvironmentVariables, "URL_VAR", apiDesc.getTargetUrlEnv());
-                                    putIfNotNullOrEmpty(newLink.sourceRelatedEnvironmentVariables, "HOST_VAR", apiDesc.getTargetHostEnv());
-                                    putIfNotNullOrEmpty(newLink.sourceRelatedEnvironmentVariables, "PORT_VAR", apiDesc.getTargetPortEnv());
-                                    links.add(newLink);
+                                case DescriptionLink.HttpLink httpDesc:
+                                    HttpLink<ComposeComponent> httpLink = new HttpLink<>(source, target);
+                                    putIfNotNullOrEmpty(httpLink.sourceRelatedEnvironmentVariables, "URL_VAR", httpDesc.getTargetUrlEnv());
+                                    putIfNotNullOrEmpty(httpLink.sourceRelatedEnvironmentVariables, "HOST_VAR", httpDesc.getTargetHostEnv());
+                                    putIfNotNullOrEmpty(httpLink.sourceRelatedEnvironmentVariables, "PORT_VAR", httpDesc.getTargetPortEnv());
+                                    links.add(httpLink);
                                     break;
-                                case DescriptionLink.StorageLink storageDesc:
-                                    // TODO
+                                case DescriptionLink.JdbcLink jdbcDesc:
+                                    ComposeService sourceService = (ComposeService) source;
+                                    JdbcLink<ComposeComponent> jdbcLink = new JdbcLink<>(source, target);
+                                    putIfNotNullOrEmpty(jdbcLink.sourceRelatedEnvironmentVariables, "URL_VAR", jdbcDesc.getTargetUrlEnv());
+                                    putIfNotNullOrEmpty(jdbcLink.sourceRelatedEnvironmentVariables, "USER_VAR", jdbcDesc.getUsernameEnv());
+                                    putIfNotNullOrEmpty(jdbcLink.sourceRelatedEnvironmentVariables, "PASS_VAR", jdbcDesc.getPasswordEnv());
+                                    jdbcLink.setJdbcUrl(sourceService.getEnvironmentValue(jdbcDesc.getTargetUrlEnv()));
+                                    jdbcLink.setUsername(sourceService.getEnvironmentValue(jdbcDesc.getUsernameEnv()));
+                                    jdbcLink.setPassword(sourceService.getEnvironmentValue(jdbcDesc.getPasswordEnv()));
+                                    links.add(jdbcLink);
                                     break;
                                 default:
                                     log.warn("Unsupported link type will be ignored: {}", descriptionLink.getClass().getSimpleName());

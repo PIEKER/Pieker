@@ -2,12 +2,12 @@ components:
 
   - name: "service-a"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
     dependencies:
-      - type: HTTP_API
+      - type: HTTP
         target: "service-c"
         targetUrlEnv: COUNTER_URL
-      - type: STORAGE
+      - type: JDBC
         target: "db"
         targetUrlEnv: SPRING_DATASOURCE_URL
         usernameEnv: SPRING_DATASOURCE_USERNAME
@@ -15,9 +15,9 @@ components:
 
   - name: "service-b"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
     dependencies:
-      - type: STORAGE
+      - type: JDBC
         target: "db"
         targetUrlEnv: SPRING_DATASOURCE_URL
         usernameEnv: SPRING_DATASOURCE_USERNAME
@@ -25,8 +25,8 @@ components:
 
   - name: "service-c"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
 
   - name: "db"
     provides:
-      interfaceType: STORAGE
+      interfaceType: DATABASE

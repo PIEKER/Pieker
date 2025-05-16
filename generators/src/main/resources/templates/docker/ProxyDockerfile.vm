@@ -3,6 +3,10 @@
 FROM azul/zulu-openjdk-alpine:23-jre-headless
 WORKDIR /app
 
-COPY $jarPath /app/app.jar
+#foreach($jarPath in $jarPaths.keySet())
+COPY $jarPath /app/$jarPaths.get($jarPath)
+#end
+
+RUN mkdir -p /tmp/logs
 
 CMD ["java", "-jar", "/app/app.jar"]

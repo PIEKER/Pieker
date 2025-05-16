@@ -27,7 +27,8 @@ public class StepGenerator {
     private static final String TRAFFIC_THREAD_TEMPLATE_FILE = "traffic/thread.vm";
     private static final String TRAFFIC_CONTAINER_TEMPLATE_FILE = "traffic/trafficContainer.vm";
     private static final String DEFAULT_FILENAME = "Default";
-    private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
+    private static final String PROJECT_ROOT = System.getProperty("projectRoot");
+    private static final String OUTPUT_DIR = PROJECT_ROOT + System.getProperty("genDir", ".gen/");
     private static final String CLASS_NAME = "className";
     private static final String TRAFFIC_IDENTIFIER = "trafficIdentifier";
     private static final String PROXY_IDENTIFIER = "proxyIdentifier";

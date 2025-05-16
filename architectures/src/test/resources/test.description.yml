@@ -2,18 +2,18 @@ components:
 
   - name: "serviceA"
     provides:
-      interfaceType: HTTP_API
+      interfaceType: HTTP
     dependencies:
-      - type: HTTP_API
+      - type: HTTP
         target: "serviceC"
         targetUrlEnv: "SERVICE_C_URL"
-      - type: STORAGE
+      - type: JDBC
         target: "db"
         usernameEnv: "DB_USERNAME"
         passwordEnv: "DB_PASSWORD"
 
   - name: "serviceB"
     dependencies:
-      - type: HTTP_API
+      - type: HTTP
         target: "serviceD"
         targetUrlEnv: "SERVICE_D_URL"

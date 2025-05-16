@@ -111,7 +111,6 @@ public class MultiStepGenerator {
         final List<String> javaStepFiles = FileSystemUtils.getFiles(CODE_DIR + componentName, ".java");
         final List<String> fileNames = FileSystemUtils.getFileNames(javaStepFiles);
         final String componentDir = CODE_DIR + componentName + File.separator;
-        final String componentJarDir = componentDir + "jars" + File.separator;
 
         log.debug("Found {} Java files for component '{}': {}", javaStepFiles.size(), componentName, javaStepFiles);
 
@@ -135,15 +134,9 @@ public class MultiStepGenerator {
         proxyContext.put("proxyName", multiStepProxyName);
         TEMPLATE_PROCESSOR.processTemplate(PROXY_TEMPLATE, proxyContext, multiStepProxyName + ".java", componentDir);
 
-        // Create MANIFEST.MF for Multistep Proxy JAR
-        VelocityContext manifestContext = new VelocityContext();
-        manifestContext.put("proxyName", multiStepProxyName);
-        manifestContext.put("jars", fileNames.stream().map(name -> name.replace("java", "jar")).toList());
-        TEMPLATE_PROCESSOR.processTemplate(MANIFEST_TEMPLATE, manifestContext, "MANIFEST.MF", componentJarDir);
-
         // Build Multistep JAR
-        JarBuilder.buildJar(componentDir + multiStepProxyName + ".java", componentDir + "jars",
-                true, null);
+        JarBuilder.buildJar(componentDir + multiStepProxyName + ".java", componentDir + "build",
+                false, null);
     }
 
 }
