@@ -52,7 +52,7 @@ public class Evaluator {
      * @param timeout maximum evaluation time.
      */
     public void run(List<Assertion> assertionList, long timeout){
-        int maxThreads = Runtime.getRuntime().availableProcessors(); // or any other system-safe number
+        int maxThreads = Runtime.getRuntime().availableProcessors();
         log.debug("Thread limit: {}", maxThreads);
 
         ExecutorService threadPool = Executors.newFixedThreadPool(maxThreads);
