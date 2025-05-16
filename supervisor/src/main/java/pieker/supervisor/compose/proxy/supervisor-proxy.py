@@ -18,6 +18,7 @@ app = FastAPI()
 async def proxy_http_get(target: str, path: str, request: Request):
     try:
         target_url = f"http://{target}:42690/{path}"
+
         async with httpx.AsyncClient() as client:
             body = await request.body()
             response = await client.request(

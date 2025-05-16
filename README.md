@@ -163,7 +163,7 @@ environment.
 - [x] Define and implement DSL for test specification
 - [x] Automatic generation of test code from DSL
 - [x] Automatic injection of test code into test containers and architectures
-- [ ] _Automatic deployment of a test environment_
+- [x] Automatic deployment of a test environment
 - [ ] _Automatic test execution and evaluation_
 - [ ] First prototype for testing Docker Compose architectures
 - [ ] First release for Docker Compose architectures
