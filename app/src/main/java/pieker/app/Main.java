@@ -37,11 +37,14 @@ public class Main {
 
     private static ScenarioTestPlan testPlan;
     private static ArchitectureModel<?> architectureModel;
-    private static final String DSL_FILE_PATH = System.getProperty("dslFilePath");
-    private static final String DSL_RESOURCE_DIRECTORY = System.getProperty("dslResourceDirectory");
-    private static final String ARCHITECTURE_FILE_PATH = System.getProperty("architectureFile");
-    private static final String INTERFACE_DESCRIPTION_FILE_PATH = System.getProperty("interfaceDescriptionFile");
-    private static final String GEN_DIR = System.getProperty("genDir");
+
+    private static final String PROJECT_ROOT = System.getProperty("projectRoot");
+    private static final String DSL_FILE_PATH = PROJECT_ROOT + System.getProperty("dslFilePath");
+    private static final String DSL_RESOURCE_DIRECTORY = PROJECT_ROOT + System.getProperty("dslResourceDirectory");
+    private static final String ARCHITECTURE_FILE_PATH = PROJECT_ROOT + System.getProperty("architectureFile");
+    private static final String INTERFACE_DESCRIPTION_FILE_PATH = PROJECT_ROOT + System.getProperty("interfaceDescriptionFile");
+    private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir");
+
     private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
 
     public static void main(String[] args) throws IOException {
