@@ -47,12 +47,12 @@ async def proxy_http_get(target: str, path: str, request: Request):
 #
 
 DB_USER = os.getenv("DB_USER", "testuser")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "testpass")
-DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PASS = os.getenv("DB_PASS", "testpass")
+DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "testdb")
 
-DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 engine = create_async_engine(DB_URL, echo=True, future=True)
 SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)

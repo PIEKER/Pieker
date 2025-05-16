@@ -54,6 +54,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             Thread.currentThread().interrupt();
             log.error("Start command interrupted: {}", e.getMessage());
         }
+        sleep(5000); // Sleep for 5 seconds to allow the system to start
     }
 
     @Override
