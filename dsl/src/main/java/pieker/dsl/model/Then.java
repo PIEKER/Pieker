@@ -58,6 +58,7 @@ public class Then {
         });
 
         this.assertList.forEach(ass -> {
+            if (ass instanceof StubAssert) return;
             if (stepComponentMap.containsKey(ass.getIdentifier())) stepComponentMap.get(ass.getIdentifier()).enableLogging();
             else throw new PiekerProcessingException("unknown component identifier provided. Logging could not be enabled");
         });
