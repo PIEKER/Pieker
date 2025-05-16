@@ -213,7 +213,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     private boolean sendRequestToComponent(String componentName, String endpoint) {
         final String host = System.getProperty("systemHost", "localhost");
         final String supervisorProxyPort = System.getProperty("supervisorPort", "42690");
-        return sendGetRequest("http://%s:%s/%s/%s".formatted(host, supervisorProxyPort, componentName, endpoint));
+        return sendGetRequest("http://%s:%s/http/%s/%s".formatted(host, supervisorProxyPort, componentName, endpoint));
     }
 
     /**
