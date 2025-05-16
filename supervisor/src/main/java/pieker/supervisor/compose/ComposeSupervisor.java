@@ -175,7 +175,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
 
     private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link<ComposeComponent> link) {
         switch (link) {
-            case HttpLink<ComposeComponent> httpLink -> {
+            case HttpLink<ComposeComponent> _ -> {
                 ComposeService service = (ComposeService) component;
                 // FIXME: Implement to handle port properly (multiple port mappings, etc.)
                 trafficTemplate.startTraffic(new String[]{

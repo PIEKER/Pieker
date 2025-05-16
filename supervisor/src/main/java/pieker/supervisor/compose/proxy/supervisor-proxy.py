@@ -1,6 +1,5 @@
-import os
-
 import httpx
+import os
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
@@ -9,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from starlette.responses import JSONResponse
 
 app = FastAPI()
+
 
 #
 # --- HTTP Proxy ---
@@ -42,6 +42,7 @@ async def proxy_http_get(target: str, path: str, request: Request):
     except httpx.RequestError as e:
         return JSONResponse(status_code=502, content={"error": str(e)})
 
+
 #
 # --- Database Proxy ---
 #
@@ -50,15 +51,23 @@ DB_USER = os.getenv("DB_USER", "testuser")
 DB_PASS = os.getenv("DB_PASS", "testpass")
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "testdb")
 
-DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+engine_cache: dict[str, AsyncEngine] = {}
 
-engine = create_async_engine(DB_URL, echo=True, future=True)
-SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
-@app.post("/db/query")
-async def run_query(request: Request):
+def get_db_url(db_name: str) -> str:
+    return f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{db_name}"
+
+
+def get_session(db_name: str):
+    if db_name not in engine_cache:
+        engine_cache[db_name] = create_async_engine(get_db_url(db_name), echo=True, future=True)
+    engine = engine_cache[db_name]
+    return sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+
+
+@app.post("/db/{db_name}/query")
+async def run_query(db_name: str, request: Request):
     try:
         body = await request.json()
         query = body.get("query")
@@ -66,6 +75,8 @@ async def run_query(request: Request):
             raise HTTPException(status_code=400, detail="Missing 'query' in request body.")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON body: {str(e)}")
+
+    SessionLocal = get_session(db_name)
 
     try:
         async with SessionLocal() as session:

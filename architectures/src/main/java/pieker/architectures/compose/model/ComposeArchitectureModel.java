@@ -152,7 +152,6 @@ public class ComposeArchitectureModel extends AbstractArchitectureModel<ComposeC
         databaseInfo.put("DB_PASS", databaseLink.getPassword());
         databaseInfo.put("DB_HOST", databaseLink.getJdbcHost());
         databaseInfo.put("DB_PORT", databaseLink.getJdbcPort());
-        databaseInfo.put("DB_NAME", databaseLink.getDatabaseName() != null ? databaseLink.getDatabaseName() : "");
 
         return Optional.of(databaseInfo);
     }
