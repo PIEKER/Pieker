@@ -21,7 +21,6 @@ public class Then {
     private int line;
     private String description;
 
-    int assertAfter = 0;
     private final List<Assert> assertList = new ArrayList<>();
     private List<String> logAllList = new ArrayList<>();
 
@@ -55,6 +54,11 @@ public class Then {
         Map<String, StepComponent> stepComponentMap = this.step.getTestComponentMap();
         this.logAllList.forEach(component -> {
             if (stepComponentMap.containsKey(component)) stepComponentMap.get(component).enableLogging();
+            else throw new PiekerProcessingException("unknown component identifier provided. Logging could not be enabled");
+        });
+
+        this.assertList.forEach(ass -> {
+            if (stepComponentMap.containsKey(ass.getIdentifier())) stepComponentMap.get(ass.getIdentifier()).enableLogging();
             else throw new PiekerProcessingException("unknown component identifier provided. Logging could not be enabled");
         });
 
