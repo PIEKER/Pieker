@@ -117,7 +117,9 @@ public class Scenario implements ScenarioTestPlan {
     @JsonProperty("stepToSequenceMap")
     public Map<String, List<TrafficTemplate>> getStepToSequenceMap() {
         Map<String, List<TrafficTemplate>> stepToSequenceMap = new HashMap<>();
-        stepToSequenceMap.put("beforeEach", this.beforeEach.getSequence());
+        if (this.beforeEach != null) {
+            stepToSequenceMap.put("beforeEach", this.beforeEach.getSequence());
+        }
         this.stepList.forEach(step -> stepToSequenceMap.put(step.getId(), step.getSequence()));
         return stepToSequenceMap;
     }
