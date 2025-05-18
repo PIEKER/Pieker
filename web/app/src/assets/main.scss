@@ -1,0 +1,62 @@
+@use 'colors';
+
+#app {
+  font-weight: normal;
+  padding-bottom: 15vh;
+  overflow: auto;
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#app::-webkit-scrollbar {
+  display: none;
+}
+
+a {
+  color: inherit;
+}
+
+table {
+  thead th {
+    background: colors.$primary-second !important;
+    color: colors.$secondary-second;
+  }
+  tr:nth-child(even){background-color: colors.$secondary-second}
+}
+
+.btn-pieker{
+  border: solid 1px colors.$primary-second!important;
+  color: colors.$primary-second!important;
+}
+
+.btn-pieker:hover{
+  background: colors.$primary-second!important;
+  color: colors.$secondary-second!important;
+}
+
+.v-expansion-panel-title{
+  background: colors.$primary-second!important;
+  color: colors.$secondary-second!important;
+
+  .v-row .v-col{
+    color: colors.$secondary-second!important;
+    span{
+      font-style: italic;
+    }
+  }
+}
+
+.v-input{
+  max-height:60px!important;
+}
+
+@media (hover: hover) {
+
+}
+
+@media (min-width: 1024px) {
+
+}
+
