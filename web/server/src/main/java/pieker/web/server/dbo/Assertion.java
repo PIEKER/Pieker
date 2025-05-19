@@ -1,5 +1,7 @@
 package pieker.web.server.dbo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,11 +24,12 @@ public class Assertion {
 
     private String identifier;
 
-    @ElementCollection
-    @CollectionTable(name = "assertion_evaluations", joinColumns = @JoinColumn(name = "assertion_id"))
-    private List<Evaluation> evaluation;
-
     @ManyToOne
-    @JoinColumn(name = "run_id")
-    private Run run;
+    @JoinColumn(name = "step_id")
+    @JsonManagedReference
+    private Step step;
+
+    @OneToMany(mappedBy = "assertion")
+    @JsonBackReference
+    private List<Evaluation> evaluation;
 }

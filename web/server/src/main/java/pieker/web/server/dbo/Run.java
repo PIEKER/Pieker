@@ -1,5 +1,6 @@
 package pieker.web.server.dbo;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +19,13 @@ public class Run {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String stepName;        // Reference name (copied from scenario step)
-    private String stepIdentifier;  // Reference identifier (copied from scenario step)
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "scenario_id")
     private Scenario scenario;
 
-    @OneToMany(mappedBy = "run", cascade = CascadeType.ALL)
-    private List<Assertion> assertions;
+
+    @OneToMany(mappedBy = "run")
+    private List<Evaluation> evaluations;
 }

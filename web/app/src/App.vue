@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const menu = [
   {text: 'Home', href: '/'},
-  {text: 'Editor', href: '/editor'}
+  {text: 'Editor', href: '/editor'},
+  {text: 'Tests', href: '/tests'}
 ]
 
 const links = [
@@ -80,5 +81,9 @@ footer{
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.container {
+  height:79vh;
 }
 </style>

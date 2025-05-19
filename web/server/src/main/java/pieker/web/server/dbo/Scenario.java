@@ -1,5 +1,7 @@
 package pieker.web.server.dbo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,9 +24,11 @@ public class Scenario {
 
     // Step configurations
     @OneToMany(mappedBy = "scenario", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Step> steps;
 
     // Runs of this scenario
     @OneToMany(mappedBy = "scenario", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<Run> runs;
 }
