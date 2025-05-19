@@ -25,6 +25,9 @@ const links = [
     </v-card>
   </header>
   <div class="content-wrapper">
+    <div class="warning bg-warning p-2 position-fixed">
+      Most pages are under construction and not fully developed. Its purpose is a proof of concept of a web application
+    </div>
     <router-view></router-view>
   </div>
   <v-footer class="d-flex align-center justify-center ga-2 flex-wrap flex-grow-1 py-3" color="surface-light">
@@ -55,6 +58,11 @@ header {
   .v-card{
     border-radius: 0
   }
+}
+.warning{
+  top: 50px;
+  width: 100%;
+  z-index: 100;
 }
 
 footer{
