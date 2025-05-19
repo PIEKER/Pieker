@@ -24,7 +24,7 @@ const links = [
       </v-tabs>
     </v-card>
   </header>
-  <div class="container w-100 mt-5">
+  <div class="content-wrapper">
     <router-view></router-view>
   </div>
   <v-footer class="d-flex align-center justify-center ga-2 flex-wrap flex-grow-1 py-3" color="surface-light">
@@ -82,8 +82,8 @@ a {
   color: inherit;
   text-decoration: none;
 }
-
-.container {
-  height:79vh;
+.content-wrapper{
+  margin-top: 50px;
 }
+
 </style>

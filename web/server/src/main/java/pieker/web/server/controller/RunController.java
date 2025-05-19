@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pieker.web.server.dbo.Run;
+import pieker.web.server.dto.RunDto;
 import pieker.web.server.service.RunService;
 
 import java.util.List;
@@ -24,12 +24,12 @@ public class RunController {
     }
 
     @RequestMapping("/all")
-    public List<Run> getRuns(){
+    public List<RunDto> getRuns(){
         return this.runService.getRuns();
     }
 
     @RequestMapping("/{id}")
-    public Run getRun(@PathVariable Long id){
+    public RunDto getRun(@PathVariable Long id){
         return this.runService.getRun(id);
     }
 }

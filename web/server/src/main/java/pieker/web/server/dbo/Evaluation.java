@@ -25,9 +25,14 @@ public class Evaluation {
     private Run run;
 
     @ManyToOne
-    @JoinColumn(name = "assertion_id")
+    @JoinColumn(name = "step_id")
+    @JsonBackReference
+    private Step step;
+
+    @ManyToOne
+    @JoinColumn(name = "assertable_id")
     @JsonManagedReference
-    private Assertion assertion;
+    private Assertable assertable;
 
     private boolean success;
     private String errorMessage;

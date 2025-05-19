@@ -15,8 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "assertions")
-public class Assertion {
+@Table(name = "assertable")
+public class Assertable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +24,7 @@ public class Assertion {
 
     private String identifier;
 
-    @ManyToOne
-    @JoinColumn(name = "step_id")
-    @JsonManagedReference
-    private Step step;
-
-    @OneToMany(mappedBy = "assertion")
+    @OneToMany(mappedBy = "assertable")
     @JsonBackReference
-    private List<Evaluation> evaluation;
+    private List<Evaluation> evaluations;
 }

@@ -30,5 +30,5 @@ public class Step {
 
     @OneToMany(mappedBy = "step")
     @JsonBackReference
-    private List<Assertion> assertions;
+    private List<Evaluation> evaluations;
 }
