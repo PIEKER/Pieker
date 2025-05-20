@@ -36,7 +36,7 @@ subprojects {
     }
 
     tasks.processResources {
-        from(rootProject.file("config")) {
+        from(rootProject.file(".config")) {
             include("logback.xml")
         }
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -59,7 +59,7 @@ subprojects {
 
     tasks.withType<JavaExec> {
         classpath = sourceSets.main.get().runtimeClasspath
-        systemProperty("logback.configurationFile", "config/logback.xml")
+        systemProperty("logback.configurationFile", ".config/logback.xml")
         project.properties.forEach { (k, v) ->
             if (v != null) {
                 systemProperty(k, v.toString())
