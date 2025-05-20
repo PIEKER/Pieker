@@ -63,7 +63,7 @@ Pieker
 
 ### Prerequisites
 
-- Java 23 or newer
+- Java 24
 - Gradle (8.14)
 - Git
 - Docker
@@ -82,7 +82,7 @@ Build executables: `./gradlew assemble`
 
 To use PIEKER with Docker Compose based systems you need:
 
-  - Java 23 or 24 (JRE) installed
+  - Java 24 (JRE) installed
   - Docker Demon running
 
 In the [`gradle.properties`](./gradle.properties) file set the required input properties to match your system. Required 
