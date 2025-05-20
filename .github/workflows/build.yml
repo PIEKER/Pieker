@@ -25,7 +25,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '23'
+          java-version: '24'
           distribution: 'temurin'
 
       - name: Setup Gradle
@@ -52,7 +52,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '23'
+          java-version: '24'
           distribution: 'temurin'
 
       # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
