@@ -22,15 +22,15 @@ subprojects {
 
     dependencies {
         // Common-Dependencies
-        implementation("org.slf4j:slf4j-api:2.0.16")
-        implementation("ch.qos.logback:logback-classic:1.5.16")
+        implementation("org.slf4j:slf4j-api:2.0.17")
+        implementation("ch.qos.logback:logback-classic:1.5.18")
         compileOnly("org.projectlombok:lombok:1.18.38")
         annotationProcessor("org.projectlombok:lombok:1.18.38")
 
         // Test-Dependencies
-        testImplementation(platform("org.junit:junit-bom:5.11.4"))
-        testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        testImplementation(platform("org.junit:junit-bom:5.12.2"))
+        testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
         testCompileOnly("org.projectlombok:lombok:1.18.38")
         testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
     }

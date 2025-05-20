@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
     implementation(project(":api"))
-    implementation("org.json:json:20250107")
+    implementation("org.json:json:20250517")
 }
