@@ -50,7 +50,7 @@ public class Converter {
      */
     private static void createGlobalScope(Background background){
         if (background != null){
-            List<Condition.Entry> variables = background.getEntryList();
+            List<Behavior.Entry> variables = background.getEntryList();
             variables.forEach(Converter::loadFileFromEntry);
             variables.forEach(Converter::generateValuesInEntryData);
 
@@ -66,7 +66,7 @@ public class Converter {
     }
 
     private static void createScenarioScope(Scenario scenario, Map<String, VariableNode> currentScope){
-        List<Condition.Entry> variables = scenario.getEntryList();
+        List<Behavior.Entry> variables = scenario.getEntryList();
         variables.forEach(Converter::loadFileFromEntry);
         variables.forEach(Converter::generateValuesInEntryData);
 
@@ -82,7 +82,7 @@ public class Converter {
      * @param when node containing possible variable entries.
      */
     private static void createStepScope(When when, Map<String, VariableNode> currentScope){
-        List<Condition.Entry> variables = when.getEntriesByKey(Keyword.DEF);
+        List<Behavior.Entry> variables = when.getEntriesByKey(Keyword.DEF);
         variables.forEach(Converter::loadFileFromEntry);
         variables.forEach(Converter::generateValuesInEntryData);
 
@@ -133,7 +133,7 @@ public class Converter {
     private static void injectVariablesInGiven(Given given, Map<String, VariableNode> scope) {
         if (given == null) return;
 
-        for (Condition.Entry entry: given.getEntryList()){
+        for (Behavior.Entry entry: given.getEntryList()){
             loadFileFromEntry(entry);
             generateValuesInEntryData(entry);
 
@@ -151,7 +151,7 @@ public class Converter {
     private static void injectVariablesInWhen(When when, Map<String, VariableNode> scope) {
         if (when == null) return;
 
-        for (Condition.Entry entry: when.getEntriesByExcludeKey(Keyword.DEF)){
+        for (Behavior.Entry entry: when.getEntriesByExcludeKey(Keyword.DEF)){
             generateValuesInEntryData(entry);
 
             String data = entry.getData();
@@ -213,10 +213,10 @@ public class Converter {
      * @param variables List of entries.
      * @param currentScope Map of currently known variables.
      */
-    private static void updateScopeFromEntryList(List<Condition.Entry> variables,
+    private static void updateScopeFromEntryList(List<Behavior.Entry> variables,
                                                                     Map<String, VariableNode> currentScope){
         try{
-            for (Condition.Entry varEntry : variables){
+            for (Behavior.Entry varEntry : variables){
                 String varAssignment = varEntry.getData();
                 assert varAssignment != null && !varAssignment.isEmpty() ;
                 String[] varTuple = varAssignment.split("=");
@@ -243,7 +243,7 @@ public class Converter {
      *
      * @param entry instance containing possible generation operations
      */
-    private static void generateValuesInEntryData(Condition.Entry entry){
+    private static void generateValuesInEntryData(Behavior.Entry entry){
         String floatPattern = ":FLOATV\\(\\s*\\d+\\.\\d+\\s*,\\s*\\d+\\.\\d+\\s*\\)";
         String intPattern = ":INTV\\(\\s*\\d+\\s*,\\s*\\d+\\s*\\)";
         String regexPattern = ":RSTART\\( (?:(?!\\)REND).)* \\)REND";
@@ -265,7 +265,7 @@ public class Converter {
 
     }
 
-    private static void generateValueFromPattern(Condition.Entry entry, Class<?> type, String regex){
+    private static void generateValueFromPattern(Behavior.Entry entry, Class<?> type, String regex){
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(entry.getData());
         while(matcher.find()){
@@ -304,7 +304,7 @@ public class Converter {
         }
     }
 
-    private static void loadFileFromEntry(Condition.Entry entry){
+    private static void loadFileFromEntry(Behavior.Entry entry){
         entry.setData(loadFileFromString(entry.getData()));
     }
 

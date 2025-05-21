@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Given extends Condition{
+public class Given extends Behavior {
 
     public Given(Step step){
         super(step);

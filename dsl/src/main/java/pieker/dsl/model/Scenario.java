@@ -25,7 +25,7 @@ public class Scenario implements ScenarioTestPlan {
     @JsonIgnore
     private Step beforeEach;
     @JsonIgnore
-    private List<Condition.Entry> entryList = new ArrayList<>();
+    private List<Behavior.Entry> entryList = new ArrayList<>();
     @JsonIgnore
     private List<Step> stepList = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public class Scenario implements ScenarioTestPlan {
     }
 
     public void addEntry(String leftKey, String leftData){
-        this.entryList.add(new Condition.Entry(leftKey, leftData));
+        this.entryList.add(new Behavior.Entry(leftKey, leftData));
     }
 
     @JsonIgnore

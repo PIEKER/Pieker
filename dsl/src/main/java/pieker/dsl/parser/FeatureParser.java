@@ -128,7 +128,7 @@ public class FeatureParser extends PiekerParserBaseListener {
         step.setLine(getShiftedLineIndex(ctx.BEFORE_EACH()));
         this.latestScenario.setBeforeEach(step);
 
-        this.createConditions(ctx.given(), ctx.when(), ctx.then(), step);
+        this.createBDDNodes(ctx.given(), ctx.when(), ctx.then(), step);
     }
 
     /**
@@ -152,7 +152,7 @@ public class FeatureParser extends PiekerParserBaseListener {
         step.setDescription(this.getDescriptionIfPresent(ctx.description()));
         this.latestScenario.addStep(step);
 
-        this.createConditions(ctx.given(),ctx.when(), ctx.then(), step);
+        this.createBDDNodes(ctx.given(),ctx.when(), ctx.then(), step);
     }
 
     // sub-node processing
@@ -200,9 +200,9 @@ public class FeatureParser extends PiekerParserBaseListener {
      * @param ctxThen parse tree of the 'then' node
      * @param step entity model
      */
-    private void createConditions(PiekerParser.GivenContext ctxGiven,
-                                   PiekerParser.WhenContext ctxWhen,
-                                   PiekerParser.ThenContext ctxThen, Step step){
+    private void createBDDNodes(PiekerParser.GivenContext ctxGiven,
+                                PiekerParser.WhenContext ctxWhen,
+                                PiekerParser.ThenContext ctxThen, Step step){
         if (ctxGiven != null) {
             this.createGivenNode(ctxGiven, step);
         }

@@ -1,6 +1,6 @@
 package pieker.dsl.model;
 
-public class When extends Condition {
+public class When extends Behavior {
 
     public When(Step step) {
         super(step);
