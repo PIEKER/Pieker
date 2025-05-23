@@ -16,9 +16,9 @@
     <logger name="pieker.app" level="debug" />
     <logger name="pieker.architectures" level="debug" />
     <logger name="pieker.common" level="debug" />
-    <logger name="pieker.dsl" level="debug" />
+    <logger name="pieker.dsl" level="info" />
     <logger name="pieker.evaluator" level="debug" />
-    <logger name="pieker.generators" level="debug" />
+    <logger name="pieker.generators" level="info" />
     <logger name="pieker.supervisor" level="debug" />
 
 </configuration>

@@ -1,7 +1,7 @@
 # PIEKER Proxy Dockerfile for minimal JRE
 
 # Step 1: Base image with full JDK to analyze dependencies
-FROM openjdk:23-jdk as builder
+FROM openjdk:24-jdk as builder
 WORKDIR /app
 
 COPY $jarPath app.jar
