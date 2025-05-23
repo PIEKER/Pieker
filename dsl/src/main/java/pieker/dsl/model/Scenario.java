@@ -126,11 +126,11 @@ public class Scenario implements ScenarioTestPlan {
         //build evaluation DTOs
         for (Step step : this.stepList) {
             for (Assertion ass : stepToAssertionsMap.get(step.getId())) {
-                AssertionDto assDto = AssertionDto.builder()
-                        .identifier(ass.getIdentifier())
-                        .evaluations(new ArrayList<>())
-                        .build();
                 for (Evaluation ev: ass.getEvaluation()){
+                    AssertionDto assDto = AssertionDto.builder()
+                            .identifier(ass.getIdentifier())
+                            .evaluations(new ArrayList<>())
+                            .build();
                     assDto.setAssertExpression(ev.getAssertExpression());
                     assDto.setAssertType(ev.getAssertType());
                     EvaluationDto evDto = EvaluationDto.builder()
@@ -138,11 +138,11 @@ public class Scenario implements ScenarioTestPlan {
                             .errorMessage(ev.getErrorMessage())
                             .build();
                     assDto.getEvaluations().add(evDto);
-                }
-                if(!stepToAssertionDtoMap.containsKey(step.getId())){
-                    stepToAssertionDtoMap.put(step.getId(), List.of(assDto));
-                } else {
-                    stepToAssertionDtoMap.get(step.getId()).add(assDto);
+                    if(!stepToAssertionDtoMap.containsKey(step.getId())){
+                        stepToAssertionDtoMap.put(step.getId(), new ArrayList<>(List.of(assDto)));
+                    } else {
+                        stepToAssertionDtoMap.get(step.getId()).add(assDto);
+                    }
                 }
             }
         }

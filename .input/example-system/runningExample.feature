@@ -20,7 +20,7 @@ Feature: Example System Running Example Thesis
 
         @passive @request passive-get-counter | service-c | $get-counter
         @passive @request passive-incr-counter | service-c | $increment-counter
-        @passive @sql passive-db | db | $all-sql
+        @passive @sql passive-db | dbname | testdb | $all-sql
 
       When:
             @duration 20

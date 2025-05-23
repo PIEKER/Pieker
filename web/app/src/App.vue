@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const menu = [
   {text: 'Home', href: '/'},
-  {text: 'Editor', href: '/editor'},
+  /*{text: 'Editor', href: '/editor'},*/
   {text: 'Tests', href: '/tests'}
 ]
 

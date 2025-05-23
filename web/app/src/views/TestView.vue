@@ -9,9 +9,9 @@ ChartJS.defaults.borderColor = '#D6D6D6'
 
 const scenario = ref({})
 const currentRun = ref({})
-const currentStep = ref({})
-const currentSuccess = ref([])
-const currentFailure = ref([])
+const currentStep = ref(null)
+const currentSuccess = ref(0)
+const currentFailure = ref(0)
 const options = {
   responsive: true,
 }
@@ -22,39 +22,51 @@ const getAllRuns = async () => {
   if (scenario.value.runs.length > 0) {
     currentRun.value = scenario.value.runs[0]
     computeChartData()
+
   }
 }
 
 const getRun = async (id: number) => {
   const response = await api.get(`/runs/${id}`)
   currentRun.value = response.data
-  currentSuccess.value = []
-  currentFailure.value = []
+  currentSuccess.value = 0
+  currentFailure.value = 0
   computeChartData()
-  currentStep.value = {}
 }
 
 const computeChartData = () => {
   const steps = currentRun.value.steps
   for (const step of steps) {
-    for (const evaluation of step.evaluations) {
+    for (const ass of step.assertions) {
+      if (ass.evaluations.length === 0) {
+        currentFailure.value += 1;
+        return;
+      }
+      const evaluation = ass.evaluations[0];
+
       if (evaluation.success) {
-        currentSuccess.value.push(evaluation)
+        currentSuccess.value += 1;
       } else {
-        currentFailure.value.push(evaluation)
+        currentFailure.value += 1;
       }
     }
   }
+}
+const getAssertionNumber = (step) => {
+  if (step.assertions === null) {
+    return 0;
+  }
+  return step.assertions.length;
 }
 
 const setCurrentStep = (step) => {
   currentStep.value = step
 }
 
-const hasPassed = (evaluations) => {
-  for (const evaluation of evaluations) {
-    if (!evaluation.success) {
-      return false
+const hasPassed = (assertions) => {
+  for (const ass of assertions) {
+    if (ass.evaluations.length !== 0 && !ass.evaluations[0].success) {
+      return false;
     }
   }
   return true
@@ -70,7 +82,7 @@ const chartData = computed(() => ({
   datasets: [
     {
       backgroundColor: ['#41B883', '#DD1B16'],
-      data: [currentSuccess.value.length, currentFailure.value.length],
+      data: [currentSuccess.value, currentFailure.value],
     },
   ],
 }))
@@ -113,10 +125,11 @@ const chartData = computed(() => ({
             <v-list-item
               v-for="step in currentRun.steps" :key="step.id"
               :title="step.name"
+              :subtitle="'Assertions: ' + getAssertionNumber(step)"
             >
               <template v-slot:prepend>
-                <v-avatar :class="[hasPassed(step.evaluations) ? 'success' : 'error']">
-                  <v-icon v-if="hasPassed(step.evaluations)" color="white">mdi-check</v-icon>
+                <v-avatar :class="[hasPassed(step.assertions) ? 'success' : 'error']">
+                  <v-icon v-if="hasPassed(step.assertions)" color="white">mdi-check</v-icon>
                   <v-icon v-else color="white">mdi-close</v-icon>
                 </v-avatar>
               </template>
@@ -130,25 +143,28 @@ const chartData = computed(() => ({
     </div>
     <div class="card-wrapper col">
       <div class="run-header">
-        <h2>Evaluation: {{currentStep.name}}</h2>
+        <h2>Evaluation: <span v-if="currentStep !== null">{{currentStep.name}}</span></h2>
       </div>
-      <div class="card-body">
-        <v-list lines="two" v-if="currentStep !== null">
+      <div class="card-body" v-if="currentStep !== null">
+        <v-list lines="two" v-if="currentStep.assertions !== null && currentStep.assertions.length > 0">
           <v-list-item
-            v-for="ev in currentStep.evaluations"
-            :key="ev.id"
-            :title="ev.assertExpression"
-            :subtitle="ev.assertType"
+            v-for="ass in currentStep.assertions"
+            :key="ass.id"
+            :title="ass.assertExpression"
+            :subtitle="ass.assertType"
           >
             <template v-slot:prepend>
-              <v-avatar :class="[ev.success ? 'success' : 'error']">
-                <v-icon v-if="ev.success" color="white">mdi-check</v-icon>
+              <v-avatar v-if="ass.evaluations.length > 0" :class="[ass.evaluations[0].success ? 'success' : 'error']">
+                <v-icon v-if="ass.evaluations[0].success" color="white">mdi-check</v-icon>
                 <v-icon v-else color="white">mdi-close</v-icon>
               </v-avatar>
-
             </template>
           </v-list-item>
         </v-list>
+        <p class="container" v-else>Keine Daten gefunden</p>
+      </div>
+      <div class="card-body" v-else>
+        <p class="container">Select a step for details.</p>
       </div>
     </div>
   </div>

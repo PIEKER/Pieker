@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.Template;
+import pieker.common.connection.Http;
 import pieker.dsl.architecture.Engine;
 import pieker.dsl.architecture.preprocessor.FileManager;
 
@@ -15,9 +16,11 @@ public class Sql implements Template, TrafficType {
     private final String name = Sql.class.getSimpleName();
 
     private final String database;
+    private final String databaseServer;
     private final String parameter;
 
-    public Sql(String database, String parameter) {
+    public Sql(String databaseServer, String database, String parameter) {
+        this.databaseServer = databaseServer;
         this.database = database;
         this.parameter = parameter.trim();
     }
@@ -36,11 +39,13 @@ public class Sql implements Template, TrafficType {
     public String sendTraffic(String[] args) {
         this.translateParameters();
 
-        if (args.length < 3){
-            log.error("unable to send SQL query du to missing parameters: 3 required, only {} found", args.length);
+        if (args.length < 1){
+            log.error("unable to send SQL query du to missing parameters: 1 required");
             return "ERROR ON SQL";
         }
-        return pieker.common.connection.Sql.send(this.database, args[0], args[1], args[2], this.query);
+        String endpointUrl = "/" + this.database + "/query";
+        String body = "{\"query\":\"" + this.query + "\"}";
+        return Http.send(this.databaseServer, args[0] + endpointUrl, "POST", 3000, 30000, "", body);
     }
 
     @Override
@@ -56,7 +61,7 @@ public class Sql implements Template, TrafficType {
 
     @Override
     public String getTarget() {
-        return this.database;
+        return this.databaseServer;
     }
 
     public String getParameter(){
