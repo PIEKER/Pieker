@@ -101,7 +101,7 @@ public class Evaluator {
 
             // Convert an object to a JSON file
             om.writerWithDefaultPrettyPrinter().writeValue(
-                    new File(path, "result.json"), scenario.getAssertionsMap());
+                    new File(path, "result.json"), scenario.createTestRunDto());
             log.info("JSON file created successfully for {}!", scenario.getName());
         } catch (IOException e) {
             log.error("unable to create JSON file for {}. Error: {}", scenario.getName(), e.getMessage());

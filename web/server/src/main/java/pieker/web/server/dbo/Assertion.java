@@ -1,7 +1,6 @@
 package pieker.web.server.dbo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,16 +14,22 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "assertable")
-public class Assertable {
+@Table(name = "assertion")
+public class Assertion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String identifier;
+    private String assertType;
+    private String assertExpression;
 
-    @OneToMany(mappedBy = "assertable")
+    @ManyToOne
+    @JoinColumn(name = "step_id")
     @JsonBackReference
+    private Step step;
+
+    @OneToMany(mappedBy = "assertion")
     private List<Evaluation> evaluations;
 }

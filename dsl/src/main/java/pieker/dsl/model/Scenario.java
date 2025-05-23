@@ -5,7 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.api.Assertion;
+import pieker.api.Evaluation;
 import pieker.common.*;
+import pieker.common.dto.AssertionDto;
+import pieker.common.dto.EvaluationDto;
+import pieker.common.dto.RunDto;
+import pieker.common.dto.StepDto;
 import pieker.dsl.architecture.component.*;
 
 import java.util.*;
@@ -111,6 +116,48 @@ public class Scenario implements ScenarioTestPlan {
             stepToAssertionsMap.put(step.getId(), assertionList);
         }
         return stepToAssertionsMap;
+    }
+
+    @Override
+    public RunDto createTestRunDto() {
+        Map<String, List<Assertion>> stepToAssertionsMap = this.getAssertionsMap();
+        Map<String, List<AssertionDto>> stepToAssertionDtoMap = new HashMap<>();
+
+        //build evaluation DTOs
+        for (Step step : this.stepList) {
+            for (Assertion ass : stepToAssertionsMap.get(step.getId())) {
+                AssertionDto assDto = AssertionDto.builder()
+                        .identifier(ass.getIdentifier())
+                        .evaluations(new ArrayList<>())
+                        .build();
+                for (Evaluation ev: ass.getEvaluation()){
+                    assDto.setAssertExpression(ev.getAssertExpression());
+                    assDto.setAssertType(ev.getAssertType());
+                    EvaluationDto evDto = EvaluationDto.builder()
+                            .success(ev.isSuccess())
+                            .errorMessage(ev.getErrorMessage())
+                            .build();
+                    assDto.getEvaluations().add(evDto);
+                }
+                if(!stepToAssertionDtoMap.containsKey(step.getId())){
+                    stepToAssertionDtoMap.put(step.getId(), List.of(assDto));
+                } else {
+                    stepToAssertionDtoMap.get(step.getId()).add(assDto);
+                }
+            }
+        }
+
+        //create RunDto
+        return RunDto.builder()
+                .scenarioName(this.name)
+                .steps(this.stepList.stream().map(step ->
+                    StepDto.builder()
+                            .name(step.getName())
+                            .identifier(step.getId())
+                            .assertions(stepToAssertionDtoMap.getOrDefault(step.getId(), new ArrayList<>()))
+                            .build()
+                    ).toList())
+                .build();
     }
 
     // used by jackson to generate TestPlan JSON

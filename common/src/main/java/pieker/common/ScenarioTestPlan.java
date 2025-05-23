@@ -1,6 +1,7 @@
 package pieker.common;
 
 import pieker.api.Assertion;
+import pieker.common.dto.RunDto;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,5 +56,7 @@ public interface ScenarioTestPlan {
      * @return Map of stepIds to a list of assertions, ordered by assertAfter attribute
      */
     Map<String, List<Assertion>> getAssertionsMap();
+
+    RunDto createTestRunDto();
 
 }

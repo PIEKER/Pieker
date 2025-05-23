@@ -7,8 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pieker.web.server.dbo.Step;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -18,16 +18,19 @@ public class StepDto {
 
     private Long id;
 
-    private String name;        // Step name (e.g., "increment-counter")
-    private String identifier;  // Some unique step logic reference
-
-    private List<EvaluationDto> evaluations;
+    private String name;
+    private String identifier;
+    private List<AssertionDto> assertions;
 
     public static StepDto toStepDto(Step step) {
         return StepDto.builder()
                 .id(step.getId())
                 .name(step.getName())
-                .evaluations(new ArrayList<>())
+                .assertions(step.getAssertion().stream().map(AssertionDto::toAssertionDto).toList())
                 .build();
+    }
+
+    protected void mapEvaluationsToAssertions(Map<Long, List<EvaluationDto>> assertToEvaluationMap){
+        this.assertions.forEach(assertionDto -> assertionDto.setEvaluations(assertToEvaluationMap.get(assertionDto.getId())));
     }
 }
