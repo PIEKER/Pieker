@@ -26,7 +26,7 @@ public class StepDto {
         return StepDto.builder()
                 .id(step.getId())
                 .name(step.getName())
-                .assertions(step.getAssertion().stream().map(AssertionDto::toAssertionDto).toList())
+                .identifier(step.getIdentifier())
                 .build();
     }
 
