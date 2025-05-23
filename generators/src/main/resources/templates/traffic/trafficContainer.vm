@@ -24,13 +24,13 @@ public class $className {
         System.out.println("Can write to /tmp/logs: " + new File(LOG_ROOT).canWrite());
 
         ${threadBody}
-        #if ($trafficIdentifierList.size() > 0)
+        #if ($trafficIdentifierList != $null && $trafficIdentifierList.size() > 0)
         try {
         #foreach( $trafficIdentifier in $trafficIdentifierList )
             ${trafficIdentifier}.join();
         #end
         } catch (InterruptedException e) {
-            log("${trafficIdentifier}", e.getMessage());
+            log("some-traffic-thread", e.getMessage());
         }
         #end
     }
