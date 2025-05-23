@@ -2,6 +2,7 @@ package pieker.supervisor.compose;
 
 import lombok.extern.slf4j.Slf4j;
 import pieker.architectures.common.model.HttpLink;
+import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
 import pieker.architectures.compose.model.ComposeService;
@@ -54,7 +55,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             Thread.currentThread().interrupt();
             log.error("Start command interrupted: {}", e.getMessage());
         }
-        sleep(5000); // Sleep for 5 seconds to allow the system to start
+        sleep(15000); // Sleep for 15 seconds to allow the system to start
     }
 
     @Override
@@ -173,20 +174,31 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
         sleep(duration); // Sleep for the duration of the test step
     }
 
+    /**
+     * Handles the traffic for the given component and link by resolving the Supervisor-Proxy endpoint that needs to be
+     * addressed to proxy to the component.
+     *
+     * @param trafficTemplate traffic template
+     * @param component       component
+     * @param link            link specifying the type of traffic
+     */
     private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link<ComposeComponent> link) {
         switch (link) {
-            case HttpLink<ComposeComponent> _ -> {
-                ComposeService service = (ComposeService) component;
-                // FIXME: Implement to handle port properly (multiple port mappings, etc.)
-                trafficTemplate.startTraffic(new String[]{
-                        "http://%s:%s".formatted(
-                                System.getProperty("systemHost", "localhost"),
-                                service.getPorts().entrySet().iterator().next().getKey()
-                        )
-                });
-            }
+            case HttpLink<ComposeComponent> _ -> startTraffic(trafficTemplate, component, "http");
+            case JdbcLink<ComposeComponent> _ -> startTraffic(trafficTemplate, component, "db");
             default -> log.warn("Unsupported traffic type: {}", link.getType());
         }
+    }
+
+    private void startTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, String trafficType) {
+        ComposeService service = (ComposeService) component;
+        trafficTemplate.startTraffic(new String[]{
+                "http://%s:%s/%s".formatted(
+                        System.getProperty("systemHost", "127.0.0.1"),
+                        service.getPorts().entrySet().iterator().next().getKey(),
+                        trafficType
+                )
+        });
     }
 
     private void setComponentBehaviorForTestStep(String testStepId) {

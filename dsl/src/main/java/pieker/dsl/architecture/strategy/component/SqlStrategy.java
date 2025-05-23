@@ -14,7 +14,7 @@ public class SqlStrategy implements KeywordStrategy {
     public void process(String[] args) {
         log.debug("processing SQL node...");
         this.checkArguments(args);
-        SupervisorTraffic traffic = new SupervisorTraffic(args[0], new Sql(args[1], args[2]));
+        SupervisorTraffic traffic = new SupervisorTraffic(args[0], new Sql(args[1], args[2], args[3]));
         Engine.getCurrentStep().addStepComponent(traffic.getIdentifier(), traffic);
         log.debug("added sql to supervisor in step '{}'", Engine.getCurrentStep().getName());
     }
@@ -26,7 +26,7 @@ public class SqlStrategy implements KeywordStrategy {
     }
 
     private void checkArguments(String[] args){
-        if (args.length != 3){
+        if (args.length != 4){
             throw new ValidationException("Invalid amount of arguments on SQL keyword.");
         }
     }

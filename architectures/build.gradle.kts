@@ -7,7 +7,7 @@ dependencies {
     implementation(project(":common"))
     testImplementation(project(":dsl"))
     // External
-    implementation("org.yaml:snakeyaml:2.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.3")
+    implementation("org.yaml:snakeyaml:2.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.0")
 }

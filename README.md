@@ -41,6 +41,7 @@ For an overview of the development progress, see the [Roadmap](#roadmap).
     - [Evaluator-Module](#evaluator-module)
     - [Generators-Module](#generators-module)
     - [Supervisor-Module](#supervisor-module)
+    - [Web-Application](#web-app)
 - [Roadmap](#roadmap)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -49,21 +50,21 @@ For an overview of the development progress, see the [Roadmap](#roadmap).
 
 ```
 Pieker
-├── app               # PIEKER Application Module for Executable
-├── architectures     # PIEKER Architectures Module
-├── common            # Module for common classes and utilities
-├── dsl               # PIEKER DSL Module
-├── evaluator         # PIEKER Evaluation Module
-├── generators        # PIEKER Generators Module
-├── supervisor        # PIEKER Supervisor Module
-└── config            # General configuration files
+├── app            # PIEKER Application Module for Executable
+├── architectures  # PIEKER Architectures Module
+├── common         # Module for common classes and utilities
+├── dsl            # PIEKER DSL Module
+├── evaluator      # PIEKER Evaluation Module
+├── generators     # PIEKER Generators Module
+├── supervisor     # PIEKER Supervisor Module
+└── web            # PIEKER Web Application
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java 23 or newer
+- Java 24
 - Gradle (8.14)
 - Git
 - Docker
@@ -82,7 +83,7 @@ Build executables: `./gradlew assemble`
 
 To use PIEKER with Docker Compose based systems you need:
 
-  - Java 23 or 24 (JRE) installed
+  - Java 24 (JRE) installed
   - Docker Demon running
 
 In the [`gradle.properties`](./gradle.properties) file set the required input properties to match your system. Required 
@@ -156,6 +157,14 @@ environment.
 - Documentation: TODO
 - Maintainer: [@simohlsen](https://github.com/simohlsen)
 
+### Web-Application
+
+This module contains the web application for PIEKER.
+
+- Directory: [`web/`](./web)
+- Documentation: TODO
+- Maintainer: [@YIllmann](https://github.com/YIllmann)
+
 ## Roadmap
 
 - [x] Initial concept and project setup
@@ -167,6 +176,7 @@ environment.
 - [ ] _Automatic test execution and evaluation_
 - [ ] First prototype for testing Docker Compose architectures
 - [ ] First release for Docker Compose architectures
+- [ ] Fully functional web application for test specification, execution, and evaluation
 - [ ] Expand functionality and architecture support (Azure, Terraform, ...)
 
 ## License

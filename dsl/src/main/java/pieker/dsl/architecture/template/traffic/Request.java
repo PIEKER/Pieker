@@ -49,7 +49,8 @@ public class Request implements Template, TrafficType {
         if (args.length == 0){
             throw new IllegalArgumentException("no arguments provided for request traffic");
         }
-        return Http.send(this.service, args[0] + this.url, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body);
+        String endpointUrl = "/" + this.service + this.url;
+        return Http.send(this.service, args[0] + endpointUrl, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body);
     }
 
     @Override

@@ -14,13 +14,13 @@ public class Background {
     private int line;
     private String description;
 
-    private List<Condition.Entry> entryList = new ArrayList<>();
+    private List<Behavior.Entry> entryList = new ArrayList<>();
 
     public Background(Feature feature){
         this.feature = feature;
     }
 
     public void addEntry(String key, String data){
-        this.entryList.add(new Condition.Entry(key, data));
+        this.entryList.add(new Behavior.Entry(key, data));
     }
 }

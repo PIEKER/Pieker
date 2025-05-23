@@ -129,17 +129,17 @@ Feature: All Valid Feature File
 
       Given:
         @passive @request passive-incr-counter | service-c | $increment-counter
-        @passive @sql passive-db | db | $all-sql
+        @passive @sql passive-db | db | testdb | $all-sql
         @request get-counter | service-c | $get-counter
-        @sql get-table | db | $all-sql
+        @sql get-table | db | testdb | $all-sql
 
     Step: With Condition No Log
 
       Given:
         @passive @request passive-incr-counter | service-c | $increment-counter
-        @passive @sql passive-db | db | $all-sql
+        @passive @sql passive-db | db | testdb | $all-sql
         @request get-counter | service-c | $get-counter
-        @sql get-table | db | $all-sql
+        @sql get-table | db | testdb | $all-sql
 
       When:
         @times [passive-incr-counter, passive-db] | 20
@@ -154,9 +154,9 @@ Feature: All Valid Feature File
 
       Given:
         @passive @request passive-incr-counter | service-c | $increment-counter
-        @passive @sql passive-db | db | $all-sql
+        @passive @sql passive-db | db | testdb | $all-sql
         @request get-counter | service-c | $get-counter
-        @sql get-table | db | $all-sql
+        @sql get-table | db | testdb | $all-sql
 
       When:
         @times [passive-incr-counter, passive-db] | 20
@@ -175,9 +175,9 @@ Feature: All Valid Feature File
     BeforeEach:
       Given:
         @passive @request passive-incr-counter | service-c | $increment-counter
-        @passive @sql passive-db | db | $all-sql
+        @passive @sql passive-db | db | testdb | $all-sql
         @request get-counter | service-c | $get-counter
-        @sql get-table | db | $all-sql
+        @sql get-table | db | testdb | $all-sql
 
     Step: No Condition No Log
 
@@ -211,9 +211,9 @@ Feature: All Valid Feature File
   BeforeEach:
     Given:
     @passive @request passive-incr-counter | service-c | $increment-counter
-    @passive @sql passive-db | db | $all-sql
+    @passive @sql passive-db | db | testdb | $all-sql
     @request get-counter | service-c | $get-counter
-    @sql get-table | db | $all-sql
+    @sql get-table | db | testdb | $all-sql
 
     When:
       @times [passive-incr-counter, passive-db] | 20
@@ -236,9 +236,9 @@ Feature: All Valid Feature File
     BeforeEach:
       Given:
         @passive @request passive-incr-counter | service-c | $increment-counter
-        @passive @sql passive-db | db | $all-sql
+        @passive @sql passive-db | db | testdb | $all-sql
         @request get-counter | service-c | $get-counter
-        @sql get-table | db | $all-sql
+        @sql get-table | db | testdb | $all-sql
 
       When:
         @times [passive-incr-counter, passive-db] | 20

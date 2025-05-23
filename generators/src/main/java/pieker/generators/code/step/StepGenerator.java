@@ -59,8 +59,11 @@ public class StepGenerator {
 
         //create empty default
         VelocityContext defaultCtx = new VelocityContext();
+        Template defaultTemplate = scenarioComponent instanceof DatabaseProxy ?
+                VELOCITY.loadTemplate(PROXY_DB_TEMPLATE_FILE) :
+                VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE);
         defaultCtx.put(CLASS_NAME, DEFAULT_FILENAME);
-        String defaultFile = VELOCITY.fillTemplate(VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE), defaultCtx);
+        String defaultFile = VELOCITY.fillTemplate(defaultTemplate, defaultCtx);
         saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
 
         //create step files

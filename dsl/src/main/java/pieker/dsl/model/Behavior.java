@@ -11,7 +11,7 @@ import static pieker.dsl.util.Util.getArgumentsFromString;
 
 @Getter
 @Setter
-public abstract class Condition {
+public abstract class Behavior {
 
     public abstract void processEntryList();
     public abstract void validateEntryList();
@@ -22,7 +22,7 @@ public abstract class Condition {
 
     protected List<Entry> entryList = new ArrayList<>();
 
-    protected Condition(Step step){
+    protected Behavior(Step step){
         this.step = step;
     }
 

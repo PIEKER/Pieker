@@ -14,7 +14,11 @@ import java.util.Random;
 //PROXY-SERVER
 public class $className {
     private static final String LOG_ROOT = "/tmp/logs/";
+    #if ($proxyIdentifier != $null)
     private static final String PROXY_IDENTIFIER = "${proxyIdentifier}";
+    #else
+    private static final String PROXY_IDENTIFIER = "default";
+    #end
     private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
     private static final Random RANDOM = new Random();
 

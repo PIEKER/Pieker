@@ -1,9 +1,11 @@
 <configuration>
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
     <!-- Console Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5level %logger{50} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | %highlight(%-5level) %logger{50} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -16,9 +18,9 @@
     <logger name="pieker.app" level="debug" />
     <logger name="pieker.architectures" level="debug" />
     <logger name="pieker.common" level="debug" />
-    <logger name="pieker.dsl" level="debug" />
+    <logger name="pieker.dsl" level="info" />
     <logger name="pieker.evaluator" level="debug" />
-    <logger name="pieker.generators" level="debug" />
+    <logger name="pieker.generators" level="info" />
     <logger name="pieker.supervisor" level="debug" />
 
 </configuration>
