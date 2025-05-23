@@ -1,6 +1,7 @@
 package pieker.architectures.compose;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import pieker.architectures.common.model.HttpLink;
 import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
@@ -18,10 +19,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Component injector for the Docker Compose architecture model.
  */
+@Slf4j
 @NoArgsConstructor
 public class ComposeComponentInjector extends AbstractComponentInjector<ComposeArchitectureModel, ComposeComponent>
         implements ComponentInjector<ComposeArchitectureModel, ComposeComponent> {
@@ -47,7 +50,10 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
         // Add Test Components
         for (ScenarioComponent scenarioComponent : testPlan.getComponents()) {
-            ComposeComponent targetComponent = this.model.getComponent(scenarioComponent.getTarget()).orElseThrow();
+            ComposeComponent targetComponent = this.model.getComponent(scenarioComponent.getTarget()).orElseThrow(() -> {
+                log.error("Specified target component not found: '{}' Please check component names in the DSL file!", scenarioComponent.getTarget());
+                return new NoSuchElementException("Target component not found: %s".formatted(scenarioComponent.getTarget()));
+            });
 
             ComposeService newComponent = this.model.createComponent(scenarioComponent.getName());
             newComponent.addVolume(LOG_DIR, "/tmp/logs");
