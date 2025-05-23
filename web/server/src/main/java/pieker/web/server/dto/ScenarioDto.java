@@ -16,15 +16,13 @@ public class ScenarioDto {
 
     private Long id;
     private String name;
-
-    // Step configurations
     private List<RunDto> runs;
 
     public static ScenarioDto toScenarioDto(Scenario scenario) {
         return ScenarioDto.builder()
                 .id(scenario.getId())
                 .name(scenario.getName())
-                .runs(scenario.getRuns().stream().map(RunDto::toRunDto).toList())
+                .runs(scenario.getRuns().stream().map(run -> new RunDto().toRunDto(run)).toList())
                 .build();
     }
 

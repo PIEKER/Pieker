@@ -24,7 +24,6 @@ public class Scenario {
 
     // Step configurations
     @OneToMany(mappedBy = "scenario", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Step> steps;
 
     // Runs of this scenario

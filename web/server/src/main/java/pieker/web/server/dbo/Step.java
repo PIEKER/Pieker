@@ -1,7 +1,6 @@
 package pieker.web.server.dbo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +28,5 @@ public class Step {
     private Scenario scenario;
 
     @OneToMany(mappedBy = "step")
-    @JsonBackReference
-    private List<Evaluation> evaluations;
+    private List<Assertion> assertion;
 }
