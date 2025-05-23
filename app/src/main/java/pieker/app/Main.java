@@ -18,26 +18,28 @@ import pieker.supervisor.SupervisorFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 @Slf4j
 public class Main {
 
     private static final String PIEKER_LOGO = """
-            
-             ____    _   _______   _   __  _______   ____    _
-            |  _ \\  | | |   ____| | | / / |   ____| |  _ \\  | |
-            | |_) | | | |  |____  | |/ /  |  |____  | |_) | | |
-            | ___/  | | |   ____| |    |  |   ____| | _ _/  |_|
-            | |     | | |  |____  | |\\ \\  |  |____  | |\\ \\   _
-            |_|     |_| |_______| |_| \\_\\ |_______| |_| \\_\\ |_|
+                                    \s
+                      %%            \s
+                  **  %%%%          \s
+                 *****%%%%%%        \s  _____  _____  ______  _  __ ______  _____
+               *******%%%%%%%%      \s |  __ \\|_   _||  ____|| |/ /|  ____||  __ \\
+             *********%%%%%%%%%%    \s | |__) | | |  | |__   | ' / | |__   | |__) |
+            **********%%%%%%%%%%%%  \s |  ___/  | |  |  __|  |  <  |  __|  |  _  /
+               *******%%%%%%%%%%    \s | |     _| |_ | |____ | . \\ | |____ | | \\ \\
+                  ****%%%%%%%%      \s |_|    |_____||______||_|\\_\\|______||_|  \\_\\
+                    **%%%%%%        \s
+                      %%%%          \s
+                      %%            \s
             """;
 
-    private static final PluginManager PLUGIN_MANAGER = new PluginManager(System.getProperty("pluginDir"));
-
-    private static ScenarioTestPlan testPlan;
-    private static ArchitectureModel<?> architectureModel;
-
+    // - Paths -
     private static final String PROJECT_ROOT = System.getProperty("projectRoot");
     private static final String DSL_FILE_PATH = PROJECT_ROOT + System.getProperty("dslFilePath");
     private static final String DSL_RESOURCE_DIRECTORY = PROJECT_ROOT + System.getProperty("dslResourceDirectory");
@@ -45,29 +47,30 @@ public class Main {
     private static final String INTERFACE_DESCRIPTION_FILE_PATH = PROJECT_ROOT + System.getProperty("interfaceDescriptionFile");
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir");
 
+    private static final PluginManager PLUGIN_MANAGER = new PluginManager(System.getProperty("pluginDir"));
     private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
 
-    public static void main(String[] args) throws IOException {
+    private static ScenarioTestPlan testPlan;
+    private static ArchitectureModel<?> architectureModel;
 
+    public static void main(String[] args) throws IOException {
         log.info("""
+                        \u001B[1;34m
                         {}
-                        
-                        Hello, this is PIEKER - let us 'kieken', what you got:
-                        
-                        Run Configuration:
-                             DSL file:                   {},
-                             DSL resource directory:     {},
-                             Architecture file:          {},
-                             Interface description file: {},
-                             Installed Plugins:          {},
-                             assertTimeout:              {}
+                        \u001B[1;32mRun Configuration:\u001B[0;32m
+                             DSL file:                   {}
+                             DSL resource directory:     {}
+                             Architecture file:          {}
+                             Interface description file: {}
+                             Installed Plugins:          {}
+                             assertTimeout:              {} \u001b[0m
                         """,
                 PIEKER_LOGO,
-                DSL_FILE_PATH,
-                DSL_RESOURCE_DIRECTORY,
-                ARCHITECTURE_FILE_PATH,
-                INTERFACE_DESCRIPTION_FILE_PATH,
-                PLUGIN_MANAGER,
+                Paths.get(DSL_FILE_PATH).normalize(),
+                Paths.get(DSL_RESOURCE_DIRECTORY).normalize(),
+                Paths.get(ARCHITECTURE_FILE_PATH).normalize(),
+                Paths.get(INTERFACE_DESCRIPTION_FILE_PATH).normalize(),
+                PLUGIN_MANAGER.getPluginRegistry().keySet(),
                 ASSERT_TIMEOUT
         );
 
