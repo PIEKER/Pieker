@@ -50,10 +50,8 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
         // Add Test Components
         for (ScenarioComponent scenarioComponent : testPlan.getComponents()) {
-            ComposeComponent targetComponent = this.model.getComponent(scenarioComponent.getTarget()).orElseThrow(() -> {
-                log.error("Specified target component not found: '{}' Please check component names in the DSL file!", scenarioComponent.getTarget());
-                return new NoSuchElementException("Target component not found: %s".formatted(scenarioComponent.getTarget()));
-            });
+            ComposeComponent targetComponent = this.model.getComponent(scenarioComponent.getTarget()).orElseThrow(()
+                    -> new NoSuchElementException("Target component not found: '%s' Please check component names in the DSL file!".formatted(scenarioComponent.getTarget())));
 
             ComposeService newComponent = this.model.createComponent(scenarioComponent.getName());
             newComponent.addVolume(LOG_DIR, "/tmp/logs");
