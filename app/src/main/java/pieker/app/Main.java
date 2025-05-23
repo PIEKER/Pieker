@@ -30,7 +30,7 @@ public class Main {
             | |_) | | | |  |____  | |/ /  |  |____  | |_) | | |
             | ___/  | | |   ____| |    |  |   ____| | _ _/  |_|
             | |     | | |  |____  | |\\ \\  |  |____  | |\\ \\   _
-            |_|     |_| |_______| | | \\_\\ |_______| |_| \\_\\ |_|
+            |_|     |_| |_______| |_| \\_\\ |_______| |_| \\_\\ |_|
             """;
 
     private static final PluginManager PLUGIN_MANAGER = new PluginManager(System.getProperty("pluginDir"));
