@@ -80,12 +80,10 @@ public class Main {
         // Parse DSL, Architecture and Interface description files, generate test code, test components, and test environment
         preprocessing();
 
-
         if (System.getProperty("runTests", "true").equals("false")) {
             log.info("Skipping test execution as per configuration.");
             System.exit(0);
         }
-
         // Test Execution
         runTests();
 

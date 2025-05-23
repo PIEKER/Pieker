@@ -103,6 +103,9 @@ public final class JarBuilder {
         // Compile the .java file into a .class file
         List<String> compileCommand = new ArrayList<>();
         compileCommand.add("javac");
+        if (System.getProperty("ignoreCompilerWarnings", "false").equals("true")) {
+            compileCommand.add("-nowarn");
+        }
         compileCommand.add("-d");
         compileCommand.add(buildDirPath);
 
