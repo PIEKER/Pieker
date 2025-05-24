@@ -61,9 +61,14 @@ public class RunService {
 
         Scenario finalScenario = scenario;
         runDto.getSteps().forEach(stepDto -> {
-            Step step = this.stepService.createStep(stepDto, finalScenario);
+            Step step = this.stepService.getStep(stepDto.getIdentifier());
+
+            if (step == null){
+                step = this.stepService.createStep(stepDto, finalScenario);
+            }
+            Step finalStep = step;
             stepDto.getAssertions().forEach(assDto -> {
-                Assertion ass = this.assertionService.createAssertion(assDto, step);
+                Assertion ass = this.assertionService.createAssertion(assDto, finalStep);
                 assDto.getEvaluations().forEach(evalDto ->
                         this.evaluationService.createEvaluation(evalDto, run, ass));
             });

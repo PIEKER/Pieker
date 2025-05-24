@@ -13,8 +13,12 @@ public class StepService {
     private final StepRepository stepRepository;
 
     @Autowired
-    public StepService( StepRepository stepRepository) {
+    public StepService(StepRepository stepRepository) {
         this.stepRepository = stepRepository;
+    }
+
+    public Step getStep(String identifier){
+        return this.stepRepository.findByIdentifier(identifier).orElse(null);
     }
 
     public Step createStep(StepDto stepDto, Scenario scenario){

@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import pieker.web.server.dbo.Assertion;
 import pieker.web.server.dbo.Evaluation;
 import pieker.web.server.dbo.Run;
+import pieker.web.server.dbo.Step;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +19,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class RunDto {
 
     private Long id;
@@ -40,16 +44,30 @@ public class RunDto {
 
     private void getStepDtoFromEvaluationList(List<Evaluation> evaluations) {
         // map every
-        Map<Long, List<EvaluationDto>> assertToEvaluationMap = new HashMap<>();
+        Map<Long, List<AssertionDto>> stepToAssertionMap = new HashMap<>();
         for (Evaluation evaluation : evaluations){
-            if (assertToEvaluationMap.containsKey(evaluation.getAssertion().getId())){
-                assertToEvaluationMap.get(evaluation.getAssertion().getId()).add(EvaluationDto.toEvaluationDto(evaluation));
+            Assertion assertion = evaluation.getAssertion();
+            assert assertion != null;
+            Step assertStep = assertion.getStep();
+            assert assertStep != null;
+
+            AssertionDto assDto = AssertionDto.toAssertionDto(assertion);
+            EvaluationDto evalDto = EvaluationDto.toEvaluationDto(evaluation);
+            assDto.setEvaluations(List.of(evalDto));
+            if (stepToAssertionMap.containsKey(assertStep.getId())){
+                log.info("mapping assertion {} to step {}", assDto.getId(), assertStep.getId());
+                stepToAssertionMap.get(assertStep.getId()).add(assDto);
             } else {
-                List<EvaluationDto> evaluationDtoList = new ArrayList<>();
-                evaluationDtoList.add(EvaluationDto.toEvaluationDto(evaluation));
-                assertToEvaluationMap.put(evaluation.getAssertion().getId(), evaluationDtoList);
+                log.info("mapping new assertionList {} to step {}", assDto.getId(), assertStep.getId());
+                stepToAssertionMap.put(assertStep.getId(), new ArrayList<>(List.of(assDto)));
             }
         }
-        this.steps.forEach(stepDto -> stepDto.mapEvaluationsToAssertions(assertToEvaluationMap));
+
+        this.steps.forEach(stepDto -> {
+            List<AssertionDto> l = stepToAssertionMap.get(stepDto.getId());
+            if (l == null){log.info("no assertions found for step {}", stepDto.getId());return;}
+            log.info("mapping assertList {} to step {}", l.stream().map(AssertionDto::getId).toList(), stepDto.getId());
+            stepDto.setAssertions(l);
+        });
     }
 }
