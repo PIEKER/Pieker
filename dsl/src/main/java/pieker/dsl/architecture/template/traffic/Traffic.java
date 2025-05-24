@@ -1,4 +1,4 @@
-package pieker.dsl.architecture.component;
+package pieker.dsl.architecture.template.traffic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.ConditionTemplate;
 import pieker.common.TrafficTemplate;
-import pieker.dsl.architecture.template.traffic.TrafficType;
+import pieker.dsl.architecture.template.component.StepComponent;
 import pieker.dsl.architecture.template.condition.*;
 
 import java.util.ArrayList;

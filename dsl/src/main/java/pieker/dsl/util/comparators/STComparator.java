@@ -1,6 +1,6 @@
 package pieker.dsl.util.comparators;
 
-import pieker.dsl.architecture.component.SupervisorTraffic;
+import pieker.dsl.architecture.template.traffic.SupervisorTraffic;
 
 import java.util.Comparator;
 import java.util.regex.Matcher;

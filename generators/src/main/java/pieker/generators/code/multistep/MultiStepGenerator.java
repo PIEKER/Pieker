@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
-import pieker.dsl.architecture.component.DatabaseProxy;
+import pieker.dsl.architecture.template.component.DatabaseProxy;
 import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 import pieker.generators.util.FileSystemUtils;

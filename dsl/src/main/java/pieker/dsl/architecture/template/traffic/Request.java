@@ -71,12 +71,7 @@ public class Request implements Template, TrafficType {
 
     @Override
     public void translateParameters() {
-        if (this.parameter.startsWith(FileManager.PREFIX)) {
-            String data = Engine.getFileManager().getDataFromFileHash(this.parameter);
-            this.convertJsonToValues(data);
-        } else {
-            this.convertJsonToValues(this.parameter);
-        }
+        this.convertJsonToValues(this.getParameter());
     }
 
     private void convertJsonToValues(String json){
@@ -107,8 +102,8 @@ public class Request implements Template, TrafficType {
     }
 
     /**
-     * Used by JsonMapper to convert Object to JSON
-     * @return String of parameter json.
+     * Resolves parameter from a stored String value, including possible file referencing.
+     * @return String of parameter JSON.
      */
     public String getParameter(){
         if (this.parameter.startsWith(FileManager.PREFIX)) {

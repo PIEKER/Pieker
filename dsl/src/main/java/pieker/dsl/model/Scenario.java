@@ -11,7 +11,10 @@ import pieker.common.dto.AssertionDto;
 import pieker.common.dto.EvaluationDto;
 import pieker.common.dto.RunDto;
 import pieker.common.dto.StepDto;
-import pieker.dsl.architecture.component.*;
+import pieker.dsl.architecture.template.component.DatabaseProxy;
+import pieker.dsl.architecture.template.component.LinkProxy;
+import pieker.dsl.architecture.template.component.ServiceProxy;
+import pieker.dsl.architecture.template.component.TrafficContainer;
 
 import java.util.*;
 

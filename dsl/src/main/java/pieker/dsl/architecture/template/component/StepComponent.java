@@ -1,4 +1,4 @@
-package pieker.dsl.architecture.component;
+package pieker.dsl.architecture.template.component;
 
 import pieker.common.ConditionTemplate;
 

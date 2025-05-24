@@ -1,8 +1,9 @@
-package pieker.dsl.architecture.component;
+package pieker.dsl.architecture.template.component;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import pieker.dsl.architecture.template.traffic.Traffic;
 
 @Getter
 @Setter

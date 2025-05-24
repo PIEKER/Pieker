@@ -6,7 +6,10 @@ import pieker.api.Assertion;
 import pieker.common.ConditionTemplate;
 import pieker.common.TestStep;
 import pieker.common.TrafficTemplate;
-import pieker.dsl.architecture.component.*;
+import pieker.dsl.architecture.template.component.StepComponent;
+import pieker.dsl.architecture.template.traffic.SupervisorTraffic;
+import pieker.dsl.architecture.template.traffic.Traffic;
+import pieker.dsl.architecture.template.component.TrafficContainer;
 import pieker.dsl.util.comparators.STComparator;
 
 import java.util.*;

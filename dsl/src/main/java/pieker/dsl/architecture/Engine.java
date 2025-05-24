@@ -3,10 +3,10 @@ package pieker.dsl.architecture;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import pieker.dsl.PiekerDslException;
-import pieker.dsl.architecture.component.*;
 import pieker.dsl.architecture.preprocessor.Converter;
 import pieker.dsl.architecture.preprocessor.FileManager;
 import pieker.dsl.architecture.preprocessor.Validator;
+import pieker.dsl.architecture.template.component.*;
 import pieker.dsl.model.*;
 
 import java.util.*;
