@@ -1,4 +1,4 @@
-package pieker.dsl.architecture.strategy.component;
+package pieker.dsl.architecture.strategy.traffic;
 
 import lombok.extern.slf4j.Slf4j;
 import pieker.dsl.architecture.Engine;

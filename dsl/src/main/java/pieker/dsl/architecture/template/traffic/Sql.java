@@ -51,6 +51,7 @@ public class Sql implements Template, TrafficType {
     @Override
     public void addContextVariable(VelocityContext ctx) {
         ctx.put("trafficType", "sql");
+        ctx.put("database", this.database);
         ctx.put("query", query);
     }
 
