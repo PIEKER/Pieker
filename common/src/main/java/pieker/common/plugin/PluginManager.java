@@ -22,9 +22,13 @@ import java.util.ServiceLoader;
 @NoArgsConstructor
 public class PluginManager {
 
+    private boolean ignoreUnknownPluginReferences = false;
 
     public PluginManager(String pluginDir){
         loadPluginsFromDir(Path.of(pluginDir));
+        this.ignoreUnknownPluginReferences = Boolean.parseBoolean(System.getProperty("ignoreMissingPluginReferences", "false"));
+
+        if (this.ignoreUnknownPluginReferences) log.info("ignoring unknown plugin-references.");
     }
 
     private final Map<String, Class<? extends Assert>> pluginRegistry = new HashMap<>();
@@ -50,16 +54,18 @@ public class PluginManager {
         }
     }
 
-    public Assert createPluginInstance(String assertPlugin, String arguments) {
+    public Assert createPluginInstance(String assertPlugin, String arguments) throws ClassNotFoundException {
         Class<? extends Assert> clazz = pluginRegistry.get(assertPlugin);
-        if (clazz == null) {
+        if (this.ignoreUnknownPluginReferences && clazz == null) {
             return new StubAssert();
+        } else if (clazz == null) {
+            throw new ClassNotFoundException("unable to find plugin implementation for plugin-reference: " + assertPlugin);
         }
         try {
             Constructor<? extends Assert> constructor = clazz.getConstructor(String.class);
             return constructor.newInstance(arguments);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to instantiate plugin: " + assertPlugin, e);
+            throw new ClassNotFoundException("Failed to instantiate plugin: " + assertPlugin, e);
         }
     }
 

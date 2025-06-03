@@ -13,6 +13,7 @@ import pieker.dsl.model.assertions.DatabaseAssert;
 import pieker.dsl.util.Util;
 
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -269,7 +270,15 @@ public class FeatureParser extends PiekerParserBaseListener {
             arguments = ctxAssert.arguments().line().getText().trim();
         }
 
-        Assert ass = assertPlugin.equals("Database") ? new DatabaseAssert(arguments): pluginManager.createPluginInstance(assertPlugin, arguments);
+        Assert ass;
+
+        try{
+            ass = assertPlugin.equals("Database") ? new DatabaseAssert(arguments): pluginManager.createPluginInstance(assertPlugin, arguments);
+        } catch (ClassNotFoundException e){
+            throw new PiekerDslException(e.getMessage(), e);
+        }
+
+        assert ass != null;
         ass.setStepId(then.getStep().getId());
 
         if (ctxAssert.assertBody() == null) {
