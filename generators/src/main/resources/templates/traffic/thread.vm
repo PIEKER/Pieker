@@ -43,7 +43,7 @@ Thread $trafficIdentifier = Thread.ofVirtual().start(() -> {
                 // TRAFFIC HERE
                 ResponseTuple r = new ResponseTuple("EMPTY", 0);
                 #if ($query)
-                r = executeSQL(DB_URL, DB_USER, DB_PASS, "${query}");
+                r = executeSQL(DB_URL + "/${database}", DB_USER, DB_PASS, "${query}");
                 #end
 
                 #if ($requestUrl)

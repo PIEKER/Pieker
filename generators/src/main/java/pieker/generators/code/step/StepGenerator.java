@@ -8,7 +8,7 @@ import pieker.common.ScenarioProxyComponent;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.ScenarioTrafficComponent;
 import pieker.common.TrafficTemplate;
-import pieker.dsl.architecture.component.DatabaseProxy;
+import pieker.dsl.architecture.template.component.DatabaseProxy;
 import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 

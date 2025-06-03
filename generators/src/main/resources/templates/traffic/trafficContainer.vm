@@ -20,8 +20,6 @@ public class $className {
     private static final String DB_PASS = System.getenv("DB_PASS");
 
     public static void main(String[] args) {
-        System.out.println("Can write to /app/logs: " + new File("/app/logs").canWrite());
-        System.out.println("Can write to /tmp/logs: " + new File(LOG_ROOT).canWrite());
 
         ${threadBody}
         #if ($trafficIdentifierList != $null && $trafficIdentifierList.size() > 0)

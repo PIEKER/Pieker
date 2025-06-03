@@ -159,7 +159,7 @@ public class Main {
             });
             log.info("Finished test component JAR generation.");
 
-            if (System.getProperty("skipImageGeneration", "false").equals("false")) {
+            if (System.getProperty("skipDockerImageGeneration", "false").equals("false")) {
                 // Generate Docker images for test components
                 log.info("Starting Docker image generation...");
                 feature.getScenarioTestPlanList().forEach(scenario -> {

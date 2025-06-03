@@ -1,11 +1,10 @@
-package pieker.dsl.architecture.component;
+package pieker.dsl.architecture.template.component;
 
 import lombok.Setter;
 import pieker.common.ConditionTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Setter
 public class DatabaseProxy extends ProxyComponent<DatabaseProxy> {

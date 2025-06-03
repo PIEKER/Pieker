@@ -5,6 +5,9 @@ import pieker.dsl.architecture.strategy.component.*;
 import pieker.dsl.architecture.strategy.condition.*;
 import pieker.dsl.architecture.strategy.general.DefStrategy;
 import pieker.dsl.architecture.strategy.general.DurationStrategy;
+import pieker.dsl.architecture.strategy.traffic.PassiveStrategy;
+import pieker.dsl.architecture.strategy.traffic.RequestStrategy;
+import pieker.dsl.architecture.strategy.traffic.SqlStrategy;
 
 /**
  * This enum matches a grammar key of PIEKER DSL.

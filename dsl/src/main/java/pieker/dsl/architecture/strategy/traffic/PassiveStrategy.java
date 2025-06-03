@@ -1,8 +1,8 @@
-package pieker.dsl.architecture.strategy.component;
+package pieker.dsl.architecture.strategy.traffic;
 
 import lombok.extern.slf4j.Slf4j;
 import pieker.dsl.architecture.Engine;
-import pieker.dsl.architecture.component.Traffic;
+import pieker.dsl.architecture.template.traffic.Traffic;
 import pieker.dsl.architecture.exception.ValidationException;
 import pieker.dsl.architecture.preprocessor.Validator;
 import pieker.dsl.architecture.strategy.KeywordStrategy;

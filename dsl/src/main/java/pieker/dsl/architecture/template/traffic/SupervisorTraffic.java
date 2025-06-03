@@ -1,6 +1,4 @@
-package pieker.dsl.architecture.component;
-
-import pieker.dsl.architecture.template.traffic.TrafficType;
+package pieker.dsl.architecture.template.traffic;
 
 public class SupervisorTraffic extends Traffic{
 

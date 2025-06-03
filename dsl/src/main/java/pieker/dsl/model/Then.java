@@ -5,7 +5,7 @@ import lombok.Setter;
 import pieker.api.assertions.Assert;
 import pieker.api.Assertion;
 import pieker.api.assertions.StubAssert;
-import pieker.dsl.architecture.component.StepComponent;
+import pieker.dsl.architecture.template.component.StepComponent;
 import pieker.dsl.architecture.exception.PiekerProcessingException;
 import pieker.dsl.architecture.preprocessor.Validator;
 

@@ -51,6 +51,7 @@ public class Sql implements Template, TrafficType {
     @Override
     public void addContextVariable(VelocityContext ctx) {
         ctx.put("trafficType", "sql");
+        ctx.put("database", this.database);
         ctx.put("query", query);
     }
 
@@ -64,6 +65,10 @@ public class Sql implements Template, TrafficType {
         return this.databaseServer;
     }
 
+    /**
+     * Resolves parameter from a stored String value, including possible file referencing.
+     * @return query string
+     */
     public String getParameter(){
         if (this.parameter.startsWith(FileManager.PREFIX)) {
             return Engine.getFileManager().getDataFromFileHash(this.parameter);
