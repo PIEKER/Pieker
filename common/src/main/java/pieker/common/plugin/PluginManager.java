@@ -22,11 +22,11 @@ import java.util.ServiceLoader;
 @NoArgsConstructor
 public class PluginManager {
 
-    private boolean ignoreUnknownPluginReferences = false;
+    private boolean ignoreUnknownPluginReferences = true;
 
     public PluginManager(String pluginDir){
         loadPluginsFromDir(Path.of(pluginDir));
-        this.ignoreUnknownPluginReferences = Boolean.parseBoolean(System.getProperty("ignoreMissingPluginReferences", "false"));
+        this.ignoreUnknownPluginReferences = Boolean.parseBoolean(System.getProperty("ignoreMissingPluginReferences", "true"));
 
         if (this.ignoreUnknownPluginReferences) log.info("ignoring unknown plugin-references.");
     }
