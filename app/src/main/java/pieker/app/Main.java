@@ -28,12 +28,12 @@ public class Main {
                                     \s
                       %%            \s
                   **  %%%%          \s
-                 *****%%%%%%        \s  _____  _____  ______  _  __ ______  _____
-               *******%%%%%%%%      \s |  __ \\|_   _||  ____|| |/ /|  ____||  __ \\
-             *********%%%%%%%%%%    \s | |__) | | |  | |__   | ' / | |__   | |__) |
-            **********%%%%%%%%%%%%  \s |  ___/  | |  |  __|  |  <  |  __|  |  _  /
-               *******%%%%%%%%%%    \s | |     _| |_ | |____ | . \\ | |____ | | \\ \\
-                  ****%%%%%%%%      \s |_|    |_____||______||_|\\_\\|______||_|  \\_\\
+                 *****%%%%%%           _____  _____  ______  _  __ ______  _____
+               *******%%%%%%%%        |  __ \\|_   _||  ____|| |/ /|  ____||  __ \\
+             *********%%%%%%%%%%      | |__) | | |  | |__   | ' / | |__   | |__) |
+            **********%%%%%%%%%%%%    |  ___/  | |  |  __|  |  <  |  __|  |  _  /
+               *******%%%%%%%%%%      | |     _| |_ | |____ | . \\ | |____ | | \\ \\
+                  ****%%%%%%%%        |_|    |_____||______||_|\\_\\|______||_|  \\_\\
                     **%%%%%%        \s
                       %%%%          \s
                       %%            \s
@@ -214,14 +214,14 @@ public class Main {
         supervisor.destroyTestEnvironment();
     }
 
-    private static void evaluate(){
+    private static void evaluate() {
         Evaluator evaluator = new Evaluator(); //TODO pass connection parameters
         evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty("scenarioName"), ".log");
         testPlan.getStepIds().forEach(sId ->
-            evaluator.run(
-                    testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
-                    ASSERT_TIMEOUT
-            )
+                evaluator.run(
+                        testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
+                        ASSERT_TIMEOUT
+                )
         );
         evaluator.generateResultJson(testPlan);
     }

@@ -124,7 +124,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
                 JdbcLink<ComposeComponent> existingLink = (JdbcLink<ComposeComponent>) links.getFirst();
                 ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
                 ((ComposeService) proxy).setEnvironment(Map.of(
-                        "DB_URL", existingLink.getJdbcUrl(),
+                        "DB_URL", getJdbcBaseUrl(existingLink.getJdbcUrl()),
                         "DB_USER", existingLink.getUsername(),
                         "DB_PASS", existingLink.getPassword()
                 ));
@@ -252,6 +252,26 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             newPort = ":" + newPort;
         }
         return jdbcUrl.replace(oldHost + oldPort, newHost + newPort);
+    }
+
+    /**
+     * Extracts the base URL from a JDBC URL (remove DB name).
+     *
+     * @param jdbcUrl The raw JDBC URL
+     * @return The base URL (protocol + host + port)
+     */
+    private String getJdbcBaseUrl(String jdbcUrl) {
+        if (jdbcUrl == null || jdbcUrl.isBlank()) {
+            return "";
+        }
+        int index_prefix = jdbcUrl.indexOf("://");
+        if (index_prefix == -1) {
+            return jdbcUrl; // No protocol found, return as is
+        }
+        String prefix = jdbcUrl.substring(0, index_prefix + 3);
+        String suffix = jdbcUrl.substring(index_prefix + 3);
+        int index_host_end = suffix.indexOf('/');
+        return prefix + suffix.substring(0, index_host_end);
     }
 
 }
