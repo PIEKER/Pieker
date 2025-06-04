@@ -20,7 +20,7 @@ public class $proxyName {
         #end
 
         server.start();
-        System.out.println("Server started on port 42690");
+        System.out.println("Server started on port $port");
     }
 
     private static void handleRequest(com.sun.net.httpserver.HttpExchange exchange, String jarName) {
