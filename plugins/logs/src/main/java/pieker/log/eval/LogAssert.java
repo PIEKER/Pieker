@@ -116,7 +116,7 @@ public class LogAssert extends Assert {
     @Override
     public void evaluate() {
         log.debug("evaluate LogEvaluation");
-        String filename = this.stepId + "_" + this.identifier + FILE_SUFFIX;
+        String filename = this.stepId + "_" + this.identifier.replace("-", "_") + FILE_SUFFIX;
         File file = this.getFileMap().get(FILE_SUFFIX).get(filename);
         if (file == null || !file.isFile()) {
             log.error("No file found for name {}", filename);

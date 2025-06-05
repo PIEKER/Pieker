@@ -48,6 +48,7 @@ public class Main {
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir");
 
     private static final PluginManager PLUGIN_MANAGER = new PluginManager(System.getProperty("pluginDir"));
+    private static final float TEST_DEFAULT_DURATION = Float.parseFloat(System.getProperty("testDurationDefault", "30.0"));
     private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
 
     private static ScenarioTestPlan testPlan;
@@ -63,6 +64,7 @@ public class Main {
                              Architecture file:          {}
                              Interface description file: {}
                              Installed Plugins:          {}
+                             Default Test Duration:      {}
                              assertTimeout:              {} \u001b[0m
                         """,
                 PIEKER_LOGO,
@@ -71,6 +73,7 @@ public class Main {
                 Paths.get(ARCHITECTURE_FILE_PATH).normalize(),
                 Paths.get(INTERFACE_DESCRIPTION_FILE_PATH).normalize(),
                 PLUGIN_MANAGER.getPluginRegistry().keySet(),
+                TEST_DEFAULT_DURATION,
                 ASSERT_TIMEOUT
         );
 
@@ -128,7 +131,7 @@ public class Main {
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
             pieker.dsl.architecture.Engine.validate(feature);
             log.info("Validation finished successfully.");
-            return;
+            System.exit(0);
         }
 
         // Generate Test Plan
