@@ -154,7 +154,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             beforeEachStep.getSequence();
         }
 
-        sleep(500); // Sleep for 0.5 seconds to allow for component behavior changes
+        sleep(1000); // Sleep for 1 second to allow for component behavior changes
 
         // Execute actual test step
         log.info("Starting test sequence...");
