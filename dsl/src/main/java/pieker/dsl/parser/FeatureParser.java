@@ -101,6 +101,7 @@ public class FeatureParser extends PiekerParserBaseListener {
      */
     @Override
     public void enterScenario(PiekerParser.ScenarioContext ctx){
+        this.stepNameSet.clear(); // new scenario allows new identifier
         String ident = ctx.line().getText();
         log.debug("entered ScenarioContext {}", ident);
 
