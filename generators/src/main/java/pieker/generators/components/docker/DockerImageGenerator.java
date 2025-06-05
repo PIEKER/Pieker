@@ -136,7 +136,7 @@ public final class DockerImageGenerator {
                     .exec(new BuildImageResultCallback())
                     .awaitImageId();
 
-            log.info("Image built with ID: {}and tag: {}:{}", imageId, imageName, tag);
+            log.info("Image built with ID '{}' and tag '{}:{}'", imageId, imageName, tag);
             return imageId;
         }
     }
