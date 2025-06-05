@@ -98,6 +98,8 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
                 log.error("Start component command interrupted: {}", e.getMessage());
             }
         }
+        log.debug("Waiting for components to start ...");
+        sleep(10000); // Sleep for 5 seconds to allow components to start
     }
 
     @Override
