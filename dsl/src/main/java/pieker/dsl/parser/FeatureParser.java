@@ -13,8 +13,8 @@ import pieker.dsl.model.assertions.DatabaseAssert;
 import pieker.dsl.util.Util;
 
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static pieker.dsl.util.FeatureUtil.getShiftedLineIndex;
@@ -28,6 +28,8 @@ public class FeatureParser extends PiekerParserBaseListener {
     private final Feature feature;
 
     private Scenario latestScenario;
+
+    private final HashSet<String> stepNameSet = new HashSet<>();
 
     private FeatureParser(ParsingReader reader, Feature feature){
         this.reader = reader;
@@ -147,6 +149,8 @@ public class FeatureParser extends PiekerParserBaseListener {
                     "Skipping context '{}' to prevent runtime failure.", ident);
             return;
         }
+
+        if (!this.stepNameSet.add(ident)) throw new PiekerDslException("Duplicate step-id detected: " + ident);
 
         Step step = new Step(this.feature, this.latestScenario, ident);
         step.setLine(getShiftedLineIndex(ctx.STEP()));

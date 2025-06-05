@@ -7,12 +7,21 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
 
+import java.io.*;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings("deprecation")
 public class $className {
 
+    private static final String LOG_ROOT = "/tmp/logs/";
+    #if ($proxyIdentifier != $null)
+    private static final String PROXY_IDENTIFIER = "${proxyIdentifier}";
+    #else
+    private static final String PROXY_IDENTIFIER = "default";
+    #end
     private static final long BOOT_TIMESTAMP = System.currentTimeMillis();
     private static final Random RANDOM = new Random();
 
@@ -30,6 +39,7 @@ public class $className {
     #end
 
     public static void main(String[] args) throws InterruptedException {
+        log("booting " + PROXY_IDENTIFIER + " for args: " + PROXY_TARGET);
         String[] hostPortArray = PROXY_TARGET.split(":");
         assert hostPortArray.length == 2;
         String host = hostPortArray[0];
@@ -70,7 +80,7 @@ public class $className {
                 });
 
         ChannelFuture f = bootstrap.bind(port).sync();
-        System.out.println("JDBC proxy started on port " + port);
+        log(PROXY_IDENTIFIER + " started on port " + port + " proxying to " + PROXY_TARGET);
         f.channel().closeFuture().sync();
     }
 
@@ -149,6 +159,24 @@ public class $className {
             return;
         }
     }
+
+    private static void log(String message) {
+            try {
+                File logFile = new File(LOG_ROOT + "dbServerProxy.log");
+                File parentDir = logFile.getParentFile();
+                if (parentDir != null && !parentDir.exists()) {
+                    parentDir.mkdirs(); // Create parent directories if they don't exist
+                }
+
+                try (FileWriter writer = new FileWriter(logFile, true)) {
+                    String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    writer.write(timestamp + " - " + message + System.lineSeparator());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     public static boolean dropout(double dropProbability){
         return RANDOM.nextDouble() < dropProbability;
     }
