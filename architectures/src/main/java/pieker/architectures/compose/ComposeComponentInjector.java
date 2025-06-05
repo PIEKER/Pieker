@@ -193,10 +193,10 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             sourceComponent.updateEnvironment(Map.of(existingLink.getHostVarName(), proxyComponent.getName()));
         }
         if (existingLink.getPortVarName() != null) {
-            sourceComponent.updateEnvironment(Map.of(existingLink.getPortVarName(), "8080"));
+            sourceComponent.updateEnvironment(Map.of(existingLink.getPortVarName(), "80"));
         }
         if (existingLink.getUrlVarName() != null) {
-            sourceComponent.updateEnvironment(Map.of(existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":8080"));
+            sourceComponent.updateEnvironment(Map.of(existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":80"));
         }
         existingLink.setTargetComponent(proxyComponent);
     }
