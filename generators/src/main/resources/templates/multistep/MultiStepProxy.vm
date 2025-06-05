@@ -58,19 +58,4 @@ public class $proxyName {
         }
     }
 
-
-    private static void copyJarFromClasspath(String resource, String destination) throws IOException {
-        File file = new File(resource);
-        Path destinationPath = Paths.get(destination, file.getName());
-
-        try (InputStream resourceStream = ${proxyName}.class.getClassLoader().getResourceAsStream(resource)) {
-
-            if (resourceStream == null) {
-                throw new FileNotFoundException("Resource not found: " + resource);
-            }
-
-            Files.copy(resourceStream, destinationPath);
-        }
-    }
-
 }

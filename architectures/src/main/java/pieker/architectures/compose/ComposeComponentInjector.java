@@ -16,6 +16,8 @@ import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -146,18 +148,16 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         proxyComponent.setImage(proxyComponent.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
         HttpLink<ComposeComponent> proxyToTargetLink = HttpLink.createForProxy(proxyComponent, targetComponent);
         this.model.addLink(proxyToTargetLink);
-        final String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
+        String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
         final String targetUrlValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getUrlVarName());
 
-        if (existingLink.getPortVarName() != null && sourcePortVarValue != null) {
-            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getPortVarName(), sourcePortVarValue));
+        if (sourcePortVarValue == null && targetUrlValue != null) {
+            sourcePortVarValue = getHostAndPort(targetUrlValue)[1];
         }
-        if (existingLink.getHostVarName() != null && targetComponent.getName() != null) {
-            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getHostVarName(), targetComponent.getName()));
-        }
-        if (existingLink.getUrlVarName() != null && targetUrlValue != null) {
-            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getUrlVarName(), targetUrlValue));
-        }
+        proxyComponent.updateEnvironment(Map.of(
+                "TARGET-PROXY-HOST", targetComponent.getName(),
+                "TARGET-PROXY-PORT", String.valueOf(sourcePortVarValue)
+        ));
     }
 
     /**
@@ -193,10 +193,10 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             sourceComponent.updateEnvironment(Map.of(existingLink.getHostVarName(), proxyComponent.getName()));
         }
         if (existingLink.getPortVarName() != null) {
-            sourceComponent.updateEnvironment(Map.of(existingLink.getPortVarName(), "80"));
+            sourceComponent.updateEnvironment(Map.of(existingLink.getPortVarName(), "8080"));
         }
         if (existingLink.getUrlVarName() != null) {
-            sourceComponent.updateEnvironment(Map.of(existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":80"));
+            sourceComponent.updateEnvironment(Map.of(existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":8080"));
         }
         existingLink.setTargetComponent(proxyComponent);
     }
@@ -272,6 +272,26 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         String suffix = jdbcUrl.substring(index_prefix + 3);
         int index_host_end = suffix.indexOf('/');
         return prefix + suffix.substring(0, index_host_end);
+    }
+
+    /**
+     * Returns the host and port of the URL.
+     * If url is set, it is parsed to extract the host and port.
+     *
+     * @return String array containing host and port, or null if not set
+     */
+    public String[] getHostAndPort(String url) {
+        if (url != null) {
+            try {
+                URI uri = new URI(url);
+                String host = uri.getHost();
+                int port = uri.getPort() != -1 ? uri.getPort() : 80;
+                return new String[]{host, String.valueOf(port)};
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException("Invalid URL format: " + url, e);
+            }
+        }
+        return null;
     }
 
 }
