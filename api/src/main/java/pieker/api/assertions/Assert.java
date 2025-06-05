@@ -25,6 +25,11 @@ public abstract class Assert implements Assertion {
     protected String identifier;
 
     @JsonIgnore
+    private boolean requiresComponent = false;
+    @JsonIgnore
+    private String requiredComponent;
+
+    @JsonIgnore
     private Map<String, Map<String, File>> fileMap = new HashMap<>();
 
     @JsonIgnore
@@ -83,6 +88,15 @@ public abstract class Assert implements Assertion {
         this.boolList.forEach(bool -> bool.setErrorMessage(message));
         this.equalsList.forEach(equals -> equals.setErrorMessage(message));
         this.nullList.forEach(null1 -> null1.setErrorMessage(message));
+    }
+
+    /**
+     * Sets a component identifier and enables a requiredComponent flag to reboot component for evaluation.
+     * @param requiredComponent string
+     */
+    public void setRequiredComponent(String requiredComponent){
+        this.requiredComponent = requiredComponent;
+        this.requiresComponent = !this.requiredComponent.isEmpty();
     }
 
     /**

@@ -53,6 +53,10 @@ public interface ScenarioTestPlan {
     Map<String, Long> getStepToDurationMap();
 
     /**
+     * @return a map of components-strings, that require a reboot to allow assertions on data.
+     */
+    Collection<String> getAssertableComponents();
+    /**
      * @return Map of stepIds to a list of assertions, ordered by assertAfter attribute
      */
     Map<String, List<Assertion>> getAssertionsMap();
