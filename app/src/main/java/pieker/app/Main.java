@@ -92,9 +92,10 @@ public class Main {
         }
         // Test Execution
         runTests();
-
         // Evaluation
         evaluate();
+        // Cleanup
+        cleanup();
     }
 
     /**
@@ -212,9 +213,10 @@ public class Main {
         supervisor.setupTestEnvironment();
         // Run Test Steps
         supervisor.executeTests();
-        // Shutdown Test Environment
+        // Stop Components in Test Environment
         supervisor.stopTestEnvironment();
-        supervisor.destroyTestEnvironment();
+        // Restart Components that are needed to verify the test results
+        supervisor.startComponents(testPlan, architectureModel);
     }
 
     private static void evaluate() {
@@ -227,6 +229,11 @@ public class Main {
                 )
         );
         evaluator.generateResultJson(testPlan);
+    }
+
+    private static void cleanup() {
+        Supervisor<?> supervisor = SupervisorFactory.createSupervisor(testPlan, architectureModel);
+        supervisor.destroyTestEnvironment();
     }
 
 }

@@ -36,6 +36,14 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     void stopTestEnvironment();
 
     /**
+     * Starts all components in the test environment.
+     *
+     * @param testPlan          the test plan to be executed
+     * @param architectureModel the architecture model containing the components to be started
+     */
+    void startComponents(ScenarioTestPlan testPlan, ArchitectureModel<?> architectureModel);
+
+    /**
      * Shuts down the test environment.
      */
     void destroyTestEnvironment();
