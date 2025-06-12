@@ -6,6 +6,7 @@ import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
 import pieker.architectures.compose.model.ComposeService;
+import pieker.architectures.model.ArchitectureModel;
 import pieker.architectures.model.Link;
 import pieker.common.*;
 import pieker.supervisor.AbstractSupervisor;
@@ -17,7 +18,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * PIEKER Supervisor for Docker Compose architectures.
@@ -36,6 +39,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     private static final String COMPOSE_START_CMD = "docker-compose -f %s up -d".formatted(COMPOSE_FILE);
     private static final String COMPOSE_STOP_CMD = "docker-compose -f %s stop".formatted(COMPOSE_FILE);
     private static final String COMPOSE_DESTROY_CMD = "docker-compose -f %s down".formatted(COMPOSE_FILE);
+    private static final String COMPOSE_COMPONENT_START_CMD = "docker-compose -f %s up -d %s".formatted(COMPOSE_FILE, "%s");
 
     public ComposeSupervisor(ScenarioTestPlan testPlan, ComposeArchitectureModel model) {
         setTestPlan(testPlan);
@@ -55,7 +59,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             Thread.currentThread().interrupt();
             log.error("Start command interrupted: {}", e.getMessage());
         }
-        sleep(15000); // Sleep for 15 seconds to allow the system to start
+        sleep(20000); // Sleep for 20 seconds to allow the system to start
     }
 
     @Override
@@ -71,6 +75,31 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             Thread.currentThread().interrupt();
             log.error("Stop command interrupted: {}", e.getMessage());
         }
+    }
+
+    @Override
+    public void startComponents(ScenarioTestPlan testPlan, ArchitectureModel<?> architectureModel) {
+        final List<String> images = testPlan.getAssertableComponents().stream()
+                .map(architectureModel::getComponent)
+                .map(Optional::orElseThrow)
+                .map(ComposeService.class::cast)
+                .map(ComposeService::getImage)
+                .toList();
+
+        log.debug("Starting components with images: {}", images);
+        for (String image : images) {
+            try {
+                runCommand(COMPOSE_COMPONENT_START_CMD.formatted(image));
+            } catch (IOException | RuntimeException e) {
+                log.error("Failed to start component '{}': {}", image, e.getMessage());
+                setStatus(Status.ERROR);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Start component command interrupted: {}", e.getMessage());
+            }
+        }
+        log.debug("Waiting for components to start ...");
+        sleep(10000); // Sleep for 5 seconds to allow components to start
     }
 
     @Override
@@ -154,7 +183,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
             beforeEachStep.getSequence();
         }
 
-        sleep(500); // Sleep for 0.5 seconds to allow for component behavior changes
+        sleep(1000); // Sleep for 1 second to allow for component behavior changes
 
         // Execute actual test step
         log.info("Starting test sequence...");

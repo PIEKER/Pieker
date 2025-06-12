@@ -1,3 +1,3 @@
-SELECT * FROM public.foos;
+SELECT * FROM data_entity;
 
-SELECT f.name FROM public.foos f WHERE f.id = 1;
+SELECT d.name FROM data_entity d WHERE d.id = 1;

@@ -116,16 +116,19 @@ public class LogAssert extends Assert {
     @Override
     public void evaluate() {
         log.debug("evaluate LogEvaluation");
-        File file = this.getFileMap().get(FILE_SUFFIX).get(this.identifier + FILE_SUFFIX); // fixme concat stepId
-        if (!file.isFile()) {
-            log.error("File does not match file: {}", file.getAbsolutePath());
-            this.invalidateAssert("File does not match file: " + file.getAbsolutePath());
+        String filename = this.stepId + "_" + this.identifier.replace("-", "_") + FILE_SUFFIX;
+        File file = this.getFileMap().get(FILE_SUFFIX).get(filename);
+        if (file == null || !file.isFile()) {
+            log.error("No file found for name {}", filename);
+            this.invalidateAssert("File does not match file: " + filename);
             return;
         }
         try {
-            logLines = Files.readAllLines(file.toPath());
+            this.logLines = Files.readAllLines(file.toPath());
         } catch (IOException e) {
             log.error("Error reading the file: {}", e.getMessage());
+            this.invalidateAssert("Error reading the file: " + e.getMessage());
+            return;
         }
 
         this.boolList.forEach(this::evaluateBoolNode);

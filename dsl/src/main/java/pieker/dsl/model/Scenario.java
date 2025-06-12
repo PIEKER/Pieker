@@ -107,6 +107,20 @@ public class Scenario implements ScenarioTestPlan {
         return stepToDurationMap;
     }
 
+    /**
+     * @return a map of components, thet require a reboot to allow assertions on data.
+     */
+    @Override
+    public Collection<String> getAssertableComponents() {
+        HashSet<String> componentSet = new HashSet<>();
+        this.getAssertionsMap().values().forEach(assertions ->
+                assertions.forEach(assertion -> {
+                    if (assertion.requiresConnectionParam()) componentSet.add(assertion.getIdentifier());
+                })
+        );
+        return componentSet.stream().toList();
+    }
+
     @JsonIgnore
     @Override
     public Map<String, List<Assertion>> getAssertionsMap() {

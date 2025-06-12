@@ -16,6 +16,8 @@ import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +126,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
                 JdbcLink<ComposeComponent> existingLink = (JdbcLink<ComposeComponent>) links.getFirst();
                 ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
                 ((ComposeService) proxy).setEnvironment(Map.of(
-                        "DB_URL", existingLink.getJdbcUrl(),
+                        "DB_URL", getJdbcBaseUrl(existingLink.getJdbcUrl()),
                         "DB_USER", existingLink.getUsername(),
                         "DB_PASS", existingLink.getPassword()
                 ));
@@ -146,18 +148,16 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         proxyComponent.setImage(proxyComponent.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
         HttpLink<ComposeComponent> proxyToTargetLink = HttpLink.createForProxy(proxyComponent, targetComponent);
         this.model.addLink(proxyToTargetLink);
-        final String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
+        String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
         final String targetUrlValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getUrlVarName());
 
-        if (existingLink.getPortVarName() != null && sourcePortVarValue != null) {
-            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getPortVarName(), sourcePortVarValue));
+        if (sourcePortVarValue == null && targetUrlValue != null) {
+            sourcePortVarValue = getHostAndPort(targetUrlValue)[1];
         }
-        if (existingLink.getHostVarName() != null && targetComponent.getName() != null) {
-            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getHostVarName(), targetComponent.getName()));
-        }
-        if (existingLink.getUrlVarName() != null && targetUrlValue != null) {
-            proxyComponent.updateEnvironment(Map.of(proxyToTargetLink.getUrlVarName(), targetUrlValue));
-        }
+        proxyComponent.updateEnvironment(Map.of(
+                "TARGET-PROXY-HOST", targetComponent.getName(),
+                "TARGET-PROXY-PORT", String.valueOf(sourcePortVarValue)
+        ));
     }
 
     /**
@@ -252,6 +252,46 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             newPort = ":" + newPort;
         }
         return jdbcUrl.replace(oldHost + oldPort, newHost + newPort);
+    }
+
+    /**
+     * Extracts the base URL from a JDBC URL (remove DB name).
+     *
+     * @param jdbcUrl The raw JDBC URL
+     * @return The base URL (protocol + host + port)
+     */
+    private String getJdbcBaseUrl(String jdbcUrl) {
+        if (jdbcUrl == null || jdbcUrl.isBlank()) {
+            return "";
+        }
+        int index_prefix = jdbcUrl.indexOf("://");
+        if (index_prefix == -1) {
+            return jdbcUrl; // No protocol found, return as is
+        }
+        String prefix = jdbcUrl.substring(0, index_prefix + 3);
+        String suffix = jdbcUrl.substring(index_prefix + 3);
+        int index_host_end = suffix.indexOf('/');
+        return prefix + suffix.substring(0, index_host_end);
+    }
+
+    /**
+     * Returns the host and port of the URL.
+     * If url is set, it is parsed to extract the host and port.
+     *
+     * @return String array containing host and port, or null if not set
+     */
+    public String[] getHostAndPort(String url) {
+        if (url != null) {
+            try {
+                URI uri = new URI(url);
+                String host = uri.getHost();
+                int port = uri.getPort() != -1 ? uri.getPort() : 80;
+                return new String[]{host, String.valueOf(port)};
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException("Invalid URL format: " + url, e);
+            }
+        }
+        return null;
     }
 
 }

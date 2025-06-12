@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 
 // Create the Axios instance
 const axiosInstance = axios.create({
@@ -32,13 +32,21 @@ axiosInstance.interceptors.response.use(
   }
 )
 
-// Export an API wrapper object
 const api = {
-  get: (url, config) => axiosInstance.get(url, config),
-  post: (url, data, config) => axiosInstance.post(url, data, config),
-  put: (url, data, config) => axiosInstance.put(url, data, config),
-  patch: (url, data, config) => axiosInstance.patch(url, data, config),
-  delete: (url, config) => axiosInstance.delete(url, config),
+  get: <T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+    axiosInstance.get<T>(url, config),
+
+  post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+    axiosInstance.post<T>(url, data, config),
+
+  put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+    axiosInstance.put<T>(url, data, config),
+
+  patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+    axiosInstance.patch<T>(url, data, config),
+
+  delete: <T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+    axiosInstance.delete<T>(url, config),
 }
 
 export default api

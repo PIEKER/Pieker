@@ -32,7 +32,7 @@ public class Step implements TestStep {
     private Then then;
 
     private boolean beforeEach = false;
-    private float duration = 4.0F;
+    private float duration = Float.parseFloat(System.getProperty("testDurationDefault", "30.0F"));
 
     // -- PIEKER architecture attributes
     private String id;
@@ -44,7 +44,7 @@ public class Step implements TestStep {
         this.feature = feature;
         this.scenario = scenario;
         this.name = name.replace(" ", "_");
-        this.id = this.name + "_" + UUID.randomUUID().toString().replace("-", "_");
+        this.id = this.name.isEmpty() ? UUID.randomUUID().toString().replace("-", "_") : this.name;
     }
 
     public Step(Feature feature, Scenario scenario){

@@ -23,8 +23,8 @@ public class RunController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Integer> createRun(@RequestBody RunDto runDto){
-        this.runService.createRun(runDto);
+    public ResponseEntity<Integer> createRun(@RequestBody RunDto run){
+        this.runService.createRun(run);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

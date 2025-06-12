@@ -20,7 +20,7 @@ public class TimesStrategy implements KeywordStrategy {
         for(String arg : args){
             try {
                 switch (CharacterKey.valueOf(arg)){
-                    case SUCCESS, FAILURE -> {
+                    case SUCCESS, FAILURE, FOR_ALL -> {
                         // character-keys have semantic impact
                     }
                     default -> log.warn("Argument {} has no semantic impact on times keyword.", arg);

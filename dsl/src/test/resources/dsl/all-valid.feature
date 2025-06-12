@@ -150,7 +150,7 @@ Feature: All Valid Feature File
         @after [passive-incr-counter, passive-db, get-counter, get-table] | 5
         @timeout [passive-incr-counter, passive-db, get-counter, get-table] | 25
 
-    Step: With Condition No Log
+    Step: With Condition With Log
 
       Given:
         @passive @request passive-incr-counter | service-c | $increment-counter
@@ -192,7 +192,7 @@ Feature: All Valid Feature File
         @after [passive-incr-counter, passive-db, get-counter, get-table] | 5
         @timeout [passive-incr-counter, passive-db, get-counter, get-table] | 25
 
-    Step: With Condition No Log
+    Step: With Condition With Log
 
       When:
         @times [passive-incr-counter, passive-db] | 20
@@ -226,7 +226,7 @@ Feature: All Valid Feature File
 
   Step: With Condition No Log
 
-  Step: With Condition No Log
+  Step: With Condition With Log
 
   Then:
     LogAll: [passive-incr-counter, passive-db, get-counter, get-table]
@@ -252,5 +252,5 @@ Feature: All Valid Feature File
       Then:
         LogAll: [passive-incr-counter, passive-db, get-counter, get-table]
 
-    Step: With Condition No Log
+    Step: With Condition With Log
 

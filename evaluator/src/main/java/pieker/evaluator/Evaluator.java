@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import pieker.api.Assertion;
 import pieker.common.ScenarioTestPlan;
+import pieker.common.connection.Http;
+import pieker.common.dto.RunDto;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,19 +95,30 @@ public class Evaluator {
         }
     }
 
-    public void generateResultJson(ScenarioTestPlan scenario){
+    public void publishResult(ScenarioTestPlan scenario){
+        RunDto result = scenario.createTestRunDto();
         ObjectMapper om = new ObjectMapper();
         try {
             String path = OUTPUT_DIR + scenario.getName();
             Files.createDirectories(Path.of(path));
-
             // Convert an object to a JSON file
             om.writerWithDefaultPrettyPrinter().writeValue(
-                    new File(path, "result.json"), scenario.createTestRunDto());
+                    new File(path, "result.json"), result);
             log.info("JSON file created successfully for {}!", scenario.getName());
+
+            boolean publishToServer = Boolean.parseBoolean(System.getProperty("publishToServer", "false"));
+            if (publishToServer){
+                String resultJson = om.writeValueAsString(result);
+                String header = "{ \"Content-Type\": \"application/json\", \"Accept\": \"application/json\" }";
+                String url = System.getProperty("publishUrl", "http://localhost:8080/runs/create");
+                log.info("publishing results to server: {}", url);
+                String response = Http.send("EVALUATOR", url, "POST", 3000, 30000, header, resultJson);
+                log.info("published with response {}", response);
+            }
         } catch (IOException e) {
             log.error("unable to create JSON file for {}. Error: {}", scenario.getName(), e.getMessage());
         }
+
     }
 
     private Map<String, File> collectFiles(File directory, String fileSuffix){

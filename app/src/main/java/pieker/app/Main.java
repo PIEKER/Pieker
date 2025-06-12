@@ -28,12 +28,12 @@ public class Main {
                                     \s
                       %%            \s
                   **  %%%%          \s
-                 *****%%%%%%        \s  _____  _____  ______  _  __ ______  _____
-               *******%%%%%%%%      \s |  __ \\|_   _||  ____|| |/ /|  ____||  __ \\
-             *********%%%%%%%%%%    \s | |__) | | |  | |__   | ' / | |__   | |__) |
-            **********%%%%%%%%%%%%  \s |  ___/  | |  |  __|  |  <  |  __|  |  _  /
-               *******%%%%%%%%%%    \s | |     _| |_ | |____ | . \\ | |____ | | \\ \\
-                  ****%%%%%%%%      \s |_|    |_____||______||_|\\_\\|______||_|  \\_\\
+                 *****%%%%%%           _____  _____  ______  _  __ ______  _____
+               *******%%%%%%%%        |  __ \\|_   _||  ____|| |/ /|  ____||  __ \\
+             *********%%%%%%%%%%      | |__) | | |  | |__   | ' / | |__   | |__) |
+            **********%%%%%%%%%%%%    |  ___/  | |  |  __|  |  <  |  __|  |  _  /
+               *******%%%%%%%%%%      | |     _| |_ | |____ | . \\ | |____ | | \\ \\
+                  ****%%%%%%%%        |_|    |_____||______||_|\\_\\|______||_|  \\_\\
                     **%%%%%%        \s
                       %%%%          \s
                       %%            \s
@@ -48,6 +48,7 @@ public class Main {
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir");
 
     private static final PluginManager PLUGIN_MANAGER = new PluginManager(System.getProperty("pluginDir"));
+    private static final float TEST_DEFAULT_DURATION = Float.parseFloat(System.getProperty("testDurationDefault", "30.0"));
     private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
 
     private static ScenarioTestPlan testPlan;
@@ -63,6 +64,7 @@ public class Main {
                              Architecture file:          {}
                              Interface description file: {}
                              Installed Plugins:          {}
+                             Default Test Duration:      {}
                              assertTimeout:              {} \u001b[0m
                         """,
                 PIEKER_LOGO,
@@ -71,6 +73,7 @@ public class Main {
                 Paths.get(ARCHITECTURE_FILE_PATH).normalize(),
                 Paths.get(INTERFACE_DESCRIPTION_FILE_PATH).normalize(),
                 PLUGIN_MANAGER.getPluginRegistry().keySet(),
+                TEST_DEFAULT_DURATION,
                 ASSERT_TIMEOUT
         );
 
@@ -89,9 +92,10 @@ public class Main {
         }
         // Test Execution
         runTests();
-
         // Evaluation
         evaluate();
+        // Cleanup
+        cleanup();
     }
 
     /**
@@ -128,7 +132,7 @@ public class Main {
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
             pieker.dsl.architecture.Engine.validate(feature);
             log.info("Validation finished successfully.");
-            return;
+            System.exit(0);
         }
 
         // Generate Test Plan
@@ -209,21 +213,27 @@ public class Main {
         supervisor.setupTestEnvironment();
         // Run Test Steps
         supervisor.executeTests();
-        // Shutdown Test Environment
+        // Stop Components in Test Environment
         supervisor.stopTestEnvironment();
-        supervisor.destroyTestEnvironment();
+        // Restart Components that are needed to verify the test results
+        supervisor.startComponents(testPlan, architectureModel);
     }
 
-    private static void evaluate(){
+    private static void evaluate() {
         Evaluator evaluator = new Evaluator(); //TODO pass connection parameters
         evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty("scenarioName"), ".log");
         testPlan.getStepIds().forEach(sId ->
-            evaluator.run(
-                    testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
-                    ASSERT_TIMEOUT
-            )
+                evaluator.run(
+                        testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
+                        ASSERT_TIMEOUT
+                )
         );
-        evaluator.generateResultJson(testPlan);
+        evaluator.publishResult(testPlan);
+    }
+
+    private static void cleanup() {
+        Supervisor<?> supervisor = SupervisorFactory.createSupervisor(testPlan, architectureModel);
+        supervisor.destroyTestEnvironment();
     }
 
 }

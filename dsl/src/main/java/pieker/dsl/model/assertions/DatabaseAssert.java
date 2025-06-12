@@ -49,6 +49,8 @@ public class DatabaseAssert extends Assert {
         }
         this.identifier = args[0];
         this.tableSelect = args[1];
+
+        this.setRequiredComponent(this.identifier); // enable component reboot
     }
 
     @Override
