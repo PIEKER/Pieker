@@ -228,7 +228,7 @@ public class Main {
                         ASSERT_TIMEOUT
                 )
         );
-        evaluator.generateResultJson(testPlan);
+        evaluator.publishResult(testPlan);
     }
 
     private static void cleanup() {

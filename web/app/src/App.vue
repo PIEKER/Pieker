@@ -26,7 +26,7 @@ const links = [
   </header>
   <div class="content-wrapper">
     <div class="warning bg-warning p-2 position-fixed">
-      Most pages are under construction and not fully developed. Its purpose is a proof of concept of a web application
+      Most pages are under construction and not fully developed yet. Its purpose is a proof of concept of a web application.
     </div>
     <router-view></router-view>
   </div>

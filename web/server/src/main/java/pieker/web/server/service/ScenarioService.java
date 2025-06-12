@@ -26,6 +26,19 @@ public class ScenarioService {
         return this.scenarioRepository.save(Scenario.builder().name(name).build());
     }
 
+    public List<ScenarioDto> getAllMinimalScenario(){
+        return this.scenarioRepository.findAll().stream()
+                .map(scenario -> ScenarioDto.builder().id(scenario.getId()).name(scenario.getName()).build())
+                .toList();
+    }
+
+    public ScenarioDto getScenarioById(Long id){
+        return ScenarioDto.toScenarioDto(
+                scenarioRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Scenario not found"))
+        );
+    }
+
     public Scenario findByName(String name){
         return this.scenarioRepository.findByName(name).orElse(null);
     }
