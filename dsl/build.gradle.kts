@@ -17,7 +17,7 @@ dependencies {
     implementation("org.json:json:20250517")
     implementation("info.picocli:picocli:4.7.7")
 
-    testImplementation("org.postgresql:postgresql:42.7.6")
+    testImplementation("org.postgresql:postgresql:42.7.7")
     testImplementation("org.testcontainers:junit-jupiter:1.21.1")
     testImplementation("org.testcontainers:postgresql:1.21.1")
 }
