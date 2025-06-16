@@ -5,8 +5,10 @@ import pieker.architectures.ArchitectureFactory;
 import pieker.architectures.generator.ModelGenerator;
 import pieker.architectures.injector.ComponentInjector;
 import pieker.architectures.model.ArchitectureModel;
+import pieker.architectures.model.Component;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.plugin.PluginManager;
+import pieker.dsl.architecture.Engine;
 import pieker.dsl.model.Feature;
 import pieker.evaluator.Evaluator;
 import pieker.generators.code.multistep.MultiStepGenerator;
@@ -130,13 +132,13 @@ public class Main {
         Feature feature = pieker.dsl.Main.parse(DSL_FILE_PATH, DSL_RESOURCE_DIRECTORY, PLUGIN_MANAGER);
 
         if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
-            pieker.dsl.architecture.Engine.validate(feature);
+            Engine.validate(feature);
             log.info("Validation finished successfully.");
             System.exit(0);
         }
 
         // Generate Test Plan
-        pieker.dsl.architecture.Engine.run(feature);
+        Engine.run(feature);
         feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
 
         if (Boolean.parseBoolean(System.getProperty("testPlanOnly", "false"))) {
@@ -220,7 +222,13 @@ public class Main {
     }
 
     private static void evaluate() {
-        Evaluator evaluator = new Evaluator(); //TODO pass connection parameters
+        if (architectureModel == null){
+            log.error("Architecture model is null, detected during evaluation. Exiting...");
+            System.exit(1);
+        }
+        // It is possible to rework the model access depending on the used deployment model (Docker, Cloud)
+        ArchitectureModel<Component>  componentArchitectureModel = (ArchitectureModel<Component>) architectureModel;
+        Evaluator evaluator = new Evaluator(componentArchitectureModel, testPlan);
         evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty("scenarioName"), ".log");
         testPlan.getStepIds().forEach(sId ->
                 evaluator.run(

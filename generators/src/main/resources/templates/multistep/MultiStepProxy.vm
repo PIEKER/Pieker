@@ -20,6 +20,7 @@ public class $proxyName {
         #end
 
         server.start();
+        currentProcess = new ProcessBuilder("java", "-jar", "/app/Default.jar").start();
         System.out.println("Server started on port $port");
     }
 

@@ -1,10 +1,15 @@
 package pieker.evaluator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import pieker.api.Assertion;
+import pieker.architectures.common.model.JdbcLink;
+import pieker.architectures.model.ArchitectureModel;
+import pieker.architectures.model.Component;
+import pieker.architectures.model.Link;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.connection.Http;
 import pieker.common.dto.RunDto;
@@ -13,23 +18,42 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 @Setter
 @Slf4j
+@NoArgsConstructor
 public class Evaluator {
 
     private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
     private Map<String, JSONObject> componentMap = new HashMap<>();
     private Map<String, Map<String, File>> fileMap = new HashMap<>();
 
-    public Evaluator(){}
+    public Evaluator(ArchitectureModel<Component> architectureModel, ScenarioTestPlan testPlan){
+        testPlan.getAssertableComponents().forEach(name -> {
+            try {
+                Component c = architectureModel.getComponent(name).orElseThrow();
+                Collection<Link<Component>> linkCollection = architectureModel.getLinksForTarget(c);
+                assert !linkCollection.isEmpty();
+                Link<Component> link = linkCollection.stream().toList().getFirst();
 
-    public Evaluator(Map<String, JSONObject> componentMap){
-        this.componentMap = componentMap;
+                switch (link.getType()){
+                    case JDBC -> {
+                        JdbcLink<Component> jdbcLink = (JdbcLink<Component>) link;
+                        log.debug("detected a jdbc link: {}", jdbcLink.getJdbcUrl());
+                        JSONObject o = new JSONObject();
+                        o.put("targetUrlEnv", this.getJdbcBaseUrl(jdbcLink.getJdbcUrl()));
+                        o.put("usernameEnv", jdbcLink.getUsername());
+                        o.put("passwordEnv", jdbcLink.getPassword());
+                        this.addComponent(name, o);
+                    }
+                    default -> log.warn("unidentified link detected: {}", link.getType());
+                }
+            } catch (NoSuchElementException | AssertionError e){
+                log.error(e.getMessage());
+            }
+        });
     }
 
     /**
@@ -150,6 +174,26 @@ public class Evaluator {
 
         ass.setFileMap(this.fileMap);
         ass.evaluate();
+    }
+
+    /**
+     * Extracts the base URL from a JDBC URL (remove DB name).
+     *
+     * @param jdbcUrl The raw JDBC URL
+     * @return The base URL (protocol + host + port)
+     */
+    private String getJdbcBaseUrl(String jdbcUrl) {
+        if (jdbcUrl == null || jdbcUrl.isBlank()) {
+            return "";
+        }
+        int indexPrefix = jdbcUrl.indexOf("://");
+        if (indexPrefix == -1) {
+            return jdbcUrl; // No protocol found, return as is
+        }
+        String prefix = jdbcUrl.substring(0, indexPrefix + 3);
+        String suffix = jdbcUrl.substring(indexPrefix + 3);
+        int indexHostEnd = suffix.indexOf('/');
+        return prefix + suffix.substring(0, indexHostEnd);
     }
 
 }
