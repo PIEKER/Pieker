@@ -10,7 +10,7 @@ dependencies {
     // External
     implementation("org.antlr:antlr4-runtime:4.13.2")
     implementation("org.cornutum.regexp:regexp-gen:2.0.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
     implementation("com.github.jsqlparser:jsqlparser:5.3")
     implementation("org.apache.velocity:velocity-engine-core:2.4.1")
     implementation("org.apache.commons:commons-jexl3:3.5.0")
