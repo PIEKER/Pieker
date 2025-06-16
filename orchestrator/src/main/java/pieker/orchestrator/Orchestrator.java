@@ -1,16 +1,16 @@
-package pieker.supervisor;
+package pieker.orchestrator;
 
 import pieker.architectures.model.ArchitectureModel;
 import pieker.architectures.model.Component;
 import pieker.common.ScenarioTestPlan;
 
 /**
- * Interface for the PIEKER Supervisor.
+ * Interface for the PIEKER Orchestrator.
  * <p>
- * The Supervisor is responsible for setting up the test environment, executing the test plan by sending requests or
+ * The Orchestrator is responsible for setting up the test environment, executing the test plan by sending requests or
  * data to the components, and shutting down the test environment.
  */
-public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
+public interface Orchestrator<M extends ArchitectureModel<? extends Component>> {
 
     /**
      * Sets up the test environment.
@@ -54,7 +54,7 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     ScenarioTestPlan getTestPlan();
 
     /**
-     * @return current status of the supervisor
+     * @return current status of the orchestrator
      */
     Status getStatus();
 
@@ -64,7 +64,7 @@ public interface Supervisor<M extends ArchitectureModel<? extends Component>> {
     M getModel();
 
     /**
-     * Status the supervisor can be in.
+     * Status the orchestrator can be in.
      */
     enum Status {
         SETUP,

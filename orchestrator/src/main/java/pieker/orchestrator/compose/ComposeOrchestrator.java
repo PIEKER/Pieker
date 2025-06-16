@@ -1,4 +1,4 @@
-package pieker.supervisor.compose;
+package pieker.orchestrator.compose;
 
 import lombok.extern.slf4j.Slf4j;
 import pieker.architectures.common.model.HttpLink;
@@ -9,8 +9,8 @@ import pieker.architectures.compose.model.ComposeService;
 import pieker.architectures.model.ArchitectureModel;
 import pieker.architectures.model.Link;
 import pieker.common.*;
-import pieker.supervisor.AbstractSupervisor;
-import pieker.supervisor.Supervisor;
+import pieker.orchestrator.AbstractOrchestrator;
+import pieker.orchestrator.Orchestrator;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +23,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * PIEKER Supervisor for Docker Compose architectures.
+ * PIEKER Orchestrator for Docker Compose architectures.
  */
 @Slf4j
-public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureModel> implements Supervisor<ComposeArchitectureModel> {
+public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectureModel> implements Orchestrator<ComposeArchitectureModel> {
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final String DEFAULT_ENDPOINT = "Default";
@@ -41,7 +41,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     private static final String COMPOSE_DESTROY_CMD = "docker-compose -f %s down".formatted(COMPOSE_FILE);
     private static final String COMPOSE_COMPONENT_START_CMD = "docker-compose -f %s up -d %s".formatted(COMPOSE_FILE, "%s");
 
-    public ComposeSupervisor(ScenarioTestPlan testPlan, ComposeArchitectureModel model) {
+    public ComposeOrchestrator(ScenarioTestPlan testPlan, ComposeArchitectureModel model) {
         setTestPlan(testPlan);
         setModel(model);
     }
@@ -204,7 +204,7 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
     }
 
     /**
-     * Handles the traffic for the given component and link by resolving the Supervisor-Proxy endpoint that needs to be
+     * Handles the traffic for the given component and link by resolving the Orchestrator-Gateway endpoint that needs to be
      * addressed to proxy to the component.
      *
      * @param trafficTemplate traffic template
@@ -257,8 +257,8 @@ public class ComposeSupervisor extends AbstractSupervisor<ComposeArchitectureMod
 
     private boolean sendRequestToComponent(String componentName, String endpoint) {
         final String host = System.getProperty("systemHost", "127.0.0.1");
-        final String supervisorProxyPort = System.getProperty("supervisorPort", "42690");
-        return sendGetRequest("http://%s:%s/http/%s/%s".formatted(host, supervisorProxyPort, componentName, endpoint));
+        final String orchestratorGatewayPort = System.getProperty("orchestratorPort", "42690");
+        return sendGetRequest("http://%s:%s/http/%s/%s".formatted(host, orchestratorGatewayPort, componentName, endpoint));
     }
 
     /**

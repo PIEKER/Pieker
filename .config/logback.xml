@@ -21,6 +21,6 @@
     <logger name="pieker.dsl" level="info" />
     <logger name="pieker.evaluator" level="debug" />
     <logger name="pieker.generators" level="info" />
-    <logger name="pieker.supervisor" level="debug" />
+    <logger name="pieker.orchestrator" level="debug" />
 
 </configuration>

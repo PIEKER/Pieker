@@ -12,8 +12,8 @@ import pieker.evaluator.Evaluator;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
 import pieker.generators.components.docker.DockerImageGenerator;
-import pieker.supervisor.Supervisor;
-import pieker.supervisor.SupervisorFactory;
+import pieker.orchestrator.Orchestrator;
+import pieker.orchestrator.OrchestratorFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -208,15 +208,15 @@ public class Main {
             System.exit(1);
         }
         System.setProperty("scenarioName", testPlan.getName());
-        Supervisor<?> supervisor = SupervisorFactory.createSupervisor(testPlan, architectureModel);
+        Orchestrator<?> orchestrator = OrchestratorFactory.createOrchestrator(testPlan, architectureModel);
         // Start Test Environment
-        supervisor.setupTestEnvironment();
+        orchestrator.setupTestEnvironment();
         // Run Test Steps
-        supervisor.executeTests();
+        orchestrator.executeTests();
         // Stop Components in Test Environment
-        supervisor.stopTestEnvironment();
+        orchestrator.stopTestEnvironment();
         // Restart Components that are needed to verify the test results
-        supervisor.startComponents(testPlan, architectureModel);
+        orchestrator.startComponents(testPlan, architectureModel);
     }
 
     private static void evaluate() {
@@ -232,8 +232,8 @@ public class Main {
     }
 
     private static void cleanup() {
-        Supervisor<?> supervisor = SupervisorFactory.createSupervisor(testPlan, architectureModel);
-        supervisor.destroyTestEnvironment();
+        Orchestrator<?> orchestrator = OrchestratorFactory.createOrchestrator(testPlan, architectureModel);
+        orchestrator.destroyTestEnvironment();
     }
 
 }

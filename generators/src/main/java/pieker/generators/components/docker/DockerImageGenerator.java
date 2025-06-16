@@ -36,7 +36,7 @@ public final class DockerImageGenerator {
     private static final String GEN_DIR = PROJECT_ROOT + System.getProperty("genDir", "../.gen/");
     private static final String CODE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "code" + File.separator;
     private static final String IMAGE_DIR = GEN_DIR + EXECUTION_NAME + File.separator + "images" + File.separator;
-    private static final String SUPERVISOR_PROXY_DIR = PROJECT_ROOT + File.separator + "supervisor/src/main/java/pieker/supervisor/compose/proxy";
+    private static final String ORCHESTRATOR_GATEWAY_DIR = PROJECT_ROOT + File.separator + "orchestrator/src/main/java/pieker/orchestrator/compose/gateway";
     // Templates
     private static final String DOCKERFILE_TEMPLATE = "docker/ProxyDockerfile.vm";
     private static final String DOCKERFILE_MINIMAL_TEMPLATE = "docker/ProxyDockerfileMinimal.vm";
@@ -109,9 +109,9 @@ public final class DockerImageGenerator {
             }
         }
 
-        // Build Supervisor Proxy Image
-        final String imageId = buildImage(SUPERVISOR_PROXY_DIR, "supervisor-proxy", "test");
-        if (System.getProperty("saveDockerImages", "false").equals("true")) saveImage(imageId, "supervisor-proxy", IMAGE_DIR);
+        // Build Gateway Image
+        final String imageId = buildImage(ORCHESTRATOR_GATEWAY_DIR, "pieker-gateway", "test");
+        if (System.getProperty("saveDockerImages", "false").equals("true")) saveImage(imageId, "pieker-gateway", IMAGE_DIR);
     }
 
     /**

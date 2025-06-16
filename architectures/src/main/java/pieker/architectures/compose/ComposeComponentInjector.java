@@ -43,12 +43,12 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
     @Override
     public void injectComponents(ScenarioTestPlan testPlan) throws ComponentInjectionException {
 
-        // Add Supervisor Proxy Component
-        ComposeService supervisorProxy = this.model.createComponent("PIEKER_PROXY_SUPERVISOR");
-        supervisorProxy.setImage("supervisor-proxy:test");
-        final String supervisorProxyPort = System.getProperty("supervisorPort", "42690");
-        supervisorProxy.addPortMapping(supervisorProxyPort, supervisorProxyPort);
-        supervisorProxy.updateEnvironment(this.model.getSupervisorDatabaseInfo().orElse(Map.of()));
+        // Add Orchestrator Proxy Component
+        ComposeService orchestratorGateway = this.model.createComponent("PIEKER_GATEWAY");
+        orchestratorGateway.setImage("pieker-gateway:test");
+        final String orchestratorPort = System.getProperty("orchestratorPort", "42690");
+        orchestratorGateway.addPortMapping(orchestratorPort, orchestratorPort);
+        orchestratorGateway.updateEnvironment(this.model.getOrchestratorDatabaseInfo().orElse(Map.of()));
 
         // Add Test Components
         for (ScenarioComponent scenarioComponent : testPlan.getComponents()) {
