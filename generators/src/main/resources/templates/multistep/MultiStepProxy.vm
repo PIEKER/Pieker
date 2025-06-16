@@ -26,7 +26,10 @@ public class $proxyName {
     private static void handleRequest(com.sun.net.httpserver.HttpExchange exchange, String jarName) {
         try {
             if ("GET".equals(exchange.getRequestMethod())) {
-                if (currentProcess != null) currentProcess.destroy();
+                if (currentProcess != null) {
+                    currentProcess.destroy();
+                    currentProcess.waitFor(); // wait for process to fully exit
+                }
 
                 try {
                     currentProcess = new ProcessBuilder("java", "-jar", "/app/" + jarName).start();
