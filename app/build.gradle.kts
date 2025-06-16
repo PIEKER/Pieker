@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":dsl"))
     implementation(project(":evaluator"))
     implementation(project(":generators"))
-    implementation(project(":supervisor"))
+    implementation(project(":orchestrator"))
     // External
 
 }

@@ -40,7 +40,7 @@ For an overview of the development progress, see the [Roadmap](#roadmap).
     - [DSL-Module](#dsl-module)
     - [Evaluator-Module](#evaluator-module)
     - [Generators-Module](#generators-module)
-    - [Supervisor-Module](#supervisor-module)
+    - [Orchestrator-Module](#orchestrator-module)
     - [Web-Application](#web-app)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -56,7 +56,7 @@ Pieker
 ├── dsl            # PIEKER DSL Module
 ├── evaluator      # PIEKER Evaluation Module
 ├── generators     # PIEKER Generators Module
-├── supervisor     # PIEKER Supervisor Module
+├── orchestrator     # PIEKER Orchestrator Module
 └── web            # PIEKER Web Application
 ```
 
@@ -148,12 +148,12 @@ images based on DSL inputs.
 - Documentation: [Code-Generators-README](./generators/README.md)
 - Maintainer: [@YIllmann](https://github.com/YIllmann), [@simohlsen](https://github.com/simohlsen)
 
-### Supervisor-Module
+### Orchestrator-Module
 
-This module contains classes to supervise the test execution process, including starting and stopping of the test
+This module contains classes to orchestrate the test execution process, including starting and stopping of the test
 environment.
 
-- Directory: [`supervisor/`](./generators)
+- Directory: [`orchestrator/`](./orchestrator)
 - Documentation: TODO
 - Maintainer: [@simohlsen](https://github.com/simohlsen)
 

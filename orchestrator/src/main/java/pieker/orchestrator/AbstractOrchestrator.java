@@ -1,4 +1,4 @@
-package pieker.supervisor;
+package pieker.orchestrator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import pieker.common.ScenarioTestPlan;
 @Slf4j
 @Getter
 @Setter
-public abstract class AbstractSupervisor<M extends ArchitectureModel<? extends Component>> implements Supervisor<M> {
+public abstract class AbstractOrchestrator<M extends ArchitectureModel<? extends Component>> implements Orchestrator<M> {
 
     private ScenarioTestPlan testPlan;
     private Status status = Status.NONE;

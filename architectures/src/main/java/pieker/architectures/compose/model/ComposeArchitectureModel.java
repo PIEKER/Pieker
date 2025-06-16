@@ -138,7 +138,12 @@ public class ComposeArchitectureModel extends AbstractArchitectureModel<ComposeC
         return new ComposeService(name);
     }
 
-    public Optional<Map<String, String>> getSupervisorDatabaseInfo() {
+    /**
+     * Retrieves the database connection information from the first JdbcLink found in the architecture model.
+     *
+     * @return an Optional containing a map with database information, or an empty Optional if no JdbcLink is found
+     */
+    public Optional<Map<String, String>> getOrchestratorDatabaseInfo() {
         JdbcLink<ComposeComponent> databaseLink = getLinks().stream()
                 .filter(link -> link instanceof JdbcLink)
                 .map(link -> (JdbcLink<ComposeComponent>) link)
