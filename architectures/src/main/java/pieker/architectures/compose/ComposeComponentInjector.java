@@ -14,6 +14,7 @@ import pieker.architectures.model.ComponentLink;
 import pieker.architectures.model.Link;
 import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
+import pieker.common.ScenarioTrafficComponent;
 
 import java.io.File;
 import java.net.URI;
@@ -67,7 +68,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             }
             linksToUpdate.removeIf(link -> link.getSourceComponent().isGenerated());
 
-            if (linksToUpdate.isEmpty()) {
+            if (linksToUpdate.isEmpty() || scenarioComponent instanceof ScenarioTrafficComponent) {
                 // Prepend component to target and add new link
                 prependComponent(newComponent, targetComponent);
                 continue;
