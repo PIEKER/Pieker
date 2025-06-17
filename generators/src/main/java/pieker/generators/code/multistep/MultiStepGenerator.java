@@ -5,6 +5,7 @@ import org.apache.velocity.VelocityContext;
 import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
 import pieker.dsl.architecture.template.component.DatabaseProxy;
+import pieker.dsl.architecture.template.component.LinkProxy;
 import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 import pieker.generators.util.FileSystemUtils;
@@ -58,7 +59,7 @@ public class MultiStepGenerator {
     public static void generateMultiStepProxies(Collection<ScenarioComponent> scenarioComponents) throws CodeGenerationException {
         for (ScenarioComponent component : scenarioComponents) {
             try {
-                List<String> dependencies = component instanceof DatabaseProxy ?
+                List<String> dependencies = (component instanceof DatabaseProxy || component instanceof LinkProxy)  ?
                         List.of("dependencies/netty-transport-4.2.0.Final.jar",
                                 "dependencies/netty-common-4.2.0.Final.jar",
                                 "dependencies/netty-buffer-4.1.119.Final.jar",
