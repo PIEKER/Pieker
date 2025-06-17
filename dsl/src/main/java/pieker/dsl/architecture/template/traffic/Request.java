@@ -37,6 +37,8 @@ public class Request implements Template, TrafficType {
     private String headers = "";
     @JsonIgnore
     private String body = "";
+    @JsonIgnore
+    private String bodyType = "json";
 
 
     public Request(String service, String parameter) {
@@ -50,7 +52,7 @@ public class Request implements Template, TrafficType {
             throw new IllegalArgumentException("no arguments provided for request traffic");
         }
         String endpointUrl = "/" + this.service + this.url;
-        return Http.send(this.service, args[0] + endpointUrl, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body);
+        return Http.send(this.service, args[0] + endpointUrl, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body, "");
     }
 
     @Override
@@ -64,6 +66,7 @@ public class Request implements Template, TrafficType {
             ctx.put("requestReadTimeout", this.readTimeout);
             ctx.put("requestHeaders", om.writeValueAsString(this.headers));
             ctx.put("requestBody", om.writeValueAsString(this.body));
+            ctx.put("requestBodyType", this.bodyType);
         } catch(JsonProcessingException e){
             throw new PiekerProcessingException("unable escape characters for header/body: " + e.getMessage());
         }
@@ -88,6 +91,7 @@ public class Request implements Template, TrafficType {
                     case "readTimeout" -> this.readTimeout = node.get(field).asInt();
                     case "headers" -> this.headers = node.get(field).toString();
                     case "body" -> this.body = node.get(field).toString();
+                    case "bodyType" -> this.bodyType = node.get(field).asText();
                     default -> log.warn("unknown field used in request json: '{}'", field);
                 }
             }

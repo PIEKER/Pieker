@@ -84,7 +84,10 @@ public class MultiStepGenerator {
         for (ScenarioComponent component : trafficComponents) {
             try {
                 List<String> dependencies = List.of(
-                        "dependencies/json-20250107.jar",
+                        "dependencies/gson-2.13.1.jar",
+                        "dependencies/okhttp-4.12.0.jar",
+                        "dependencies/okio-jvm-3.6.0.jar",
+                        "dependencies/kotlin-stdlib-1.9.10.jar",
                         "dependencies/postgresql-42.7.5.jar"
                 );
                 log.debug("Starting to generate multi-step traffic component '{}' with dependencies: {}",

@@ -99,7 +99,7 @@ public class Evaluator {
                 String header = "{ \"Content-Type\": \"application/json\", \"Accept\": \"application/json\" }";
                 String url = System.getProperty("publishUrl", "http://localhost:8080/runs/create");
                 log.info("publishing results to server: {}", url);
-                String response = Http.send("EVALUATOR", url, "POST", 3000, 30000, header, resultJson);
+                String response = Http.send("EVALUATOR", url, "POST", 3000, 30000, header, resultJson, "json");
                 log.info("published with response {}", response);
             }
         } catch (IOException e) {
