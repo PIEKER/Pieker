@@ -39,7 +39,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
     private static final String COMPOSE_START_CMD = "docker-compose -f %s up -d".formatted(COMPOSE_FILE);
     private static final String COMPOSE_STOP_CMD = "docker-compose -f %s stop".formatted(COMPOSE_FILE);
     private static final String COMPOSE_DESTROY_CMD = "docker-compose -f %s down".formatted(COMPOSE_FILE);
-    private static final String COMPOSE_COMPONENT_START_CMD = "docker-compose -f %s up -d %s".formatted(COMPOSE_FILE, "%s");
+    private static final String COMPOSE_COMPONENT_START_CMD = "docker-compose -f %s start %s".formatted(COMPOSE_FILE, "%s");
 
     public ComposeOrchestrator(ScenarioTestPlan testPlan, ComposeArchitectureModel model) {
         setTestPlan(testPlan);
@@ -79,19 +79,19 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
 
     @Override
     public void startComponents(ScenarioTestPlan testPlan, ArchitectureModel<?> architectureModel) {
-        final List<String> images = testPlan.getAssertableComponents().stream()
+        final List<String> componentNames = testPlan.getAssertableComponents().stream()
                 .map(architectureModel::getComponent)
                 .map(Optional::orElseThrow)
                 .map(ComposeService.class::cast)
-                .map(ComposeService::getImage)
+                .map(ComposeService::getName)
                 .toList();
 
-        log.debug("Starting components with images: {}", images);
-        for (String image : images) {
+        log.debug("Starting components with names: {}", componentNames);
+        for (String name : componentNames) {
             try {
-                runCommand(COMPOSE_COMPONENT_START_CMD.formatted(image));
+                runCommand(COMPOSE_COMPONENT_START_CMD.formatted(name));
             } catch (IOException | RuntimeException e) {
-                log.error("Failed to start component '{}': {}", image, e.getMessage());
+                log.error("Failed to start component '{}': {}", name, e.getMessage());
                 setStatus(Status.ERROR);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
