@@ -33,5 +33,7 @@ Feature: Example System Running Example Thesis
       Then:
         Assert: Database
           Arguments: db | testdb | SELECT * FROM data_entity
-          Null: True
+          Null: False
             content
+          Bool: True | > 10
+            COUNT(*)
