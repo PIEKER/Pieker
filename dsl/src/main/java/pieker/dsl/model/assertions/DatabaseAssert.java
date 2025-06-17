@@ -3,12 +3,12 @@ package pieker.dsl.model.assertions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
 import pieker.api.assertions.Equals;
 import pieker.api.assertions.Null;
 import pieker.api.Evaluation;
+import pieker.common.connection.Http;
 import pieker.dsl.PiekerDslException;
 import pieker.dsl.architecture.exception.ValidationException;
 import pieker.dsl.util.Util;
@@ -168,13 +168,13 @@ public class DatabaseAssert extends Assert {
     }
 
     @Override
-    public void setConnectionParam(JSONObject cpJson) {
-        this.jdbcUrl = cpJson.getString("targetUrlEnv") + "/" + this.database;
-        this.username = cpJson.getString("usernameEnv");
-        this.password = cpJson.getString("passwordEnv");
+    public void setConnectionParam(String gatewayUrl) {
+        this.jdbcUrl = gatewayUrl;
     }
 
     private String sendQuery(String query){
-        return pieker.common.connection.Sql.send(this.identifier, this.jdbcUrl, this.username, this.password, query);
+        String endpointUrl = "/db/" + this.database + "/query";
+        String body = "{\"query\":\"" + query + "\"}";
+        return Http.send(this.identifier, this.jdbcUrl + endpointUrl, "POST", 3000, 30000, "", body);
     }
 }

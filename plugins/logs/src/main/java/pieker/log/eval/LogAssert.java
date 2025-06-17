@@ -1,7 +1,6 @@
 package pieker.log.eval;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import pieker.api.Evaluation;
 import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
@@ -151,7 +150,7 @@ public class LogAssert extends Assert {
     }
 
     @Override
-    public void setConnectionParam(JSONObject cpJson) {
+    public void setConnectionParam(String gatewayUrl) {
         log.info("setup ConnectionParam in LogEvaluation");
     }
 

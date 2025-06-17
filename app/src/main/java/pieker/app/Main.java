@@ -234,9 +234,7 @@ public class Main {
             log.error("Architecture model is null, detected during evaluation. Exiting...");
             System.exit(1);
         }
-        // It is possible to rework the model access depending on the used deployment model (Docker, Cloud)
-        ArchitectureModel<Component>  componentArchitectureModel = (ArchitectureModel<Component>) architectureModel;
-        Evaluator evaluator = new Evaluator(componentArchitectureModel, testPlan);
+        Evaluator evaluator = new Evaluator();
         evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty(SCENARIO_NAME), ".log");
         testPlan.getStepIds().forEach(sId ->
                 evaluator.run(
