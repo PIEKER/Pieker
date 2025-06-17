@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -79,12 +80,16 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
 
     @Override
     public void startComponents(ScenarioTestPlan testPlan, ArchitectureModel<?> architectureModel) {
-        final List<String> componentNames = testPlan.getAssertableComponents().stream()
-                .map(architectureModel::getComponent)
-                .map(Optional::orElseThrow)
-                .map(ComposeService.class::cast)
-                .map(ComposeService::getName)
-                .toList();
+        final List<String> componentNames = new ArrayList<>();
+        componentNames.add("PIEKER_GATEWAY");
+        componentNames.addAll(
+                testPlan.getAssertableComponents().stream()
+                        .map(architectureModel::getComponent)
+                        .map(Optional::orElseThrow)
+                        .map(ComposeService.class::cast)
+                        .map(ComposeService::getName)
+                        .toList()
+        );
 
         log.debug("Starting components with names: {}", componentNames);
         for (String name : componentNames) {
