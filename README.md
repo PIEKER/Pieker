@@ -177,7 +177,7 @@ This module contains the web application for PIEKER.
 - [x] Automatic generation of test code from DSL
 - [x] Automatic injection of test code into test containers and architectures
 - [x] Automatic deployment of a test environment
-- [ ] _Automatic test execution and evaluation_
+- [x] Automatic test execution and evaluation
 - [ ] _First prototype for testing Docker Compose architectures_
 - [ ] First release for Docker Compose architectures
 - [ ] Fully functional web application for test specification, execution, and evaluation
