@@ -33,6 +33,7 @@ public class DatabaseAssert extends Assert {
     protected final String assertableTableQuery = "CREATE TABLE " + this.assertableTableName + " AS ";
     protected final String dropAssertableTableQuery = "DROP TABLE " + this.assertableTableName;
 
+    private String database;
     protected String tableSelect;
     private String jdbcUrl;
     private String username;
@@ -42,13 +43,14 @@ public class DatabaseAssert extends Assert {
         super(ASSERT_PLUGIN);
 
         String[] args = Util.getArgumentsFromString(arguments);
-        if (args.length != 2){
+        if (args.length != 3){
             throw new PiekerDslException("invalid amount of arguments on an DatabaseAssert!" +
                     " args: " + args.length +
                     VALUE + arguments);
         }
         this.identifier = args[0];
-        this.tableSelect = args[1];
+        this.database = args[1];
+        this.tableSelect = args[2];
 
         this.setRequiredComponent(this.identifier); // enable component reboot
     }
@@ -167,7 +169,7 @@ public class DatabaseAssert extends Assert {
 
     @Override
     public void setConnectionParam(JSONObject cpJson) {
-        this.jdbcUrl = cpJson.getString("targetUrlEnv");
+        this.jdbcUrl = cpJson.getString("targetUrlEnv") + "/" + this.database;
         this.username = cpJson.getString("usernameEnv");
         this.password = cpJson.getString("passwordEnv");
     }

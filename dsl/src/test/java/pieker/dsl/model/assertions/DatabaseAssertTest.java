@@ -16,25 +16,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class DatabaseAssertTest {
-
-    static final String DB = "fooDB";
+    static final String DB_SERVER = "fooServer";
+    static final String DB = "test";
     static final String TABLE = "fooTable";
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+    static String jdbcUrl = "";
 
     @BeforeAll
     static void startContainer(){
         postgres.start();
-        String query = "CREATE DATABASE " + DB + ";";
-        String result = send(query);
-        log.info(result);
-        assertNotEquals("ERROR ON SQL", result);
-        query = "CREATE TABLE " + TABLE + " (" +
+        jdbcUrl = "jdbc:postgresql://" + postgres.getHost() + ":" + postgres.getFirstMappedPort();
+        String query = "CREATE TABLE " + TABLE + " (" +
                 "PersonID int, " +
                 "LastName varchar(255), " +
                 "FirstName varchar(255), " +
                 "Address varchar(255), " +
                 "City varchar(255));";
-        result = send(query);
+        String result = send(query);
         log.info(result);
         assertNotEquals("ERROR ON SQL", result);
 
@@ -101,7 +99,7 @@ class DatabaseAssertTest {
                     "usernameEnv": "<?>",
                     "passwordEnv": "<?>"
                 }
-                """.replaceFirst("<\\?>", postgres.getJdbcUrl())
+                """.replaceFirst("<\\?>", jdbcUrl)
                     .replaceFirst("<\\?>", postgres.getUsername())
                 .replaceFirst("<\\?>", postgres.getPassword()))
         );
@@ -112,12 +110,23 @@ class DatabaseAssertTest {
     }
 
     DatabaseAssert getEmptyDatabaseAssert(){
-        return new DatabaseAssert(DB + "|" + "SELECT * FROM " + TABLE);
+        DatabaseAssert empty = new DatabaseAssert(DB_SERVER + "|" + DB + "|" + "SELECT * FROM " + TABLE);
+        empty.setConnectionParam(new JSONObject("""
+                {
+                    "targetUrlEnv": "<?>",
+                    "usernameEnv": "<?>",
+                    "passwordEnv": "<?>"
+                }
+                """.replaceFirst("<\\?>", jdbcUrl)
+                .replaceFirst("<\\?>", postgres.getUsername())
+                .replaceFirst("<\\?>", postgres.getPassword()))
+        );
+        return empty;
     }
 
     DatabaseAssert getValidTestObject(){
 
-        DatabaseAssert databaseAssert = new DatabaseAssert(DB + "|" + "SELECT * FROM " + TABLE);
+        DatabaseAssert databaseAssert = new DatabaseAssert(DB_SERVER + "|" + DB + "|" + "SELECT * FROM " + TABLE);
         databaseAssert.addBoolAssertion("true", " == 4", "COUNT(LastName)");
         databaseAssert.addBoolAssertion("true", " < 2", "COUNT(LastName) | LastName = 'Ohlsen'");
         databaseAssert.addBoolAssertion("false", " > 2", "COUNT(FirstName) | FirstName = 'Yannick'");
@@ -134,6 +143,6 @@ class DatabaseAssertTest {
     }
 
     private static String send(String query){
-        return Sql.send(DB, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), query);
+        return Sql.send(DB_SERVER, jdbcUrl + "/" + DB, postgres.getUsername(), postgres.getPassword(), query);
     }
 }
