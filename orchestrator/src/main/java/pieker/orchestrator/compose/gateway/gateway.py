@@ -84,7 +84,14 @@ async def run_query(db_name: str, request: Request):
             if query.strip().lower().startswith("select"):
                 rows = result.fetchall()
                 keys = result.keys()
-                return {"result": [dict(zip(keys, row)) for row in rows]}
+
+                # aggregate values per key
+                aggregated = {key: [] for key in keys}
+                for row in rows:
+                    for key, value in zip(keys, row):
+                        aggregated[key].append(value)
+
+                return {"result": aggregated}
             else:
                 await session.commit()
                 return {"status": "success"}

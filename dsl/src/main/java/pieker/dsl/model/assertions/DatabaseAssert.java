@@ -1,5 +1,10 @@
 package pieker.dsl.model.assertions;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +18,7 @@ import pieker.dsl.PiekerDslException;
 import pieker.dsl.architecture.exception.ValidationException;
 import pieker.dsl.util.Util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Setter
 @Getter
@@ -109,9 +112,8 @@ public class DatabaseAssert extends Assert {
             query += WHERE + values[1];
         }
 
-        String result = this.sendQuery(query);
-        String[] valueList = result.split("\\|" );
-        Arrays.stream(valueList).forEach(bool::evaluate);
+        String response = this.sendQuery(query);
+        this.evaluateQueryResponse(bool, response);
     }
 
     @Override
@@ -128,9 +130,8 @@ public class DatabaseAssert extends Assert {
             query += WHERE + values[1];
         }
 
-        String result = this.sendQuery(query);
-        String[] valueList = result.split("\\|" );
-        Arrays.stream(valueList).forEach(equals::evaluate);
+        String response = this.sendQuery(query);
+        this.evaluateQueryResponse(equals, response);
     }
 
     @Override
@@ -147,10 +148,8 @@ public class DatabaseAssert extends Assert {
             query += WHERE + values[1];
         }
 
-        String result = this.sendQuery(query);
-        String[] valueList = result.split("\\|" );
-        if (valueList.length == 0) nuLL.setSuccess(nuLL.isNull());
-        Arrays.stream(valueList).forEach(nuLL::evaluate);
+        String response = this.sendQuery(query);
+        this.evaluateQueryResponse(nuLL, response);
     }
 
     @Override
@@ -176,5 +175,49 @@ public class DatabaseAssert extends Assert {
         String endpointUrl = "/db/" + this.database + "/query";
         String body = "{\"query\":\"" + query + "\"}";
         return Http.send(this.identifier, this.jdbcUrl + endpointUrl, "POST", 3000, 30000, "", body);
+    }
+
+    private void evaluateQueryResponse(Evaluation evaluation, String response){
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(response);
+
+            JsonNode errorNode = rootNode.get("error");
+            if (errorNode != null){
+                evaluation.setErrorMessage(errorNode.asText());
+                return;
+            }
+
+            JsonNode resultNode = rootNode.get("result");
+            if (resultNode != null && resultNode.isObject()) {
+                ObjectNode resultObject = (ObjectNode) resultNode;
+
+                if (evaluation instanceof Null nuLL && resultObject.properties().isEmpty()){
+                    nuLL.setSuccess(true);
+                    return;
+                }
+
+                resultObject.properties().forEach(entry -> {
+                    JsonNode valueNode = entry.getValue();
+
+                    if (valueNode.isArray()) {
+                        ArrayNode arrayNode = (ArrayNode) valueNode;
+                        List<String> valueList = new ArrayList<>();
+
+                        arrayNode.forEach(item -> valueList.add(item.asText()));
+                        valueList.forEach(evaluation::evaluate);
+                    } else {
+                        // Handle non-array values if necessary
+                        String singleValue = valueNode.asText();
+                        evaluation.evaluate(singleValue);
+                    }
+                });
+            } else {
+                log.warn("result node is missing or not an object");
+            }
+
+        } catch (JsonProcessingException e){
+            log.error("unable to parse gateway-response: {}", e.getMessage());
+        }
     }
 }

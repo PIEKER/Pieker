@@ -28,4 +28,9 @@ public interface Evaluation {
      */
     void evaluate(String arg);
 
+    /**
+     * Sets a string as error-message
+     * @param errorMessage string
+     */
+    void setErrorMessage(String errorMessage);
 }

@@ -89,6 +89,11 @@ public class StubAssert extends Assert{
         }
 
         @Override
+        public void setErrorMessage(String errorMessage){
+            //no action required
+        }
+
+        @Override
         public void evaluate(String arg) {
             this.evaluated = true;
         }
