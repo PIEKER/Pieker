@@ -33,7 +33,7 @@ class ComposeArchitectureModelTest {
 
     @Test
     void testLinks() {
-        final HttpLink httpLink = new HttpLink(this.composeService, this.composeService);
+        final HttpLink<ComposeComponent> httpLink = new HttpLink<>(this.composeService, this.composeService);
 
         this.composeArchitectureModel.addLink(httpLink);
 
@@ -53,10 +53,7 @@ class ComposeArchitectureModelTest {
     void testComponents() {
         final ComposeService composeService2 = new ComposeService("service2");
 
-        this.composeService.addContainedComponent(composeService2);
-        assertTrue(this.composeService.isValid());
-        composeService2.addContainedComponent(this.composeService);
-        assertFalse(this.composeService.isValid());
+        assertThrows(UnsupportedOperationException.class, () -> this.composeService.addContainedComponent(composeService2));
     }
 
     @Test
