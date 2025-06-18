@@ -39,7 +39,7 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
     @SuppressWarnings("unchecked")
     private void collectComponents(C component, List<C> allComponents) {
         allComponents.add(component);
-        if (component instanceof AbstractComponent) {
+        if (component instanceof AbstractCompositeComponent) {
             for (Component child : component.getContainedComponents()) {
                 collectComponents((C) child, allComponents);
             }
@@ -62,12 +62,12 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
     }
 
     @Override
-    public void addComponent(C component) {
+    public void addRootComponent(C component) {
         this.components.add(component);
     }
 
     @Override
-    public void addComponents(Collection<? extends C> components) {
+    public void addRootComponents(Collection<? extends C> components) {
         this.components.addAll(components);
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
         }
         C component = this.createComponentInstance(name);
         component.setGenerated(true);
-        this.addComponent(component);
+        this.addRootComponent(component);
         return component;
     }
 

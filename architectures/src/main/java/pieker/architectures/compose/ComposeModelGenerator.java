@@ -40,9 +40,9 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
 
             ComposeArchitectureModel model = new ComposeArchitectureModel();
             model.setVersion((String) data.get("version"));
-            model.addComponents(this.modelServices.values());
-            model.addComponents(this.modelStorages.values());
-            model.addComponents(this.modelNetworks);
+            model.addRootComponents(this.modelServices.values());
+            model.addRootComponents(this.modelStorages.values());
+            model.addRootComponents(this.modelNetworks);
             this.model = model;
 
             log.info("Successfully constructed ComposeArchitectureModel");

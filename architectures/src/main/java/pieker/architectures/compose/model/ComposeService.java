@@ -3,6 +3,7 @@ package pieker.architectures.compose.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import pieker.architectures.model.CompositeService;
 import pieker.architectures.model.Service;
 import pieker.architectures.model.util.EnvironmentVariables;
 

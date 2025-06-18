@@ -22,14 +22,14 @@ public interface ArchitectureModel<C extends Component> {
      *
      * @param component component to be added
      */
-    void addComponent(C component);
+    void addRootComponent(C component);
 
     /**
      * Adds a collection of components to the architecture model.
      *
      * @param components components to be added
      */
-    void addComponents(Collection<? extends C> components);
+    void addRootComponents(Collection<? extends C> components);
 
     /**
      * Creates a new component with the given name and adds it to the architecture model.

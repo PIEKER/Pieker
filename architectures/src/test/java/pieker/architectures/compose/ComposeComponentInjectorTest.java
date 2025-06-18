@@ -22,7 +22,7 @@ class ComposeComponentInjectorTest {
         a.setEnvironment(new HashMap<>(Map.of("I", "1")));
         final ComposeService b = new ComposeService("b");
         final HttpLink l = new HttpLink(a, b);
-        model.addComponents(List.of(a, b));
+        model.addRootComponents(List.of(a, b));
         model.addLink(l);
 
         // Test: A --l'--> X --l--> B
