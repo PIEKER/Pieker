@@ -7,6 +7,7 @@ import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
 import pieker.architectures.compose.model.ComposeService;
 import pieker.architectures.model.ArchitectureModel;
+import pieker.architectures.model.ComponentLink;
 import pieker.architectures.model.Link;
 import pieker.common.*;
 import pieker.orchestrator.AbstractOrchestrator;
@@ -194,15 +195,15 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
         log.info("Starting test sequence...");
         for (TrafficTemplate trafficTemplate : testStep.getSequence()) {
             ComposeComponent component;
-            Link<ComposeComponent> link;
+            ComponentLink.LinkType interfaceType;
             try {
                 component = getModel().getComponent(trafficTemplate.getTarget()).orElseThrow();
-                link = getModel().getLinksForTarget(component).getFirst();
+                interfaceType = component.getProvidedInterfaceType();
             } catch (NoSuchElementException e) {
                 log.warn("No link found for target component: {}", trafficTemplate.getTarget());
                 continue;
             }
-            handleComposeTraffic(trafficTemplate, component, link);
+            handleComposeTraffic(trafficTemplate, component, interfaceType);
         }
 
         sleep(duration); // Sleep for the duration of the test step
@@ -214,13 +215,13 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
      *
      * @param trafficTemplate traffic template
      * @param component       component
-     * @param link            link specifying the type of traffic
+     * @param interfaceType   type of traffic
      */
-    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link<ComposeComponent> link) {
-        switch (link) {
-            case HttpLink<ComposeComponent> _ -> startTraffic(trafficTemplate, component, "http");
-            case JdbcLink<ComposeComponent> _ -> startTraffic(trafficTemplate, component, "db");
-            default -> log.warn("Unsupported traffic type: {}", link.getType());
+    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, ComponentLink.LinkType interfaceType) {
+        switch (interfaceType) {
+            case HTTP -> startTraffic(trafficTemplate, component, "http");
+            case DATABASE -> startTraffic(trafficTemplate, component, "db");
+            default -> log.warn("Unsupported traffic type: {}", interfaceType);
         }
     }
 
