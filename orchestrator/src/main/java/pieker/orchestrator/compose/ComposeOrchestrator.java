@@ -200,34 +200,37 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
                 log.warn("No link found for target component: {}", trafficTemplate.getTarget());
                 continue;
             }
-            handleComposeTraffic(trafficTemplate, interfaceType);
+            handleComposeTraffic(trafficTemplate, component, interfaceType);
         }
 
         sleep(duration); // Sleep for the duration of the test step
     }
 
     /**
-     * Handles the traffic for the given interface type by resolving the Orchestrator-Gateway endpoint that needs to be
-     * addressed to proxy to the component.
+     * Handles the traffic for the given component and interface type by resolving the Orchestrator-Gateway endpoint
+     * that needs to be addressed to proxy to the component.
      *
      * @param trafficTemplate traffic template
+     * @param component       component
      * @param interfaceType   type of traffic
      */
-    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComponentLink.LinkType interfaceType) {
+    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, ComponentLink.LinkType interfaceType) {
         switch (interfaceType) {
-            case HTTP -> startTraffic(trafficTemplate, "http");
-            case DATABASE -> startTraffic(trafficTemplate, "db");
+            case HTTP -> startTraffic(trafficTemplate, component, "http");
+            case DATABASE -> startTraffic(trafficTemplate, component, "db");
             default -> log.warn("Unsupported traffic type: {}", interfaceType);
         }
     }
 
-    private void startTraffic(TrafficTemplate trafficTemplate, String trafficType) {
+    private void startTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, String trafficType) {
+        ComposeService service = (ComposeService) component;
         trafficTemplate.startTraffic(new String[]{
                 "http://%s:%s/%s".formatted(
                         System.getProperty("orchestratorHost", "127.0.0.1"),
                         System.getProperty("orchestratorPort", "42690"),
                         trafficType
-                )
+                ),
+                service.getPorts().entrySet().iterator().next().getKey()
         });
     }
 
