@@ -262,7 +262,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
     private boolean sendRequestToComponent(String componentName, String endpoint) {
         final String host = System.getProperty("orchestratorHost", "127.0.0.1");
         final String orchestratorGatewayPort = System.getProperty("orchestratorPort", "42690");
-        return sendGetRequest("http://%s:%s/http/%s/%s".formatted(host, orchestratorGatewayPort, componentName, endpoint));
+        return sendGetRequest("http://%s:%s/http/%s/%s/%s".formatted(host, orchestratorGatewayPort, componentName, orchestratorGatewayPort, endpoint));
     }
 
     /**
