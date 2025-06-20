@@ -16,6 +16,6 @@ public class DescriptionComponent {
 
     private String name;
     private DescriptionInterface provides;
-    private List<DescriptionLink> dependencies;
+    private List<DescriptionLink> requires;
 
 }

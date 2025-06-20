@@ -22,9 +22,9 @@ class InterfaceDescriptionTest {
         assertNotNull(architectureDescription);
         assertEquals(2, architectureDescription.getComponents().size());
         assertEquals("serviceA", architectureDescription.getComponents().getFirst().getName());
-        assertEquals(2, architectureDescription.getComponents().getFirst().getDependencies().size());
-        assertEquals("serviceC", architectureDescription.getComponents().getFirst().getDependencies().getFirst().getTarget());
-        assertEquals(ComponentLink.LinkType.HTTP, architectureDescription.getComponents().getFirst().getDependencies().getFirst().getType());
+        assertEquals(2, architectureDescription.getComponents().getFirst().getRequires().size());
+        assertEquals("serviceC", architectureDescription.getComponents().getFirst().getRequires().getFirst().getTarget());
+        assertEquals(ComponentLink.LinkType.HTTP, architectureDescription.getComponents().getFirst().getRequires().getFirst().getType());
     }
 
 }

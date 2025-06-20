@@ -61,9 +61,9 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
         for (DescriptionComponent descriptionComponent : description.getComponents()) {
             // ... find the corresponding component in the ComposeArchitectureModel ...
             model.getComponent(descriptionComponent.getName()).ifPresent(source -> {
-                if (descriptionComponent.getDependencies() != null && !descriptionComponent.getDependencies().isEmpty()) {
+                if (descriptionComponent.getRequires() != null && !descriptionComponent.getRequires().isEmpty()) {
                     // ... and for each link in the Interface Description of this component ...
-                    for (DescriptionLink descriptionLink : descriptionComponent.getDependencies()) {
+                    for (DescriptionLink descriptionLink : descriptionComponent.getRequires()) {
                         // ... find the corresponding target component in the ComposeArchitectureModel ...
                         model.getComponent(descriptionLink.getTarget()).ifPresent(target -> {
                             // ... and create a new link between the source and target components of the corresponding type
