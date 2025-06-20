@@ -2,7 +2,7 @@ package pieker.architectures.model;
 
 public abstract class AbstractComponent extends AbstractCompositeComponent implements Component {
 
-    public AbstractComponent() {
+    protected AbstractComponent() {
         super();
     }
 
