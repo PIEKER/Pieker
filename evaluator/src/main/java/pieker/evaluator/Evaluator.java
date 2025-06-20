@@ -25,7 +25,7 @@ public class Evaluator {
 
     public Evaluator(){
         this.gatewayUrl = "http://"
-                + System.getProperty("systemHost", "127.0.0.1") + ":"
+                + System.getProperty("orchestratorHost", "127.0.0.1") + ":"
                 + System.getProperty("orchestratorPort", "42690");
     }
 
