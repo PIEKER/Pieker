@@ -14,10 +14,10 @@ app = FastAPI()
 # --- HTTP Proxy ---
 #
 
-@app.api_route("/http/{target}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
-async def proxy_http_get(target: str, path: str, request: Request):
+@app.api_route("/http/{target}/{port}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
+async def proxy_http_get(target: str, port: str, path: str, request: Request):
     try:
-        target_url = f"http://{target}:42690/{path}"
+        target_url = f"http://{target}:{port}/{path}"
 
         async with httpx.AsyncClient() as client:
             body = await request.body()
