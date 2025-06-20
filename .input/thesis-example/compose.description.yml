@@ -1,0 +1,37 @@
+components:
+  - name: "data-service"
+    provides:
+      interfaceType: HTTP
+    requires:
+      - type: HTTP
+        target: "risk-service"
+        targetUrlEnv: RISK_SERVICE_URL
+      - type: JDBC
+        target: "db"
+        targetUrlEnv: SPRING_DATASOURCE_URL
+        usernameEnv: SPRING_DATASOURCE_USERNAME
+        passwordEnv: SPRING_DATASOURCE_PASSWORD
+
+  - name: "risk-service"
+    provides:
+      interfaceType: HTTP
+    requires:
+      - type: JDBC
+        target: "db"
+        targetUrlEnv: SPRING_DATASOURCE_URL
+        usernameEnv: SPRING_DATASOURCE_USERNAME
+        passwordEnv: SPRING_DATASOURCE_PASSWORD
+
+  - name: "web-service"
+    provides:
+      interfaceType: HTTP
+    requires:
+      - type: JDBC
+        target: "db"
+        targetUrlEnv: SPRING_DATASOURCE_URL
+        usernameEnv: SPRING_DATASOURCE_USERNAME
+        passwordEnv: SPRING_DATASOURCE_PASSWORD
+
+  - name: "db"
+    provides:
+      interfaceType: DATABASE

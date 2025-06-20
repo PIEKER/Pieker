@@ -51,7 +51,7 @@ public class Request implements Template, TrafficType {
         if (args.length == 0){
             throw new IllegalArgumentException("no arguments provided for request traffic");
         }
-        String endpointUrl = "/" + this.service + this.url;
+        String endpointUrl = "/" + this.service + "/" + args[1] + this.url;
         return Http.send(this.service, args[0] + endpointUrl, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body, this.bodyType);
     }
 
@@ -65,7 +65,7 @@ public class Request implements Template, TrafficType {
             ctx.put("requestConnTimeout", this.connectionTimeout);
             ctx.put("requestReadTimeout", this.readTimeout);
             ctx.put("requestHeaders", om.writeValueAsString(this.headers));
-            ctx.put("requestBody", om.writeValueAsString(this.body));
+            ctx.put("requestBody", (this.bodyType.equals("text"))? om.writeValueAsString(this.body): this.body);
             ctx.put("requestBodyType", this.bodyType);
         } catch(JsonProcessingException e){
             throw new PiekerProcessingException("unable escape characters for header/body: " + e.getMessage());
@@ -95,6 +95,7 @@ public class Request implements Template, TrafficType {
                     default -> log.warn("unknown field used in request json: '{}'", field);
                 }
             }
+            if (this.bodyType.equals("text")) this.body = this.body.replace("\"", "");
         } catch(JsonProcessingException e){
             throw new PiekerProcessingException("unable to process file data. Invalid Json provided: " + e.getMessage());
         }

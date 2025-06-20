@@ -15,7 +15,9 @@ import pieker.api.assertions.Null;
 import pieker.api.Evaluation;
 import pieker.common.connection.Http;
 import pieker.dsl.PiekerDslException;
+import pieker.dsl.architecture.Engine;
 import pieker.dsl.architecture.exception.ValidationException;
+import pieker.dsl.architecture.preprocessor.FileManager;
 import pieker.dsl.util.Util;
 
 import java.util.*;
@@ -86,7 +88,8 @@ public class DatabaseAssert extends Assert {
     @Override
     public void evaluate() {
         log.debug("creating assertable Table");
-        String response = this.sendQuery(this.assertableTableQuery + tableSelect);
+        this.tableSelect = this.getParameter(this.tableSelect);
+        String response = this.sendQuery(this.assertableTableQuery + this.tableSelect);
         log.debug(response);
 
         this.boolList.forEach(this::evaluateBoolNode);
@@ -219,5 +222,16 @@ public class DatabaseAssert extends Assert {
         } catch (JsonProcessingException e){
             log.error("unable to parse gateway-response: {}", e.getMessage());
         }
+    }
+
+    /**
+     * Resolves parameter from a stored String value, including possible file referencing.
+     * @return query string
+     */
+    public String getParameter(String parameter){
+        if (parameter.startsWith(FileManager.PREFIX)) {
+            return Engine.getFileManager().getDataFromFileHash(parameter);
+        }
+        return parameter;
     }
 }
