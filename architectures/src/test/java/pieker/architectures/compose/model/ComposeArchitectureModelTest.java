@@ -26,9 +26,9 @@ class ComposeArchitectureModelTest {
         this.composeNetwork = new ComposeNetwork("network");
 
         this.composeArchitectureModel = new ComposeArchitectureModel("3.8");
-        this.composeArchitectureModel.addRootComponent(this.composeService);
-        this.composeArchitectureModel.addRootComponent(this.composeVolume);
-        this.composeArchitectureModel.addRootComponent(this.composeNetwork);
+        this.composeArchitectureModel.addComponent(this.composeService);
+        this.composeArchitectureModel.addComponent(this.composeVolume);
+        this.composeArchitectureModel.addComponent(this.composeNetwork);
     }
 
     @Test
@@ -74,7 +74,7 @@ class ComposeArchitectureModelTest {
                 "POSTGRES_DB", "testdb")
         );
 
-        model.addRootComponent(service);
+        model.addComponent(service);
 
         // Assemble model to executable format
         model.toYamlFile("src/test/resources/generated-docker-compose.yml");

@@ -36,7 +36,7 @@ public abstract class AbstractComponentInjector<M extends ArchitectureModel<C>, 
             envSource.updateEnvironment(envUpdatesSource);
         }
 
-        this.model.addRootComponent(proxy);
+        this.model.addComponent(proxy);
         this.model.addLink(newLink);
     }
 

@@ -62,12 +62,12 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
     }
 
     @Override
-    public void addRootComponent(C component) {
+    public void addComponent(C component) {
         this.components.add(component);
     }
 
     @Override
-    public void addRootComponents(Collection<? extends C> components) {
+    public void addComponents(Collection<? extends C> components) {
         this.components.addAll(components);
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
         }
         C component = this.createComponentInstance(name);
         component.setGenerated(true);
-        this.addRootComponent(component);
+        this.addComponent(component);
         return component;
     }
 
