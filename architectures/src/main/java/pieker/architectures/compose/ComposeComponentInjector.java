@@ -200,7 +200,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         }
         if (existingLink.getUrlVarName() != null) {
             sourceComponent.updateEnvironment(Map.of(
-                            existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":80" + getUrlPath(existingLink.getUrl())
+                            existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":80" + getUrlPath(sourceComponent.getEnvironmentValue(existingLink.getUrlVarName()))
                     )
             );
         }
