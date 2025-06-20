@@ -93,9 +93,10 @@ public class Traffic implements StepComponent, TrafficTemplate {
 
     @Override
     public void startTraffic(String[] args){
+        this.trafficType.translateParameters();
         this.transferConditionList();
 
-        this.after.performCondition();
+        if (this.after != null) this.after.performCondition();
         if (this.times != null && this.retry != null){
             log.error("invalid traffic configuration on Traffic. No Amount or Retry Limit set.");
         } else if (this.times != null) {
@@ -128,8 +129,8 @@ public class Traffic implements StepComponent, TrafficTemplate {
     }
 
     private void runTraffic(String[] args){
-        this.delay.performCondition();
-        if (this.dropout.performCondition()){
+        if (this.delay != null) this.delay.performCondition();
+        if (this.dropout != null && this.dropout.performCondition()){
             return;
         }
         String response = this.trafficType.sendTraffic(args);

@@ -1,8 +1,9 @@
 [
   {
-    "url": "/message",
+    "url": "/serviceA/upload",
     "method": "POST",
     "headers": {},
+    "bodyType": "form",
     "body": {"content":  "I am an important message!"}
   },
   {

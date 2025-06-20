@@ -10,14 +10,16 @@ import pieker.architectures.compose.model.ComposeService;
 import pieker.architectures.injector.AbstractComponentInjector;
 import pieker.architectures.injector.ComponentInjector;
 import pieker.architectures.injector.exceptions.ComponentInjectionException;
-import pieker.architectures.model.ComponentLink;
 import pieker.architectures.model.Link;
 import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
+import pieker.common.ScenarioTrafficComponent;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             }
             linksToUpdate.removeIf(link -> link.getSourceComponent().isGenerated());
 
-            if (linksToUpdate.isEmpty()) {
+            if (linksToUpdate.isEmpty() || scenarioComponent instanceof ScenarioTrafficComponent) {
                 // Prepend component to target and add new link
                 prependComponent(newComponent, targetComponent);
                 continue;
@@ -104,7 +106,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
     @Override
     public <T extends ComposeComponent> void prependComponent(T proxy, ComposeComponent targetComponent) throws ComponentInjectionException {
-        ComponentLink.LinkType interfaceType = targetComponent.getProvidedInterfaceType();
+        Link.LinkType interfaceType = targetComponent.getProvidedInterfaceType();
         if (interfaceType == null) {
             throw new ComponentInjectionException("Provided component type is null for target component: %s".formatted(targetComponent.getName()));
         }
@@ -196,7 +198,10 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             sourceComponent.updateEnvironment(Map.of(existingLink.getPortVarName(), "80"));
         }
         if (existingLink.getUrlVarName() != null) {
-            sourceComponent.updateEnvironment(Map.of(existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":80"));
+            sourceComponent.updateEnvironment(Map.of(
+                            existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":80" + getUrlPath(sourceComponent.getEnvironmentValue(existingLink.getUrlVarName()))
+                    )
+            );
         }
         existingLink.setTargetComponent(proxyComponent);
     }
@@ -292,6 +297,40 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the URL path of the given URL string.
+     * If the URL is malformed or empty, an empty string is returned.
+     *
+     * @param urlString The URL string to parse
+     * @return The URL path, query, and fragment as a single string
+     */
+    public String getUrlPath(String urlString) {
+        if (urlString == null || urlString.isBlank()) {
+            return "";
+        }
+        try {
+            URL url = new URI(urlString).toURL();
+
+            // Get everything after host:port
+            String path = url.getPath();          // "/api/v1/users"
+            String query = url.getQuery();        // "id=123"
+            String fragment = url.getRef();       // "section"
+
+            // Reconstruct the full path after host:port
+            StringBuilder fullPath = new StringBuilder(path);
+            if (query != null) {
+                fullPath.append("?").append(query);
+            }
+            if (fragment != null) {
+                fullPath.append("#").append(fragment);
+            }
+            return fullPath.toString();
+        } catch (MalformedURLException | URISyntaxException e) {
+            log.error("Malformed URL: {}", urlString, e);
+            return "";
+        }
     }
 
 }

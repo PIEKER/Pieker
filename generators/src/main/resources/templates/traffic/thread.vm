@@ -47,17 +47,12 @@ Thread $trafficIdentifier = Thread.ofVirtual().start(() -> {
                 #end
 
                 #if ($requestUrl)
-                try {
-                    r = sendHttpRequest("$requestUrl",
-                                        "$requestMethod",
-                                        $requestConnTimeout, $requestReadTimeout,
-                                        jsonToMap($requestHeaders),
-                                        $requestBody);
-                } catch (IOException e) {
-                    log(trafficIdent, trafficIdent + " failed due to IOException: " + e.getMessage());
-                } catch (URISyntaxException e) {
-                    log(trafficIdent, trafficIdent + " failed due to URISyntaxException: " + e.getMessage());
-                }
+                r = sendHttpRequest("$requestUrl",
+                                    "$requestMethod",
+                                    $requestConnTimeout, $requestReadTimeout,
+                                    $requestHeaders,
+                                    $requestBody,
+                                    "$requestBodyType");
                 #end
                 #if($enableLogging == true)
                 if (r.statusCode != 0) log(trafficIdent, trafficIdent + " - " + r.toString());

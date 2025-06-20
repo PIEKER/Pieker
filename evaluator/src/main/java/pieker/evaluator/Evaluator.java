@@ -3,7 +3,6 @@ package pieker.evaluator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import pieker.api.Assertion;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.connection.Http;
@@ -13,9 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 @Setter
@@ -23,23 +20,13 @@ import java.util.concurrent.*;
 public class Evaluator {
 
     private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
-    private Map<String, JSONObject> componentMap = new HashMap<>();
+    private String gatewayUrl;
     private Map<String, Map<String, File>> fileMap = new HashMap<>();
 
-    public Evaluator(){}
-
-    public Evaluator(Map<String, JSONObject> componentMap){
-        this.componentMap = componentMap;
-    }
-
-    /**
-     * Adds a JSONObject storing connection attributes mapped to a component identifier.
-     *
-     * @param identifier of component
-     * @param component JSONObject
-     */
-    public void addComponent(String identifier, JSONObject component){
-        this.componentMap.put(identifier, component);
+    public Evaluator(){
+        this.gatewayUrl = "http://"
+                + System.getProperty("orchestratorHost", "127.0.0.1") + ":"
+                + System.getProperty("orchestratorPort", "42690");
     }
 
     public void preprocessFiles(String path, String fileSuffix){
@@ -112,7 +99,7 @@ public class Evaluator {
                 String header = "{ \"Content-Type\": \"application/json\", \"Accept\": \"application/json\" }";
                 String url = System.getProperty("publishUrl", "http://localhost:8080/runs/create");
                 log.info("publishing results to server: {}", url);
-                String response = Http.send("EVALUATOR", url, "POST", 3000, 30000, header, resultJson);
+                String response = Http.send("EVALUATOR", url, "POST", 3000, 30000, header, resultJson, "json");
                 log.info("published with response {}", response);
             }
         } catch (IOException e) {
@@ -145,11 +132,10 @@ public class Evaluator {
     private void evaluateStep(Assertion ass){
 
         if (ass.requiresConnectionParam()) {
-            ass.setConnectionParam(this.componentMap.get(ass.getIdentifier()));
+            ass.setConnectionParam(this.gatewayUrl);
         }
 
         ass.setFileMap(this.fileMap);
         ass.evaluate();
     }
-
 }

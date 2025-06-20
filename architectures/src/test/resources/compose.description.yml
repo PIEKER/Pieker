@@ -3,7 +3,7 @@ components:
   - name: "service-a"
     provides:
       interfaceType: HTTP
-    dependencies:
+    requires:
       - type: HTTP
         target: "service-c"
         targetUrlEnv: COUNTER_URL
@@ -16,7 +16,7 @@ components:
   - name: "service-b"
     provides:
       interfaceType: HTTP
-    dependencies:
+    requires:
       - type: JDBC
         target: "db"
         targetUrlEnv: SPRING_DATASOURCE_URL

@@ -1,7 +1,5 @@
 package pieker.api;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +15,9 @@ public interface Assertion {
     /**
      * Creates a connection setup with required parameters provided in the JSONObject.
      *
-     * @param cpJson JSONObject
+     * @param gatewayUrl base-url of the gateway-service
      */
-    void setConnectionParam(JSONObject cpJson);
+    void setConnectionParam(String gatewayUrl);
 
     /**
      * Sets a fileMap mapping a suffix to a map of filenames to file objects.

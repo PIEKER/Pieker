@@ -1,21 +1,26 @@
 package pieker.dsl.model.assertions;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
 import pieker.api.assertions.Equals;
 import pieker.api.assertions.Null;
 import pieker.api.Evaluation;
+import pieker.common.connection.Http;
 import pieker.dsl.PiekerDslException;
+import pieker.dsl.architecture.Engine;
 import pieker.dsl.architecture.exception.ValidationException;
+import pieker.dsl.architecture.preprocessor.FileManager;
 import pieker.dsl.util.Util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Setter
 @Getter
@@ -33,6 +38,7 @@ public class DatabaseAssert extends Assert {
     protected final String assertableTableQuery = "CREATE TABLE " + this.assertableTableName + " AS ";
     protected final String dropAssertableTableQuery = "DROP TABLE " + this.assertableTableName;
 
+    private String database;
     protected String tableSelect;
     private String jdbcUrl;
     private String username;
@@ -42,13 +48,14 @@ public class DatabaseAssert extends Assert {
         super(ASSERT_PLUGIN);
 
         String[] args = Util.getArgumentsFromString(arguments);
-        if (args.length != 2){
+        if (args.length != 3){
             throw new PiekerDslException("invalid amount of arguments on an DatabaseAssert!" +
                     " args: " + args.length +
                     VALUE + arguments);
         }
         this.identifier = args[0];
-        this.tableSelect = args[1];
+        this.database = args[1];
+        this.tableSelect = args[2];
 
         this.setRequiredComponent(this.identifier); // enable component reboot
     }
@@ -81,7 +88,8 @@ public class DatabaseAssert extends Assert {
     @Override
     public void evaluate() {
         log.debug("creating assertable Table");
-        String response = this.sendQuery(this.assertableTableQuery + tableSelect);
+        this.tableSelect = this.getParameter(this.tableSelect);
+        String response = this.sendQuery(this.assertableTableQuery + this.tableSelect);
         log.debug(response);
 
         this.boolList.forEach(this::evaluateBoolNode);
@@ -107,9 +115,8 @@ public class DatabaseAssert extends Assert {
             query += WHERE + values[1];
         }
 
-        String result = this.sendQuery(query);
-        String[] valueList = result.split("\\|" );
-        Arrays.stream(valueList).forEach(bool::evaluate);
+        String response = this.sendQuery(query);
+        this.evaluateQueryResponse(bool, response);
     }
 
     @Override
@@ -126,9 +133,8 @@ public class DatabaseAssert extends Assert {
             query += WHERE + values[1];
         }
 
-        String result = this.sendQuery(query);
-        String[] valueList = result.split("\\|" );
-        Arrays.stream(valueList).forEach(equals::evaluate);
+        String response = this.sendQuery(query);
+        this.evaluateQueryResponse(equals, response);
     }
 
     @Override
@@ -145,10 +151,8 @@ public class DatabaseAssert extends Assert {
             query += WHERE + values[1];
         }
 
-        String result = this.sendQuery(query);
-        String[] valueList = result.split("\\|" );
-        if (valueList.length == 0) nuLL.setSuccess(nuLL.isNull());
-        Arrays.stream(valueList).forEach(nuLL::evaluate);
+        String response = this.sendQuery(query);
+        this.evaluateQueryResponse(nuLL, response);
     }
 
     @Override
@@ -166,13 +170,68 @@ public class DatabaseAssert extends Assert {
     }
 
     @Override
-    public void setConnectionParam(JSONObject cpJson) {
-        this.jdbcUrl = cpJson.getString("targetUrlEnv");
-        this.username = cpJson.getString("usernameEnv");
-        this.password = cpJson.getString("passwordEnv");
+    public void setConnectionParam(String gatewayUrl) {
+        this.jdbcUrl = gatewayUrl;
     }
 
     private String sendQuery(String query){
-        return pieker.common.connection.Sql.send(this.identifier, this.jdbcUrl, this.username, this.password, query);
+        String endpointUrl = "/db/" + this.database + "/query";
+        String body = "{\"query\":\"" + query + "\"}";
+        return Http.send(this.identifier, this.jdbcUrl + endpointUrl, "POST", 3000, 30000, "", body, "json");
+    }
+
+    private void evaluateQueryResponse(Evaluation evaluation, String response){
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(response);
+
+            JsonNode errorNode = rootNode.get("error");
+            if (errorNode != null){
+                evaluation.setErrorMessage(errorNode.asText());
+                return;
+            }
+
+            JsonNode resultNode = rootNode.get("result");
+            if (resultNode != null && resultNode.isObject()) {
+                ObjectNode resultObject = (ObjectNode) resultNode;
+
+                if (evaluation instanceof Null nuLL && resultObject.properties().isEmpty()){
+                    nuLL.setSuccess(true);
+                    return;
+                }
+
+                resultObject.properties().forEach(entry -> {
+                    JsonNode valueNode = entry.getValue();
+
+                    if (valueNode.isArray()) {
+                        ArrayNode arrayNode = (ArrayNode) valueNode;
+                        List<String> valueList = new ArrayList<>();
+
+                        arrayNode.forEach(item -> valueList.add(item.asText()));
+                        valueList.forEach(evaluation::evaluate);
+                    } else {
+                        // Handle non-array values if necessary
+                        String singleValue = valueNode.asText();
+                        evaluation.evaluate(singleValue);
+                    }
+                });
+            } else {
+                log.warn("result node is missing or not an object");
+            }
+
+        } catch (JsonProcessingException e){
+            log.error("unable to parse gateway-response: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Resolves parameter from a stored String value, including possible file referencing.
+     * @return query string
+     */
+    public String getParameter(String parameter){
+        if (parameter.startsWith(FileManager.PREFIX)) {
+            return Engine.getFileManager().getDataFromFileHash(parameter);
+        }
+        return parameter;
     }
 }

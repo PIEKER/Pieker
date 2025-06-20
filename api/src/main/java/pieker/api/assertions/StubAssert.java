@@ -1,7 +1,6 @@
 package pieker.api.assertions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import pieker.api.Evaluation;
 
 import java.util.List;
@@ -62,7 +61,7 @@ public class StubAssert extends Assert{
     }
 
     @Override
-    public void setConnectionParam(JSONObject cpJson) {
+    public void setConnectionParam(String gatewayUrl) {
         log.debug("no setup required.");
     }
 
@@ -87,6 +86,11 @@ public class StubAssert extends Assert{
         @Override
         public String getErrorMessage() {
             return "no error possible on stub";
+        }
+
+        @Override
+        public void setErrorMessage(String errorMessage){
+            //no action required
         }
 
         @Override

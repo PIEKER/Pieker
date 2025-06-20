@@ -3,7 +3,7 @@ components:
   - name: "serviceA"
     provides:
       interfaceType: HTTP
-    dependencies:
+    requires:
       - type: HTTP
         target: "serviceC"
         targetUrlEnv: "SERVICE_C_URL"
@@ -13,7 +13,7 @@ components:
         passwordEnv: "DB_PASSWORD"
 
   - name: "serviceB"
-    dependencies:
+    requires:
       - type: HTTP
         target: "serviceD"
         targetUrlEnv: "SERVICE_D_URL"

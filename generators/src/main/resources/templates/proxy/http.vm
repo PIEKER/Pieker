@@ -103,7 +103,7 @@ public class $className {
              -- DSL LOGIC END
              */
 
-            String targetUrl = host + ":" + port + exchange.getRequestURI();
+            String targetUrl = "http://" + host + ":" + port + exchange.getRequestURI();
             proxy(exchange, targetUrl); // -- BOILERPLATE PROXY
         });
 

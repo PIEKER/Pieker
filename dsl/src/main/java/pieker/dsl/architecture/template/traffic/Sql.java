@@ -45,7 +45,7 @@ public class Sql implements Template, TrafficType {
         }
         String endpointUrl = "/" + this.database + "/query";
         String body = "{\"query\":\"" + this.query + "\"}";
-        return Http.send(this.databaseServer, args[0] + endpointUrl, "POST", 3000, 30000, "", body);
+        return Http.send(this.databaseServer, args[0] + endpointUrl, "POST", 3000, 30000, "", body, "json");
     }
 
     @Override

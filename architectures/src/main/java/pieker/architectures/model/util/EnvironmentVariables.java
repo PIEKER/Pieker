@@ -17,7 +17,10 @@ public interface EnvironmentVariables {
      * @param key key of the environment variable
      * @return value of the environment variable
      */
-    String getEnvironmentValue(String key);
+    default String getEnvironmentValue(String key) {
+        Map<String, String> env = getEnvironment();
+        return (env != null) ? env.get(key) : null;
+    }
 
     /**
      * Updates the environment variables with the given updates.
@@ -25,6 +28,13 @@ public interface EnvironmentVariables {
      * @param envUpdates map of environment variable updates
      * @return true if the environment variables were updated successfully, false otherwise
      */
-    boolean updateEnvironment(Map<String, String> envUpdates);
+    default boolean updateEnvironment(Map<String, String> envUpdates) {
+        try {
+            getEnvironment().putAll(envUpdates);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 }

@@ -3,7 +3,7 @@ package pieker.architectures.common.model;
 import lombok.Getter;
 import lombok.Setter;
 import pieker.architectures.model.Component;
-import pieker.architectures.model.ComponentLink;
+import pieker.architectures.model.AbstractLink;
 import pieker.architectures.model.Link;
 import pieker.architectures.util.Validators;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class HttpLink<C extends Component> extends Link<C> implements ComponentLink {
+public class HttpLink<C extends Component> extends AbstractLink<C> implements Link<C> {
 
     /**
      * Map of names of environment variables related to the API link in the source component. These are used to identify

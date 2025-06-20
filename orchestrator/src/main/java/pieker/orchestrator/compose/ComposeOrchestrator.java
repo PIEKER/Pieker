@@ -1,8 +1,6 @@
 package pieker.orchestrator.compose;
 
 import lombok.extern.slf4j.Slf4j;
-import pieker.architectures.common.model.HttpLink;
-import pieker.architectures.common.model.JdbcLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
 import pieker.architectures.compose.model.ComposeService;
@@ -18,6 +16,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
     private static final String COMPOSE_START_CMD = "docker-compose -f %s up -d".formatted(COMPOSE_FILE);
     private static final String COMPOSE_STOP_CMD = "docker-compose -f %s stop".formatted(COMPOSE_FILE);
     private static final String COMPOSE_DESTROY_CMD = "docker-compose -f %s down".formatted(COMPOSE_FILE);
-    private static final String COMPOSE_COMPONENT_START_CMD = "docker-compose -f %s up -d %s".formatted(COMPOSE_FILE, "%s");
+    private static final String COMPOSE_COMPONENT_START_CMD = "docker-compose -f %s start %s".formatted(COMPOSE_FILE, "%s");
 
     public ComposeOrchestrator(ScenarioTestPlan testPlan, ComposeArchitectureModel model) {
         setTestPlan(testPlan);
@@ -79,19 +78,23 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
 
     @Override
     public void startComponents(ScenarioTestPlan testPlan, ArchitectureModel<?> architectureModel) {
-        final List<String> images = testPlan.getAssertableComponents().stream()
-                .map(architectureModel::getComponent)
-                .map(Optional::orElseThrow)
-                .map(ComposeService.class::cast)
-                .map(ComposeService::getImage)
-                .toList();
+        final List<String> componentNames = new ArrayList<>();
+        componentNames.add("PIEKER_GATEWAY");
+        componentNames.addAll(
+                testPlan.getAssertableComponents().stream()
+                        .map(architectureModel::getComponent)
+                        .map(Optional::orElseThrow)
+                        .map(ComposeService.class::cast)
+                        .map(ComposeService::getName)
+                        .toList()
+        );
 
-        log.debug("Starting components with images: {}", images);
-        for (String image : images) {
+        log.debug("Starting components with names: {}", componentNames);
+        for (String name : componentNames) {
             try {
-                runCommand(COMPOSE_COMPONENT_START_CMD.formatted(image));
+                runCommand(COMPOSE_COMPONENT_START_CMD.formatted(name));
             } catch (IOException | RuntimeException e) {
-                log.error("Failed to start component '{}': {}", image, e.getMessage());
+                log.error("Failed to start component '{}': {}", name, e.getMessage());
                 setStatus(Status.ERROR);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -189,33 +192,33 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
         log.info("Starting test sequence...");
         for (TrafficTemplate trafficTemplate : testStep.getSequence()) {
             ComposeComponent component;
-            Link<ComposeComponent> link;
+            Link.LinkType interfaceType;
             try {
                 component = getModel().getComponent(trafficTemplate.getTarget()).orElseThrow();
-                link = getModel().getLinksForTarget(component).getFirst();
+                interfaceType = component.getProvidedInterfaceType();
             } catch (NoSuchElementException e) {
                 log.warn("No link found for target component: {}", trafficTemplate.getTarget());
                 continue;
             }
-            handleComposeTraffic(trafficTemplate, component, link);
+            handleComposeTraffic(trafficTemplate, component, interfaceType);
         }
 
         sleep(duration); // Sleep for the duration of the test step
     }
 
     /**
-     * Handles the traffic for the given component and link by resolving the Orchestrator-Gateway endpoint that needs to be
-     * addressed to proxy to the component.
+     * Handles the traffic for the given component and interface type by resolving the Orchestrator-Gateway endpoint
+     * that needs to be addressed to proxy to the component.
      *
      * @param trafficTemplate traffic template
      * @param component       component
-     * @param link            link specifying the type of traffic
+     * @param interfaceType   type of traffic
      */
-    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link<ComposeComponent> link) {
-        switch (link) {
-            case HttpLink<ComposeComponent> _ -> startTraffic(trafficTemplate, component, "http");
-            case JdbcLink<ComposeComponent> _ -> startTraffic(trafficTemplate, component, "db");
-            default -> log.warn("Unsupported traffic type: {}", link.getType());
+    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link.LinkType interfaceType) {
+        switch (interfaceType) {
+            case HTTP -> startTraffic(trafficTemplate, component, "http");
+            case DATABASE -> startTraffic(trafficTemplate, component, "db");
+            default -> log.warn("Unsupported traffic type: {}", interfaceType);
         }
     }
 
@@ -223,10 +226,11 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
         ComposeService service = (ComposeService) component;
         trafficTemplate.startTraffic(new String[]{
                 "http://%s:%s/%s".formatted(
-                        System.getProperty("systemHost", "127.0.0.1"),
-                        service.getPorts().entrySet().iterator().next().getKey(),
+                        System.getProperty("orchestratorHost", "127.0.0.1"),
+                        System.getProperty("orchestratorPort", "42690"),
                         trafficType
-                )
+                ),
+                service.getPorts().entrySet().iterator().next().getValue()
         });
     }
 
@@ -256,9 +260,9 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
     }
 
     private boolean sendRequestToComponent(String componentName, String endpoint) {
-        final String host = System.getProperty("systemHost", "127.0.0.1");
+        final String host = System.getProperty("orchestratorHost", "127.0.0.1");
         final String orchestratorGatewayPort = System.getProperty("orchestratorPort", "42690");
-        return sendGetRequest("http://%s:%s/http/%s/%s".formatted(host, orchestratorGatewayPort, componentName, endpoint));
+        return sendGetRequest("http://%s:%s/http/%s/%s/%s".formatted(host, orchestratorGatewayPort, componentName, orchestratorGatewayPort, endpoint));
     }
 
     /**

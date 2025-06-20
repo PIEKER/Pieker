@@ -1,6 +1,7 @@
 package pieker.architectures.util;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Map;
  */
 public final class MapUtils {
 
-    private MapUtils() {}
+    private MapUtils() {
+    }
 
     /**
      * Puts the value into the map if it is not null or empty.
@@ -42,6 +44,18 @@ public final class MapUtils {
 
             map.put(key, value);
         }
+    }
+
+    /**
+     * Converts a map to a list of strings in the format "key:value".
+     *
+     * @param map the map to convert
+     * @return a list of strings representing the map entries
+     */
+    public static List<String> mapToList(Map<?, ?> map) {
+        return map.entrySet().stream()
+                .map(e -> e.getKey().toString() + ":" + e.getValue().toString())
+                .toList();
     }
 
 }

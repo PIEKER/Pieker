@@ -1,79 +1,99 @@
 package pieker.common.connection;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
+import okhttp3.*;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Http {
+    private static final Gson GSON = new Gson();
 
     private Http(){}
 
     public static String send(String service, String url, String method, int connectionTimeout, int readTimeout,
-                       String jsonHeaders, String requestBody) {
-        try{
-            URL urlInstance = new URI(url).toURL();
-            HttpURLConnection connection = (HttpURLConnection) urlInstance.openConnection();
+                       String jsonHeaders, String requestBody, String bodyType) {
+        try {
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+                    .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
+                    .build();
 
-            // Set request method and timeouts
-            connection.setRequestMethod(method);
-            connection.setConnectTimeout(connectionTimeout);
-            connection.setReadTimeout(readTimeout);
-            connection.setDoOutput(true);
-
-            // Set headers
-
-            for (Map.Entry<String, String> header : jsonToMap(jsonHeaders).entrySet()) {
-                connection.setRequestProperty(header.getKey(), header.getValue());
+            // Parse headers
+            Map<String, String> headersMap = jsonToMap(jsonHeaders);
+            Headers.Builder headersBuilder = new Headers.Builder();
+            for (Map.Entry<String, String> entry : headersMap.entrySet()) {
+                headersBuilder.add(entry.getKey(), entry.getValue());
             }
 
-            // Write request body if applicable
-            InputStream inputStream = getInputStream(requestBody, connection);
+            // Build request body based on bodyType
+            RequestBody body = null;
+            if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
+                Map<String, Object> bodyMap = !bodyType.equalsIgnoreCase("text") ? jsonToMapObject(requestBody): new HashMap<>();
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
+                switch (bodyType.toLowerCase()) {
+                    case "json":
+                        String json = GSON.toJson(bodyMap);
+                        body = RequestBody.create(json, MediaType.parse("application/json"));
+                        break;
+
+                    case "form":
+                        FormBody.Builder formBuilder = new FormBody.Builder();
+                        for (Map.Entry<String, Object> entry : bodyMap.entrySet()) {
+                            formBuilder.add(entry.getKey(), entry.getValue().toString());
+                        }
+                        body = formBuilder.build();
+                        break;
+
+                    case "multipart":
+                        MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                        for (Map.Entry<String, Object> entry : bodyMap.entrySet()) {
+                            multipartBuilder.addFormDataPart(entry.getKey(), entry.getValue().toString());
+                        }
+                        body = multipartBuilder.build();
+                        break;
+                    case "text":
+                        body = RequestBody.create(requestBody, MediaType.parse("text/plain"));
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Unsupported body type: " + bodyType);
                 }
-                return response.toString();
             }
-        } catch (Exception e){
-            log.error("exception occurred while sending request to service {}. Exception: {}", service, e.getMessage());
+
+            Request.Builder requestBuilder = new Request.Builder()
+                    .url(url)
+                    .method(method, body)
+                    .headers(headersBuilder.build());
+
+            Response response = client.newCall(requestBuilder.build()).execute();
+
+            if (response.body() != null) {
+                return response.body().string();
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while sending request to service {}. Exception: {}", service, e.getMessage());
             return "ERROR ON REQUEST";
         }
     }
 
-
-    private static InputStream getInputStream(String requestBody, HttpURLConnection connection) throws IOException {
-        if (requestBody != null && !requestBody.isEmpty()) {
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
+    private static Map<String, Object> jsonToMapObject(String json) {
+        if (json == null || json.trim().isEmpty()) {
+            return Map.of();
         }
-
-        // Read response
-        return (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST)
-                ? connection.getInputStream() : connection.getErrorStream();
+        return GSON.fromJson(json, new TypeToken<Map<String, Object>>(){}.getType());
     }
 
-    private static Map<String, String> jsonToMap(String jsonString) {
-        Map<String, String> map = new HashMap<>();
-        if (jsonString == null || jsonString.isEmpty()) {
-            return map;
+    private static Map<String, String> jsonToMap(String json) {
+        if (json == null || json.trim().isEmpty()) {
+            return Map.of();
         }
-        JSONObject jsonObject = new JSONObject(jsonString);
-        for (String key : jsonObject.keySet()) {
-            map.put(key, jsonObject.getString(key));
-        }
-        return map;
+        return GSON.fromJson(json, new TypeToken<Map<String, String>>(){}.getType());
     }
 }

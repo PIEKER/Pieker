@@ -6,7 +6,6 @@ import pieker.architectures.ArchitectureFactory;
 import pieker.architectures.common.model.HttpLink;
 import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
-import pieker.architectures.model.ComponentLink;
 import pieker.architectures.model.Link;
 
 import java.nio.file.Path;
@@ -22,8 +21,7 @@ class ComposeGeneratorTest {
 
     @Test
     void testGenerator() {
-        final ComposeModelGenerator modelGenerator = (ComposeModelGenerator) ArchitectureFactory
-                .createGenerator(DOCKER_COMPOSE_FILE, COMPOSE_DESCRIPTION_FILE);
+        final ComposeModelGenerator modelGenerator = (ComposeModelGenerator) ArchitectureFactory.createGenerator(DOCKER_COMPOSE_FILE, COMPOSE_DESCRIPTION_FILE);
         final ComposeArchitectureModel model = modelGenerator.generate();
 
         assertNotNull(model);
@@ -35,7 +33,7 @@ class ComposeGeneratorTest {
         assertFalse(links.isEmpty());
 
         HttpLink<ComposeComponent> httpLink = (HttpLink<ComposeComponent>) links.getFirst();
-        assertEquals(ComponentLink.LinkType.HTTP, links.getFirst().getType());
+        assertEquals(Link.LinkType.HTTP, links.getFirst().getType());
 
         String targetUrlEnvName = httpLink.getSourceRelatedEnvironmentVariables().get("URL_VAR");
         assertEquals("COUNTER_URL", targetUrlEnvName);

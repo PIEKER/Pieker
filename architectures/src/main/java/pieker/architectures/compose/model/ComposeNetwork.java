@@ -2,6 +2,7 @@ package pieker.architectures.compose.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import pieker.architectures.model.CompositeNetwork;
 import pieker.architectures.model.Network;
 
 import java.util.HashMap;

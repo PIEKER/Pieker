@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Network extends AbstractCompositeComponent implements Component {
+public class CompositeNetwork extends AbstractCompositeComponent implements Component {
 
     // TODO: Implement this class
 

@@ -34,7 +34,7 @@ public class Null implements Evaluation {
 
     @Override
     public void evaluate(String arg) {
-        this.success = isNull == (arg == null || arg.isBlank());
+        this.success = isNull == (arg == null || arg.isBlank() || arg.equals("null"));
         if (!this.success){
             this.errorMessage = "Expected: " + (isNull ? "null" : "not null") + " but got: " + arg;
         }
