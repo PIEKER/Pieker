@@ -10,7 +10,6 @@ import pieker.architectures.compose.model.ComposeService;
 import pieker.architectures.injector.AbstractComponentInjector;
 import pieker.architectures.injector.ComponentInjector;
 import pieker.architectures.injector.exceptions.ComponentInjectionException;
-import pieker.architectures.model.ComponentLink;
 import pieker.architectures.model.Link;
 import pieker.common.ScenarioComponent;
 import pieker.common.ScenarioTestPlan;
@@ -107,7 +106,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
 
     @Override
     public <T extends ComposeComponent> void prependComponent(T proxy, ComposeComponent targetComponent) throws ComponentInjectionException {
-        ComponentLink.LinkType interfaceType = targetComponent.getProvidedInterfaceType();
+        Link.LinkType interfaceType = targetComponent.getProvidedInterfaceType();
         if (interfaceType == null) {
             throw new ComponentInjectionException("Provided component type is null for target component: %s".formatted(targetComponent.getName()));
         }
@@ -312,7 +311,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             return "";
         }
         try {
-            URL url = new URL(urlString);
+            URL url = new URI(urlString).toURL();
 
             // Get everything after host:port
             String path = url.getPath();          // "/api/v1/users"
@@ -328,7 +327,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
                 fullPath.append("#").append(fragment);
             }
             return fullPath.toString();
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | URISyntaxException e) {
             log.error("Malformed URL: {}", urlString, e);
             return "";
         }

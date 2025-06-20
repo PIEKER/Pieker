@@ -14,7 +14,7 @@ public abstract class AbstractCompositeComponent implements Component {
 
     private String name;
     private boolean isGenerated = false;
-    private ComponentLink.LinkType providedInterfaceType;
+    private Link.LinkType providedInterfaceType;
     private List<Component> containedComponents = new ArrayList<>();
 
     @Override

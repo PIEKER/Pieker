@@ -62,7 +62,7 @@ public class StepGenerator {
     }
 
     public static void generateProxyComponent(String scenarioName, ScenarioProxyComponent scenarioComponent, ArchitectureModel<Component> architectureModel) {
-        switch (scenarioComponent){
+        switch (scenarioComponent) {
             case DatabaseProxy databaseProxy -> {
                 createDefaultProxy(scenarioName, databaseProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
                 createStepProxy(scenarioName, databaseProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
@@ -72,7 +72,7 @@ public class StepGenerator {
                 List<Link<Component>> componentLinkList = architectureModel.getLinksForTarget(sink).stream().toList();
                 assert !componentLinkList.isEmpty();
                 Link<Component> componentLink = componentLinkList.getFirst();
-                if (componentLink instanceof JdbcLink<Component>){
+                if (componentLink instanceof JdbcLink<Component>) {
                     createDefaultProxy(scenarioName, linkProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
                     createStepProxy(scenarioName, linkProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
                 } else {
@@ -84,7 +84,8 @@ public class StepGenerator {
                 createDefaultProxy(scenarioName, serviceProxy, VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE));
                 createStepProxy(scenarioName, serviceProxy, VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE));
             }
-            default -> log.error("unknown instance detected for scenarioComponent {}: {}", scenarioComponent, scenarioComponent.getClass());
+            default ->
+                    log.error("unknown instance detected for scenarioComponent {}: {}", scenarioComponent, scenarioComponent.getClass());
         }
     }
 
@@ -106,7 +107,7 @@ public class StepGenerator {
             for (TrafficTemplate traffic : entry.getValue()) {
                 VelocityContext ctx = new VelocityContext();
                 ctx.put(ENABLE_LOGS, traffic.isEnableLogs());
-                ctx.put(TRAFFIC_IDENTIFIER, stepId +"_"+ traffic.getIdentifier().replace("-", "_"));
+                ctx.put(TRAFFIC_IDENTIFIER, stepId + "_" + traffic.getIdentifier().replace("-", "_"));
                 traffic.addContextVariable(ctx);
                 String trafficType = (String) ctx.get("trafficType");
                 if (trafficType == null) {
@@ -137,19 +138,19 @@ public class StepGenerator {
     }
 
     // HELPER
-    private static void createDefaultProxy(String scenarioName, ScenarioProxyComponent scenarioComponent, Template defaultTemplate){
+    private static void createDefaultProxy(String scenarioName, ScenarioProxyComponent scenarioComponent, Template defaultTemplate) {
         VelocityContext defaultCtx = new VelocityContext();
         defaultCtx.put(CLASS_NAME, DEFAULT_FILENAME);
         String defaultFile = VELOCITY.fillTemplate(defaultTemplate, defaultCtx);
         saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
     }
 
-    private static void createStepProxy(String scenarioName, ScenarioProxyComponent scenarioComponent, Template template){
+    private static void createStepProxy(String scenarioName, ScenarioProxyComponent scenarioComponent, Template template) {
         Map<String, List<pieker.common.ConditionTemplate>> stepConditionMap = scenarioComponent.getStepToConditionMap();
         stepConditionMap.forEach((stepId, conditionList) -> {
                     VelocityContext ctx = new VelocityContext();
                     ctx.put(CLASS_NAME, stepId);
-                    ctx.put(PROXY_IDENTIFIER, stepId +"_"+ scenarioComponent.getName());
+                    ctx.put(PROXY_IDENTIFIER, stepId + "_" + scenarioComponent.getName());
                     ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
 
                     conditionList.forEach(t -> t.addContextVariable(ctx));

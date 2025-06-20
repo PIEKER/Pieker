@@ -5,7 +5,7 @@ import pieker.architectures.compose.model.ComposeArchitectureModel;
 import pieker.architectures.compose.model.ComposeComponent;
 import pieker.architectures.compose.model.ComposeService;
 import pieker.architectures.model.ArchitectureModel;
-import pieker.architectures.model.ComponentLink;
+import pieker.architectures.model.Link;
 import pieker.common.*;
 import pieker.orchestrator.AbstractOrchestrator;
 import pieker.orchestrator.Orchestrator;
@@ -192,7 +192,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
         log.info("Starting test sequence...");
         for (TrafficTemplate trafficTemplate : testStep.getSequence()) {
             ComposeComponent component;
-            ComponentLink.LinkType interfaceType;
+            Link.LinkType interfaceType;
             try {
                 component = getModel().getComponent(trafficTemplate.getTarget()).orElseThrow();
                 interfaceType = component.getProvidedInterfaceType();
@@ -214,7 +214,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
      * @param component       component
      * @param interfaceType   type of traffic
      */
-    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, ComponentLink.LinkType interfaceType) {
+    private void handleComposeTraffic(TrafficTemplate trafficTemplate, ComposeComponent component, Link.LinkType interfaceType) {
         switch (interfaceType) {
             case HTTP -> startTraffic(trafficTemplate, component, "http");
             case DATABASE -> startTraffic(trafficTemplate, component, "db");

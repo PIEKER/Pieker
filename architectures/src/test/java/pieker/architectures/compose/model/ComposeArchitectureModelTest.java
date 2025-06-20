@@ -45,7 +45,7 @@ class ComposeArchitectureModelTest {
 
         assertTrue(this.composeArchitectureModel.validate());
 
-        Link clonedLink = httpLink.clone();
+        Link<?> clonedLink = httpLink.clone();
         assertInstanceOf(HttpLink.class, clonedLink);
     }
 

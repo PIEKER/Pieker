@@ -2,7 +2,7 @@ package pieker.architectures.description;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import pieker.architectures.model.ComponentLink;
+import pieker.architectures.model.Link;
 
 import java.nio.file.Path;
 
@@ -24,7 +24,7 @@ class InterfaceDescriptionTest {
         assertEquals("serviceA", architectureDescription.getComponents().getFirst().getName());
         assertEquals(2, architectureDescription.getComponents().getFirst().getRequires().size());
         assertEquals("serviceC", architectureDescription.getComponents().getFirst().getRequires().getFirst().getTarget());
-        assertEquals(ComponentLink.LinkType.HTTP, architectureDescription.getComponents().getFirst().getRequires().getFirst().getType());
+        assertEquals(Link.LinkType.HTTP, architectureDescription.getComponents().getFirst().getRequires().getFirst().getType());
     }
 
 }
