@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +33,7 @@ public class Http {
             // Build request body based on bodyType
             RequestBody body = null;
             if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
-                Map<String, Object> bodyMap = jsonToMapObject(requestBody);
+                Map<String, Object> bodyMap = !bodyType.equalsIgnoreCase("text") ? jsonToMapObject(requestBody): new HashMap<>();
 
                 switch (bodyType.toLowerCase()) {
                     case "json":
@@ -54,6 +55,9 @@ public class Http {
                             multipartBuilder.addFormDataPart(entry.getKey(), entry.getValue().toString());
                         }
                         body = multipartBuilder.build();
+                        break;
+                    case "text":
+                        body = RequestBody.create(requestBody, MediaType.parse("text/plain"));
                         break;
 
                     default:

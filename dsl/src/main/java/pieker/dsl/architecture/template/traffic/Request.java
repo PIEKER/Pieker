@@ -52,7 +52,7 @@ public class Request implements Template, TrafficType {
             throw new IllegalArgumentException("no arguments provided for request traffic");
         }
         String endpointUrl = "/" + this.service + this.url;
-        return Http.send(this.service, args[0] + endpointUrl, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body, "");
+        return Http.send(this.service, args[0] + endpointUrl, this.method, this.connectionTimeout, this.readTimeout, this.headers, this.body, this.bodyType);
     }
 
     @Override
