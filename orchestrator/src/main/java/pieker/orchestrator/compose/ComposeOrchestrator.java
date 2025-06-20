@@ -230,7 +230,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
                         System.getProperty("orchestratorPort", "42690"),
                         trafficType
                 ),
-                service.getPorts().entrySet().iterator().next().getKey()
+                service.getPorts().entrySet().iterator().next().getValue()
         });
     }
 
