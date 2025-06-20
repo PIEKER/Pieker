@@ -14,7 +14,7 @@ app = FastAPI()
 # --- HTTP Proxy ---
 #
 
-@app.get("/http/{target}/{path:path}")
+@app.api_route("/http/{target}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 async def proxy_http_get(target: str, path: str, request: Request):
     try:
         target_url = f"http://{target}:42690/{path}"
