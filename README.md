@@ -13,6 +13,10 @@
   <a href="https://sonarcloud.io/summary/new_code?id=pieker">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=pieker&metric=alert_status" alt="Quality Gate Status"/>
   </a>
+  <br>
+  <a href="https://deepwiki.com/PIEKER/Pieker">
+    <img src="https://deepwiki.com/badge.svg" alt="DeepWiki"/>
+  </a>
 </p>
 
 <hr/>
@@ -56,7 +60,7 @@ Pieker
 ├── dsl            # PIEKER DSL Module
 ├── evaluator      # PIEKER Evaluation Module
 ├── generators     # PIEKER Generators Module
-├── orchestrator     # PIEKER Orchestrator Module
+├── orchestrator   # PIEKER Orchestrator Module
 └── web            # PIEKER Web Application
 ```
 
@@ -173,7 +177,7 @@ This module contains the web application for PIEKER.
 - [x] Automatic generation of test code from DSL
 - [x] Automatic injection of test code into test containers and architectures
 - [x] Automatic deployment of a test environment
-- [ ] _Automatic test execution and evaluation_
+- [x] Automatic test execution and evaluation
 - [ ] _First prototype for testing Docker Compose architectures_
 - [ ] First release for Docker Compose architectures
 - [ ] Fully functional web application for test specification, execution, and evaluation

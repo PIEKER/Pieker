@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class representing a service in the architecture model.
+ * Class representing a composite service in the architecture model.
  */
 @Getter
 @Setter
-public class Service extends AbstractComponent implements Component, EnvironmentVariables {
+public class CompositeService extends AbstractCompositeComponent implements Component, EnvironmentVariables {
 
     /// Container Image
     private String image;

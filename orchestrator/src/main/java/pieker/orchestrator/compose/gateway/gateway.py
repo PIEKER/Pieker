@@ -14,10 +14,10 @@ app = FastAPI()
 # --- HTTP Proxy ---
 #
 
-@app.get("/http/{target}/{path:path}")
-async def proxy_http_get(target: str, path: str, request: Request):
+@app.api_route("/http/{target}/{port}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
+async def proxy_http_get(target: str, port: str, path: str, request: Request):
     try:
-        target_url = f"http://{target}:42690/{path}"
+        target_url = f"http://{target}:{port}/{path}"
 
         async with httpx.AsyncClient() as client:
             body = await request.body()
@@ -84,7 +84,14 @@ async def run_query(db_name: str, request: Request):
             if query.strip().lower().startswith("select"):
                 rows = result.fetchall()
                 keys = result.keys()
-                return {"result": [dict(zip(keys, row)) for row in rows]}
+
+                # aggregate values per key
+                aggregated = {key: [] for key in keys}
+                for row in rows:
+                    for key, value in zip(keys, row):
+                        aggregated[key].append(value)
+
+                return {"result": aggregated}
             else:
                 await session.commit()
                 return {"status": "success"}

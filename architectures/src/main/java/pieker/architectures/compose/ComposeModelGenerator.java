@@ -61,9 +61,9 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
         for (DescriptionComponent descriptionComponent : description.getComponents()) {
             // ... find the corresponding component in the ComposeArchitectureModel ...
             model.getComponent(descriptionComponent.getName()).ifPresent(source -> {
-                if (descriptionComponent.getDependencies() != null && !descriptionComponent.getDependencies().isEmpty()) {
+                if (descriptionComponent.getRequires() != null && !descriptionComponent.getRequires().isEmpty()) {
                     // ... and for each link in the Interface Description of this component ...
-                    for (DescriptionLink descriptionLink : descriptionComponent.getDependencies()) {
+                    for (DescriptionLink descriptionLink : descriptionComponent.getRequires()) {
                         // ... find the corresponding target component in the ComposeArchitectureModel ...
                         model.getComponent(descriptionLink.getTarget()).ifPresent(target -> {
                             // ... and create a new link between the source and target components of the corresponding type
@@ -114,10 +114,23 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
             Map<String, Object> serviceData = (Map<String, Object>) rawServiceData;
 
             ComposeService service = new ComposeService(serviceName);
-            service.setImage((String) serviceData.get("image"));
-            service.setBuild((String) serviceData.get("build"));
+            service.setImage((String) serviceData.getOrDefault("image", null));
+            service.setBuild((String) serviceData.getOrDefault("build", null));
             service.setEnvironment((Map<String, String>) serviceData.getOrDefault("environment", new HashMap<>()));
             service.setDependsOn((List<String>) serviceData.getOrDefault("depends_on", new ArrayList<>()));
+
+            service.setCommand((String) serviceData.getOrDefault("command", null));
+            service.setEntrypoint((String) serviceData.getOrDefault("entrypoint", null));
+            service.setContainerName((String) serviceData.getOrDefault("container_name", null));
+            service.setWorkingDir((String) serviceData.getOrDefault("working_dir", null));
+            service.setRestart((String) serviceData.getOrDefault("restart", null));
+            service.setUser((String) serviceData.getOrDefault("user", null));
+            service.setTty((Boolean) serviceData.getOrDefault("tty", null));
+            service.setStdinOpen((Boolean) serviceData.getOrDefault("stdin_open", null));
+            service.setPrivileged((Boolean) serviceData.getOrDefault("privileged", null));
+
+            // TODO: Construct networks as ComposeNetwork objects and volumes as ComposeVolume objects
+
             HashMap<String, String> ports = new HashMap<>();
             ((ArrayList<String>) serviceData.getOrDefault("ports", List.of())).forEach(port -> {
                 String[] portMapping = port.split(":");

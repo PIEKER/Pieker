@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Storage extends AbstractComponent implements Component {
+public class CompositeStorage extends AbstractCompositeComponent implements Component {
 
     private StorageType type;
 
@@ -17,5 +17,4 @@ public class Storage extends AbstractComponent implements Component {
         DATABASE,
         UNSUPPORTED
     }
-
 }

@@ -1,20 +1,22 @@
-import java.io.*;
-import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-import org.json.JSONObject; // requires json.jar
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import okhttp3.*;
+
 
 //TRAFFIC-CONTAINER
 public class $className {
-    private static final String LOG_ROOT = "/tmp/logs/";
+    private static final Gson GSON = new Gson();
     private static final Random RANDOM = new Random();
-
+    private static final String LOG_ROOT = "/tmp/logs/";
     private static final String SERVICE_BASE_URL = System.getenv("SERVICE_BASE_URL");
-
     private static final String DB_URL = System.getenv("DB_URL");
     private static final String DB_USER = System.getenv("DB_USER");
     private static final String DB_PASS = System.getenv("DB_PASS");
@@ -35,7 +37,7 @@ public class $className {
 
     // -- SQL
     public static ResponseTuple executeSQL(String dbUrl, String dbUser, String dbPassword, String sqlQuery) {
-        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        try (java.sql.Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
              Statement statement = connection.createStatement()) {
 
             boolean hasResultSet = statement.execute(sqlQuery);
@@ -71,71 +73,85 @@ public class $className {
         }
 
     // -- perform HTTP
-    public static ResponseTuple sendHttpRequest(String urlString, String requestMethod, int connectTimeout, int readTimeout,
-                                                Map<String, String> headers, String requestBody) throws IOException, URISyntaxException {
-        URL url = new URI(SERVICE_BASE_URL + urlString).toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    public static ResponseTuple sendHttpRequest(String url, String method, int connectionTimeout, int readTimeout,
+                                     String jsonHeaders, String requestBody, String bodyType) {
+        try {
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+                    .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
+                    .build();
 
-        // Set request method and timeouts
-        connection.setRequestMethod(requestMethod);
-        connection.setConnectTimeout(connectTimeout);
-        connection.setReadTimeout(readTimeout);
-
-        // Set headers
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            connection.setRequestProperty(header.getKey(), header.getValue());
-        }
-
-        // Only set doOutput and write body for POST/PUT with a non-empty request body
-        if ((requestMethod.equalsIgnoreCase("POST") || requestMethod.equalsIgnoreCase("PUT")) && requestBody != null && !requestBody.isEmpty()) {
-            connection.setDoOutput(true);
-            try (OutputStream os = connection.getOutputStream()) {
-                os.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            // Parse headers
+            Map<String, String> headersMap = jsonToMap(jsonHeaders);
+            Headers.Builder headersBuilder = new Headers.Builder();
+            for (Map.Entry<String, String> entry : headersMap.entrySet()) {
+                headersBuilder.add(entry.getKey(), entry.getValue());
             }
-        }
 
-        // Read the response
-        InputStream inputStream;
-        int responseCode = connection.getResponseCode();
-        if (responseCode >= 400) {
-            inputStream = connection.getErrorStream();
-        } else {
-            inputStream = connection.getInputStream();
-        }
+            // Build request body based on bodyType
+            RequestBody body = null;
+            if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
+                Map<String, Object> bodyMap = !bodyType.equalsIgnoreCase("text") ? jsonToMapObject(requestBody): new HashMap<>();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+                switch (bodyType.toLowerCase()) {
+                    case "json":
+                        String json = GSON.toJson(bodyMap);
+                        body = RequestBody.create(json, MediaType.parse("application/json"));
+                        break;
+
+                    case "form":
+                        FormBody.Builder formBuilder = new FormBody.Builder();
+                        for (Map.Entry<String, Object> entry : bodyMap.entrySet()) {
+                            formBuilder.add(entry.getKey(), entry.getValue().toString());
+                        }
+                        body = formBuilder.build();
+                        break;
+
+                    case "multipart":
+                        MultipartBody.Builder multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                        for (Map.Entry<String, Object> entry : bodyMap.entrySet()) {
+                            multipartBuilder.addFormDataPart(entry.getKey(), entry.getValue().toString());
+                        }
+                        body = multipartBuilder.build();
+                        break;
+                    case "text":
+                        body = RequestBody.create(requestBody, MediaType.parse("text/plain"));
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Unsupported body type: " + bodyType);
+                }
             }
-            return new ResponseTuple(response.toString(), responseCode);
+
+            Request.Builder requestBuilder = new Request.Builder()
+                    .url(SERVICE_BASE_URL + url)
+                    .method(method, body)
+                    .headers(headersBuilder.build());
+
+            Response response = client.newCall(requestBuilder.build()).execute();
+
+            if (response.body() != null) {
+                return new ResponseTuple(response.body().string(), response.code());
+            } else {
+                return new ResponseTuple("NO BODY", response.code());
+            }
+        } catch (Exception e) {
+            return new ResponseTuple("Exception occurred while sending request. Exception: " + e.getMessage(), 400);
         }
     }
 
-    private static InputStream getInputStream(String requestBody, HttpURLConnection connection) throws IOException {
-        if (requestBody != null && !requestBody.isEmpty()) {
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
+    private static Map<String, Object> jsonToMapObject(String json) {
+        if (json == null || json.trim().isEmpty()) {
+            return Map.of();
         }
-
-        // Read response
-        return (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST)
-                ? connection.getInputStream() : connection.getErrorStream();
+        return GSON.fromJson(json, new TypeToken<Map<String, Object>>(){}.getType());
     }
 
-    public static Map<String, String> jsonToMap(String jsonString) {
-        Map<String, String> map = new HashMap<>();
-        if (jsonString == null || jsonString.isEmpty()) {
-            return map;
+    private static Map<String, String> jsonToMap(String json) {
+        if (json == null || json.trim().isEmpty()) {
+            return Map.of();
         }
-        JSONObject jsonObject = new JSONObject(jsonString);
-        for (String key : jsonObject.keySet()) {
-            map.put(key, jsonObject.getString(key));
-        }
-        return map;
+        return GSON.fromJson(json, new TypeToken<Map<String, Object>>(){}.getType());
     }
 
     private static void log(String filename, String message) {

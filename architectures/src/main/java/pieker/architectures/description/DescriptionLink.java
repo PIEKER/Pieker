@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pieker.architectures.model.ComponentLink;
+import pieker.architectures.model.Link;
 
 import java.util.List;
 
@@ -27,13 +27,13 @@ import java.util.List;
 public class DescriptionLink {
 
     private String target;  // Name of target component (must match the name of a component in the architecture model)
-    private ComponentLink.LinkType type;  // Type of link
+    private Link.LinkType type;  // Type of link
 
     @Getter
     @Setter
     @NoArgsConstructor
     public static class HttpLink extends DescriptionLink {
-        private final ComponentLink.LinkType type = ComponentLink.LinkType.HTTP;
+        private final Link.LinkType type = Link.LinkType.HTTP;
         private String targetUrlEnv;  // Name of environment variable for target URL
         private String targetHostEnv;  // Name of environment variable for target host
         private String targetPortEnv;  // Name of environment variable for target port
@@ -44,7 +44,7 @@ public class DescriptionLink {
     @Setter
     @NoArgsConstructor
     public static class JdbcLink extends DescriptionLink {
-        private final ComponentLink.LinkType type = ComponentLink.LinkType.JDBC;
+        private final Link.LinkType type = Link.LinkType.JDBC;
         private String targetUrlEnv;  // Name of environment variable for target URL
         private String usernameEnv;  // Name of environment variable for username
         private String passwordEnv;  // Name of environment variable for password

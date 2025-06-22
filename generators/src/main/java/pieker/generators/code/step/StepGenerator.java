@@ -4,11 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import pieker.architectures.common.model.JdbcLink;
+import pieker.architectures.model.ArchitectureModel;
+import pieker.architectures.model.Component;
+import pieker.architectures.model.Link;
 import pieker.common.ScenarioProxyComponent;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.ScenarioTrafficComponent;
 import pieker.common.TrafficTemplate;
 import pieker.dsl.architecture.template.component.DatabaseProxy;
+import pieker.dsl.architecture.template.component.LinkProxy;
+import pieker.dsl.architecture.template.component.ServiceProxy;
 import pieker.generators.code.CodeGenerationException;
 import pieker.generators.code.VelocityTemplateProcessor;
 
@@ -22,8 +28,8 @@ import java.util.Map;
 @Slf4j
 public class StepGenerator {
 
-    private static final String PROXY_HTTP_TEMPLATE_FILE = "proxy/proxyHTTP.vm";
-    private static final String PROXY_DB_TEMPLATE_FILE = "proxy/proxyDB.vm";
+    private static final String PROXY_HTTP_TEMPLATE_FILE = "proxy/http.vm";
+    private static final String PROXY_TCP_TEMPLATE_FILE = "proxy/tcp.vm";
     private static final String TRAFFIC_THREAD_TEMPLATE_FILE = "traffic/thread.vm";
     private static final String TRAFFIC_CONTAINER_TEMPLATE_FILE = "traffic/trafficContainer.vm";
     private static final String DEFAULT_FILENAME = "Default";
@@ -55,35 +61,32 @@ public class StepGenerator {
         }
     }
 
-    public static void generateProxyComponent(String scenarioName, ScenarioProxyComponent scenarioComponent) {
-
-        //create empty default
-        VelocityContext defaultCtx = new VelocityContext();
-        Template defaultTemplate = scenarioComponent instanceof DatabaseProxy ?
-                VELOCITY.loadTemplate(PROXY_DB_TEMPLATE_FILE) :
-                VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE);
-        defaultCtx.put(CLASS_NAME, DEFAULT_FILENAME);
-        String defaultFile = VELOCITY.fillTemplate(defaultTemplate, defaultCtx);
-        saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
-
-        //create step files
-        Map<String, List<pieker.common.ConditionTemplate>> stepConditionMap = scenarioComponent.getStepToConditionMap();
-        stepConditionMap.forEach((stepId, conditionList) -> {
-                    VelocityContext ctx = new VelocityContext();
-                    ctx.put(CLASS_NAME, stepId);
-                    ctx.put(PROXY_IDENTIFIER, stepId +"_"+ scenarioComponent.getName());
-                    ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
-                    Template template = scenarioComponent instanceof DatabaseProxy ?
-                            VELOCITY.loadTemplate(PROXY_DB_TEMPLATE_FILE) :
-                            VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE);
-
-                    conditionList.forEach(t -> t.addContextVariable(ctx));
-                    String proxyFile = VELOCITY.fillTemplate(template, ctx);
-                    saveCodeFile(proxyFile,
-                            getComponentFileName(scenarioName, scenarioComponent.getName(), stepId));
+    public static void generateProxyComponent(String scenarioName, ScenarioProxyComponent scenarioComponent, ArchitectureModel<Component> architectureModel) {
+        switch (scenarioComponent) {
+            case DatabaseProxy databaseProxy -> {
+                createDefaultProxy(scenarioName, databaseProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
+                createStepProxy(scenarioName, databaseProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
+            }
+            case LinkProxy linkProxy -> {
+                Component sink = architectureModel.getComponent(linkProxy.getHostB()).orElseThrow();
+                List<Link<Component>> componentLinkList = architectureModel.getLinksForTarget(sink).stream().toList();
+                assert !componentLinkList.isEmpty();
+                Link<Component> componentLink = componentLinkList.getFirst();
+                if (componentLink instanceof JdbcLink<Component>) {
+                    createDefaultProxy(scenarioName, linkProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
+                    createStepProxy(scenarioName, linkProxy, VELOCITY.loadTemplate(PROXY_TCP_TEMPLATE_FILE));
+                } else {
+                    createDefaultProxy(scenarioName, linkProxy, VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE));
+                    createStepProxy(scenarioName, linkProxy, VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE));
                 }
-        );
-
+            }
+            case ServiceProxy serviceProxy -> {
+                createDefaultProxy(scenarioName, serviceProxy, VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE));
+                createStepProxy(scenarioName, serviceProxy, VELOCITY.loadTemplate(PROXY_HTTP_TEMPLATE_FILE));
+            }
+            default ->
+                    log.error("unknown instance detected for scenarioComponent {}: {}", scenarioComponent, scenarioComponent.getClass());
+        }
     }
 
     public static void generateTrafficComponent(String scenarioName, ScenarioTrafficComponent scenarioComponent) {
@@ -104,7 +107,7 @@ public class StepGenerator {
             for (TrafficTemplate traffic : entry.getValue()) {
                 VelocityContext ctx = new VelocityContext();
                 ctx.put(ENABLE_LOGS, traffic.isEnableLogs());
-                ctx.put(TRAFFIC_IDENTIFIER, stepId +"_"+ traffic.getIdentifier().replace("-", "_"));
+                ctx.put(TRAFFIC_IDENTIFIER, stepId + "_" + traffic.getIdentifier().replace("-", "_"));
                 traffic.addContextVariable(ctx);
                 String trafficType = (String) ctx.get("trafficType");
                 if (trafficType == null) {
@@ -132,6 +135,30 @@ public class StepGenerator {
             String trafficContainerFile = VELOCITY.fillTemplate(template, ctxTrafficContainer);
             saveCodeFile(trafficContainerFile, getComponentFileName(scenarioName, scenarioComponent.getName(), stepId));
         }
+    }
+
+    // HELPER
+    private static void createDefaultProxy(String scenarioName, ScenarioProxyComponent scenarioComponent, Template defaultTemplate) {
+        VelocityContext defaultCtx = new VelocityContext();
+        defaultCtx.put(CLASS_NAME, DEFAULT_FILENAME);
+        String defaultFile = VELOCITY.fillTemplate(defaultTemplate, defaultCtx);
+        saveCodeFile(defaultFile, getComponentFileName(scenarioName, scenarioComponent.getName(), DEFAULT_FILENAME));
+    }
+
+    private static void createStepProxy(String scenarioName, ScenarioProxyComponent scenarioComponent, Template template) {
+        Map<String, List<pieker.common.ConditionTemplate>> stepConditionMap = scenarioComponent.getStepToConditionMap();
+        stepConditionMap.forEach((stepId, conditionList) -> {
+                    VelocityContext ctx = new VelocityContext();
+                    ctx.put(CLASS_NAME, stepId);
+                    ctx.put(PROXY_IDENTIFIER, stepId + "_" + scenarioComponent.getName());
+                    ctx.put(ENABLE_LOGS, scenarioComponent.getStepToLog().get(stepId));
+
+                    conditionList.forEach(t -> t.addContextVariable(ctx));
+                    String proxyFile = VELOCITY.fillTemplate(template, ctx);
+                    saveCodeFile(proxyFile,
+                            getComponentFileName(scenarioName, scenarioComponent.getName(), stepId));
+                }
+        );
     }
 
     private static void saveCodeFile(String file, String filePath) {

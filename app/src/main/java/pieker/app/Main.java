@@ -5,8 +5,10 @@ import pieker.architectures.ArchitectureFactory;
 import pieker.architectures.generator.ModelGenerator;
 import pieker.architectures.injector.ComponentInjector;
 import pieker.architectures.model.ArchitectureModel;
+import pieker.architectures.model.Component;
 import pieker.common.ScenarioTestPlan;
 import pieker.common.plugin.PluginManager;
+import pieker.dsl.architecture.Engine;
 import pieker.dsl.model.Feature;
 import pieker.evaluator.Evaluator;
 import pieker.generators.code.multistep.MultiStepGenerator;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class Main {
@@ -38,6 +41,8 @@ public class Main {
                       %%%%          \s
                       %%            \s
             """;
+    private static final String FALSE = "false";
+    private static final String SCENARIO_NAME = "scenarioName";
 
     // - Paths -
     private static final String PROJECT_ROOT = System.getProperty("projectRoot");
@@ -86,7 +91,7 @@ public class Main {
         // Parse DSL, Architecture and Interface description files, generate test code, test components, and test environment
         preprocessing();
 
-        if (System.getProperty("runTests", "true").equals("false")) {
+        if (System.getProperty("runTests", "true").equals(FALSE)) {
             log.info("Skipping test execution as per configuration.");
             System.exit(0);
         }
@@ -129,54 +134,33 @@ public class Main {
         // Parse DSL
         Feature feature = pieker.dsl.Main.parse(DSL_FILE_PATH, DSL_RESOURCE_DIRECTORY, PLUGIN_MANAGER);
 
-        if (Boolean.parseBoolean(System.getProperty("validateOnly", "false"))) {
-            pieker.dsl.architecture.Engine.validate(feature);
+        if (Boolean.parseBoolean(System.getProperty("validateOnly", FALSE))) {
+            Engine.validate(feature);
             log.info("Validation finished successfully.");
             System.exit(0);
         }
 
         // Generate Test Plan
-        pieker.dsl.architecture.Engine.run(feature);
+        Engine.run(feature);
         feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
 
-        if (Boolean.parseBoolean(System.getProperty("testPlanOnly", "false"))) {
+        if (Boolean.parseBoolean(System.getProperty("testPlanOnly", FALSE))) {
             log.info("PIEKER Test Plan generation finished successfully.");
             System.exit(0);
         }
 
-        if (System.getProperty("skipFileGeneration", "false").equals("false")) {
-            // Generate code for test components
-            log.info("Starting test component code generation...");
-            feature.getScenarioTestPlanList().forEach(scenario -> {
-                scenario.getTrafficComponents().forEach(
-                        c -> StepGenerator.generateTrafficComponent(scenario.getName(), c));
-                scenario.getProxyComponents().forEach(
-                        c -> StepGenerator.generateProxyComponent(scenario.getName(), c));
-            });
-            log.info("Finished generating test component code.");
-
-            // Package test component code into JAR files
-            log.info("Starting test component JAR generation...");
-            feature.getScenarioTestPlanList().forEach(scenario -> {
-                System.setProperty("scenarioName", scenario.getName());
-                MultiStepGenerator.generateMultiStepProxies(scenario);
-            });
-            log.info("Finished test component JAR generation.");
-
-            if (System.getProperty("skipDockerImageGeneration", "false").equals("false")) {
-                // Generate Docker images for test components
-                log.info("Starting Docker image generation...");
-                feature.getScenarioTestPlanList().forEach(scenario -> {
-                    System.setProperty("scenarioName", scenario.getName());
-                    try {
-                        DockerImageGenerator.generateImages(scenario);
-                    } catch (Exception e) {
-                        log.error("Aborting... Error during Docker image generation: {}", e.getMessage());
-                    }
-                });
-                log.info("Finished Docker image generation.");
-            }
+        String scenarioName = System.getProperty(SCENARIO_NAME, "");
+        if (scenarioName.isEmpty()){
+            testPlan = feature.getScenarioTestPlanList().getFirst();
+        } else {
+            List<ScenarioTestPlan> testPlanList = feature.getScenarioTestPlanList()
+                    .stream()
+                    .filter(scenarioTestPlan -> scenarioTestPlan.getName().equals(scenarioName))
+                    .toList();
+            assert testPlanList.size() > 1;
+            testPlan = testPlanList.getFirst();
         }
+        System.setProperty(SCENARIO_NAME, testPlan.getName());
 
         // Generate Test Environment
         log.info("Starting test architecture generation...");
@@ -186,17 +170,43 @@ public class Main {
         final ArchitectureModel<?> model = modelGenerator.generate(architectureFilePath, interfaceDescriptionFilePath);
         final ComponentInjector<?, ?> componentInjector = ArchitectureFactory.createInjector(model);
 
-        // FIXME: Ensure only one scenario is executed at a time (e.g. through config)
-        componentInjector.injectComponents(feature.getScenarioTestPlanList().getFirst());
+        componentInjector.injectComponents(testPlan);
+        architectureModel = model;
 
-        if (System.getProperty("skipFileGeneration", "false").equals("false")) {
-            log.info("Finished test architecture generation. Storing results...");
-            final String filePath = GEN_DIR + File.separator + System.getProperty("scenarioName") + File.separator + "docker-compose.yml";
-            model.saveToFile(filePath);
+        if (!System.getProperty("skipFileGeneration", FALSE).equals(FALSE)) {
+            return;
         }
 
-        testPlan = feature.getScenarioTestPlanList().getFirst();
-        architectureModel = model;
+        // Generate code for test components
+        log.info("Starting test component code generation...");
+        ArchitectureModel<Component>  componentArchitectureModel = (ArchitectureModel<Component>) architectureModel;
+        feature.getScenarioTestPlanList().forEach(scenario -> {
+            scenario.getTrafficComponents().forEach(
+                    c -> StepGenerator.generateTrafficComponent(scenario.getName(), c));
+            scenario.getProxyComponents().forEach(
+                    c -> StepGenerator.generateProxyComponent(scenario.getName(), c, componentArchitectureModel));
+        });
+        log.info("Finished generating test component code.");
+
+        // Package test component code into JAR files
+        log.info("Starting test component JAR generation...");
+        MultiStepGenerator.generateMultiStepProxies(testPlan);
+        log.info("Finished test component JAR generation.");
+
+        if (System.getProperty("skipDockerImageGeneration", FALSE).equals(FALSE)) {
+            // Generate Docker images for test components
+            log.info("Starting Docker image generation...");
+            try {
+                DockerImageGenerator.generateImages(testPlan);
+            } catch (Exception e) {
+                log.error("Aborting... Error during Docker image generation: {}", e.getMessage());
+            }
+            log.info("Finished Docker image generation.");
+        }
+
+        log.info("Finished test architecture generation. Storing results...");
+        final String filePath = GEN_DIR + File.separator + System.getProperty(SCENARIO_NAME) + File.separator + "docker-compose.yml";
+        architectureModel.saveToFile(filePath);
     }
 
     /**
@@ -207,7 +217,7 @@ public class Main {
             log.error("Test plan or architecture model is null. Exiting...");
             System.exit(1);
         }
-        System.setProperty("scenarioName", testPlan.getName());
+        System.setProperty(SCENARIO_NAME, testPlan.getName());
         Orchestrator<?> orchestrator = OrchestratorFactory.createOrchestrator(testPlan, architectureModel);
         // Start Test Environment
         orchestrator.setupTestEnvironment();
@@ -220,8 +230,12 @@ public class Main {
     }
 
     private static void evaluate() {
-        Evaluator evaluator = new Evaluator(); //TODO pass connection parameters
-        evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty("scenarioName"), ".log");
+        if (architectureModel == null){
+            log.error("Architecture model is null, detected during evaluation. Exiting...");
+            System.exit(1);
+        }
+        Evaluator evaluator = new Evaluator();
+        evaluator.preprocessFiles(GEN_DIR + File.separator + System.getProperty(SCENARIO_NAME), ".log");
         testPlan.getStepIds().forEach(sId ->
                 evaluator.run(
                         testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),

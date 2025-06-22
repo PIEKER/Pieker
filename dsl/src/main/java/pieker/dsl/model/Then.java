@@ -2,9 +2,11 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import pieker.api.assertions.Assert;
 import pieker.api.Assertion;
 import pieker.api.assertions.StubAssert;
+import pieker.dsl.architecture.exception.ValidationException;
 import pieker.dsl.architecture.template.component.StepComponent;
 import pieker.dsl.architecture.exception.PiekerProcessingException;
 import pieker.dsl.architecture.preprocessor.Validator;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 @Getter
 @Setter
+@Slf4j
 public class Then {
 
     private final Step step;
@@ -35,7 +38,11 @@ public class Then {
     public void validateAssertList() {
         this.assertList.forEach(ass -> {
             if (!(ass instanceof StubAssert)){
-                Validator.isIdentifierPresent(ass.getIdentifier());
+                try{
+                    Validator.isIdentifierPresent(ass.getIdentifier());
+                } catch (ValidationException e){
+                    log.warn("unidentified assertion target. If this identifier is no storage component, refactor the configuration. Message: {}", e.getMessage());
+                }
             }
             ass.validate(this.line);
         });
@@ -60,7 +67,7 @@ public class Then {
         this.assertList.forEach(ass -> {
             if (ass instanceof StubAssert) return;
             if (stepComponentMap.containsKey(ass.getIdentifier())) stepComponentMap.get(ass.getIdentifier()).enableLogging();
-            else throw new PiekerProcessingException("unknown component identifier provided. Logging could not be enabled");
+            else log.warn("unknown component identifier provided. Logging could not be enabled for {}", ass.getIdentifier());
         });
 
         this.assertList.forEach(Assert::processAssert);

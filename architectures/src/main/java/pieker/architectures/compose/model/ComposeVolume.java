@@ -3,6 +3,7 @@ package pieker.architectures.compose.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import pieker.architectures.model.CompositeStorage;
 import pieker.architectures.model.Storage;
 
 import java.util.HashMap;

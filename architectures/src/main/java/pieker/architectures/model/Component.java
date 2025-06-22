@@ -61,11 +61,11 @@ public interface Component {
      *
      * @return LinkType of the provided interface
      */
-    ComponentLink.LinkType getProvidedInterfaceType();
+    Link.LinkType getProvidedInterfaceType();
 
     /**
      * Sets the type of the interface the component provides.
      */
-    void setProvidedInterfaceType(ComponentLink.LinkType providedInterfaceType);
+    void setProvidedInterfaceType(Link.LinkType providedInterfaceType);
 
 }

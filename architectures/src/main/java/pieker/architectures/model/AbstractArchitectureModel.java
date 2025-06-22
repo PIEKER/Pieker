@@ -39,7 +39,7 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
     @SuppressWarnings("unchecked")
     private void collectComponents(C component, List<C> allComponents) {
         allComponents.add(component);
-        if (component instanceof AbstractComponent) {
+        if (component instanceof AbstractCompositeComponent) {
             for (Component child : component.getContainedComponents()) {
                 collectComponents((C) child, allComponents);
             }

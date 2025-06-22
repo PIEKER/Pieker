@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pieker.architectures.model.ComponentLink;
+import pieker.architectures.model.Link;
 
 @Getter
 @Setter
@@ -22,27 +22,27 @@ import pieker.architectures.model.ComponentLink;
 })
 public class DescriptionInterface {
 
-    public ComponentLink.LinkType interfaceType;
+    public Link.LinkType interfaceType;
 
     @Getter
     @Setter
     @NoArgsConstructor
     public static class HttpInterface extends DescriptionInterface {
-        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.HTTP;
+        private final Link.LinkType interfaceType = Link.LinkType.HTTP;
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
     public static class JdbcInterface extends DescriptionInterface {
-        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.JDBC;
+        private final Link.LinkType interfaceType = Link.LinkType.JDBC;
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
     public static class DatabaseInterface extends DescriptionInterface {
-        private final ComponentLink.LinkType interfaceType = ComponentLink.LinkType.DATABASE;
+        private final Link.LinkType interfaceType = Link.LinkType.DATABASE;
     }
 
 }

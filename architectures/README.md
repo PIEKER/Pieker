@@ -14,7 +14,7 @@ and assemble the model into a format that can be used to execute the underlying 
 | [`parser`](./src/main/java/pieker/architectures/parser)           | Contains classes to parse model descriptions (e.g. docker-compose.yml)                                                                                                   |
 | [`generator`](./src/main/java/pieker/architectures/generator)     | Contains classes to generated a model and entities from parsed data for supported architecture formats.                                                                  |
 | [`injector`](./src/main/java/pieker/architectures/injector)       | Contains classes to inject entities into an existing model.                                                                                                              |
-| [`description`](./src/main/java/pieker/architectures/description) | Contains classes to model and parse the PIEKER Dependency Description.                                                                                                   |
+| [`description`](./src/main/java/pieker/architectures/description) | Contains classes to model and parse the PIEKER Interface Description.                                                                                                    |
 
 ## Supported Architecture Formats
 
@@ -42,9 +42,9 @@ represent the corresponding architecture format.
 More information about working with the architecture meta-model and its implementations can be found in
 the [architecture model README](./src/main/java/pieker/architectures/model/README.md).
 
-## The PIEKER Dependency Description
+## The PIEKER Interface Description
 
-The PIEKER dependency description is a YAML-based format that defines additional properties of the system under test, like
+The PIEKER Interface Description is a YAML-based format that defines additional properties of the system under test, like
 API connections between the components. This information is not part of the component-defining files, e.g. the Docker Compose
 YAML, so that an additional specification of these relationships is necessary. Further information can be found 
 [here](./src/main/java/pieker/architectures/description/README.md).

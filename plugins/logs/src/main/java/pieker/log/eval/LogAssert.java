@@ -1,7 +1,6 @@
 package pieker.log.eval;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import pieker.api.Evaluation;
 import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
@@ -117,11 +116,15 @@ public class LogAssert extends Assert {
     public void evaluate() {
         log.debug("evaluate LogEvaluation");
         String filename = this.stepId + "_" + this.identifier.replace("-", "_") + FILE_SUFFIX;
+        String filenameBackup = this.stepId + "_PIEKER_PROXY_" + this.identifier.replace("-", "_") + FILE_SUFFIX;
         File file = this.getFileMap().get(FILE_SUFFIX).get(filename);
         if (file == null || !file.isFile()) {
-            log.error("No file found for name {}", filename);
-            this.invalidateAssert("File does not match file: " + filename);
-            return;
+            file = this.getFileMap().get(FILE_SUFFIX).get(filenameBackup);
+            if (file == null || !file.isFile()) {
+                log.error("No file found for name {}", filename);
+                this.invalidateAssert("File does not match file: " + filename);
+                return;
+            }
         }
         try {
             this.logLines = Files.readAllLines(file.toPath());
@@ -151,7 +154,7 @@ public class LogAssert extends Assert {
     }
 
     @Override
-    public void setConnectionParam(JSONObject cpJson) {
+    public void setConnectionParam(String gatewayUrl) {
         log.info("setup ConnectionParam in LogEvaluation");
     }
 

@@ -57,6 +57,7 @@ public class $className {
                         Bootstrap dbBootstrap = new Bootstrap();
                         dbBootstrap.group(clientChannel.eventLoop())
                                 .channel(NioSocketChannel.class)
+                                .option(ChannelOption.SO_REUSEADDR, true)
                                 .handler(new ChannelInitializer<SocketChannel>() {
                                     @Override
                                     protected void initChannel(SocketChannel dbChannel) {
@@ -79,9 +80,14 @@ public class $className {
                     }
                 });
 
-        ChannelFuture f = bootstrap.bind(port).sync();
-        log(PROXY_IDENTIFIER + " started on port " + port + " proxying to " + PROXY_TARGET);
-        f.channel().closeFuture().sync();
+        try {
+            ChannelFuture f = bootstrap.bind(port).sync();
+            log(PROXY_IDENTIFIER + " started on port " + port + " proxying to " + PROXY_TARGET);
+            f.channel().closeFuture().sync();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
     }
 
     static class RelayHandler extends ChannelInboundHandlerAdapter {

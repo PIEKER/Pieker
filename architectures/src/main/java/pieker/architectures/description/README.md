@@ -12,7 +12,7 @@ components:
   - name: "service-a"
     provides:
       interfaceType: HTTP
-    dependencies:
+    requires:
       - type: HTTP
         target: "service-b"
         targetUrlEnv: TARGET_URL
@@ -23,7 +23,7 @@ components:
   - name: "service-b"
     provides:
       interfaceType: HTTP
-    dependencies:
+    requires:
       - type: JDBC
         target: "db"
         targetUrlEnv: DB_URL

@@ -3,13 +3,16 @@ package pieker.architectures.compose.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import pieker.architectures.model.CompositeService;
 import pieker.architectures.model.Service;
 import pieker.architectures.model.util.EnvironmentVariables;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static pieker.architectures.util.MapUtils.mapToList;
 import static pieker.architectures.util.MapUtils.putIfNotNullOrEmpty;
 
 /**
@@ -22,13 +25,32 @@ import static pieker.architectures.util.MapUtils.putIfNotNullOrEmpty;
 @AllArgsConstructor
 public class ComposeService extends Service implements ComposeComponent, EnvironmentVariables {
 
+    /* ---- Relationships ---- */
     private List<String> dependsOn;
     private Map<String, String> ports = new HashMap<>();
-    private Map<String, String> volumes = new HashMap<>();
+    private Map<String, String> volumes = new HashMap<>(); // TODO: Implement as ComposeVolume
+
+    /* ---- Core Runtime ---- */
+    private String image;
     private String build;
-    private List<String> networks;
-    private List<String> configs;
-    private List<String> secrets;
+    private String command;
+    private String entrypoint;
+    private String workingDir;
+    private String restart;
+    private String user;
+    private Boolean tty;
+    private Boolean stdinOpen;
+    private Boolean privileged;
+
+    /* ---- Environment ---- */
+    private Map<String, String> environment = new HashMap<>();
+
+    /* ---- Networking ---- */
+    private List<String> networks = new ArrayList<>(); // TODO: Implement as ComposeNetwork
+
+    /* ---- Misc ---- */
+    private String containerName;
+
 
     public ComposeService(String name) {
         this.setName(name);
@@ -45,17 +67,21 @@ public class ComposeService extends Service implements ComposeComponent, Environ
         Map<String, Object> attributeMap = new HashMap<>();
 
         putIfNotNullOrEmpty(attributeMap, "image", this.getImage());
+        putIfNotNullOrEmpty(attributeMap, "build", this.getBuild());
+        putIfNotNullOrEmpty(attributeMap, "command", this.getCommand());
+        putIfNotNullOrEmpty(attributeMap, "entrypoint", this.getEntrypoint());
+        putIfNotNullOrEmpty(attributeMap, "container_name", this.getContainerName());
+        putIfNotNullOrEmpty(attributeMap, "working_dir", this.getWorkingDir());
+        putIfNotNullOrEmpty(attributeMap, "restart", this.getRestart());
+        putIfNotNullOrEmpty(attributeMap, "user", this.getUser());
+        putIfNotNullOrEmpty(attributeMap, "tty", this.getTty());
+        putIfNotNullOrEmpty(attributeMap, "stdin_open", this.getStdinOpen());
+        putIfNotNullOrEmpty(attributeMap, "privileged", this.getPrivileged());
+
         putIfNotNullOrEmpty(attributeMap, "depends_on", this.dependsOn);
-        putIfNotNullOrEmpty(attributeMap, "ports", this.ports.entrySet().stream()
-                .map(e -> e.getKey() + ":" + e.getValue())
-                .toList());
-        putIfNotNullOrEmpty(attributeMap, "volumes", this.volumes.entrySet().stream()
-                .map(e -> e.getKey() + ":" + e.getValue())
-                .toList());
-        putIfNotNullOrEmpty(attributeMap, "build", this.build);
+        putIfNotNullOrEmpty(attributeMap, "ports", mapToList(this.ports));
+        putIfNotNullOrEmpty(attributeMap, "volumes", mapToList(this.volumes));
         putIfNotNullOrEmpty(attributeMap, "networks", this.networks);
-        putIfNotNullOrEmpty(attributeMap, "configs", this.configs);
-        putIfNotNullOrEmpty(attributeMap, "secrets", this.secrets);
         putIfNotNullOrEmpty(attributeMap, "environment", this.getEnvironment());
 
         return Map.of(this.getName(), attributeMap);

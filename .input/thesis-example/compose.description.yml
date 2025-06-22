@@ -1,19 +1,18 @@
 components:
-
-  - name: "service-a"
+  - name: "data-service"
     provides:
       interfaceType: HTTP
     requires:
       - type: HTTP
-        target: "service-c"
-        targetUrlEnv: COUNTER_URL
+        target: "risk-service"
+        targetUrlEnv: RISK_SERVICE_URL
       - type: JDBC
         target: "db"
         targetUrlEnv: SPRING_DATASOURCE_URL
         usernameEnv: SPRING_DATASOURCE_USERNAME
         passwordEnv: SPRING_DATASOURCE_PASSWORD
 
-  - name: "service-b"
+  - name: "risk-service"
     provides:
       interfaceType: HTTP
     requires:
@@ -23,9 +22,15 @@ components:
         usernameEnv: SPRING_DATASOURCE_USERNAME
         passwordEnv: SPRING_DATASOURCE_PASSWORD
 
-  - name: "service-c"
+  - name: "web-service"
     provides:
       interfaceType: HTTP
+    requires:
+      - type: JDBC
+        target: "db"
+        targetUrlEnv: SPRING_DATASOURCE_URL
+        usernameEnv: SPRING_DATASOURCE_USERNAME
+        passwordEnv: SPRING_DATASOURCE_PASSWORD
 
   - name: "db"
     provides:
