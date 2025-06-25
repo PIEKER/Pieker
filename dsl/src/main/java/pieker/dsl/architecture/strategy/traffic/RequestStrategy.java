@@ -2,7 +2,7 @@ package pieker.dsl.architecture.strategy.traffic;
 
 import lombok.extern.slf4j.Slf4j;
 import pieker.dsl.architecture.Engine;
-import pieker.dsl.architecture.template.traffic.SupervisorTraffic;
+import pieker.dsl.architecture.template.traffic.OrchestratorTraffic;
 import pieker.dsl.architecture.exception.ValidationException;
 import pieker.dsl.architecture.preprocessor.Validator;
 import pieker.dsl.architecture.strategy.KeywordStrategy;
@@ -14,7 +14,7 @@ public class RequestStrategy implements KeywordStrategy {
     public void process(String[] args) {
         log.debug("process REQUEST node...");
         this.checkArguments(args);
-        SupervisorTraffic traffic = new SupervisorTraffic(args[0], new Request(args[1], args[2]));
+        OrchestratorTraffic traffic = new OrchestratorTraffic(args[0], new Request(args[1], args[2]));
         Engine.getCurrentStep().addStepComponent(traffic.getIdentifier(), traffic);
         log.debug("added request to supervisor in step '{}'", Engine.getCurrentStep().getName());
     }
