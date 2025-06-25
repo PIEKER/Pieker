@@ -102,7 +102,8 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
             }
         }
         log.debug("Waiting for components to start ...");
-        sleep(10000); // Sleep for 5 seconds to allow components to start
+        long bootingDelay = (long) Integer.parseInt(System.getProperty("bootingDelay", "5")) * 1000;
+        sleep(bootingDelay); // Sleep for x seconds to allow components to start
     }
 
     @Override

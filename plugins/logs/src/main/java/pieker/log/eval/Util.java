@@ -23,7 +23,7 @@ public class Util {
                 evaluation.evaluate(arg);
                 if (evaluation.isSuccess()) return true;
             }
-            case FOR_ALL -> {
+            case FORALL -> {
                 evaluation.evaluate(arg);
                 if (!evaluation.isSuccess()) return true;
             }

@@ -54,7 +54,7 @@ public class Main {
 
     private static final PluginManager PLUGIN_MANAGER = new PluginManager(System.getProperty("pluginDir"));
     private static final float TEST_DEFAULT_DURATION = Float.parseFloat(System.getProperty("testDurationDefault", "30.0"));
-    private static final long ASSERT_TIMEOUT = Long.parseLong(System.getProperty("assertTimeout", "30000"));
+    private static final float ASSERT_TIMEOUT = Float.parseFloat(System.getProperty("assertTimeout", "30.0"));
 
     private static ScenarioTestPlan testPlan;
     private static ArchitectureModel<?> architectureModel;
@@ -140,15 +140,10 @@ public class Main {
             System.exit(0);
         }
 
-        // Generate Test Plan
+        // Generate Test Plan List
         Engine.run(feature);
-        feature.getScenarioTestPlanList().forEach(StepGenerator::createScenarioJson);
 
-        if (Boolean.parseBoolean(System.getProperty("testPlanOnly", FALSE))) {
-            log.info("PIEKER Test Plan generation finished successfully.");
-            System.exit(0);
-        }
-
+        // Set selected Scenario
         String scenarioName = System.getProperty(SCENARIO_NAME, "");
         if (scenarioName.isEmpty()){
             testPlan = feature.getScenarioTestPlanList().getFirst();
@@ -161,6 +156,16 @@ public class Main {
             testPlan = testPlanList.getFirst();
         }
         System.setProperty(SCENARIO_NAME, testPlan.getName());
+
+        // Generate Test Plan JSON
+        StepGenerator.createScenarioJson(testPlan);
+
+
+        if (Boolean.parseBoolean(System.getProperty("testPlanOnly", FALSE))) {
+            log.info("PIEKER Test Plan generation finished successfully.");
+            System.exit(0);
+        }
+
 
         // Generate Test Environment
         log.info("Starting test architecture generation...");
@@ -179,13 +184,10 @@ public class Main {
 
         // Generate code for test components
         log.info("Starting test component code generation...");
-        ArchitectureModel<Component>  componentArchitectureModel = (ArchitectureModel<Component>) architectureModel;
-        feature.getScenarioTestPlanList().forEach(scenario -> {
-            scenario.getTrafficComponents().forEach(
-                    c -> StepGenerator.generateTrafficComponent(scenario.getName(), c));
-            scenario.getProxyComponents().forEach(
-                    c -> StepGenerator.generateProxyComponent(scenario.getName(), c, componentArchitectureModel));
-        });
+        testPlan.getTrafficComponents().forEach(c ->
+                StepGenerator.generateTrafficComponent(testPlan.getName(), c));
+        testPlan.getProxyComponents().forEach(c ->
+                StepGenerator.generateProxyComponent(testPlan.getName(), c, (ArchitectureModel<Component>) architectureModel));
         log.info("Finished generating test component code.");
 
         // Package test component code into JAR files
@@ -239,7 +241,7 @@ public class Main {
         testPlan.getStepIds().forEach(sId ->
                 evaluator.run(
                         testPlan.getAssertionsMap().getOrDefault(sId, new ArrayList<>()),
-                        ASSERT_TIMEOUT
+                        (long) (ASSERT_TIMEOUT * 1000)
                 )
         );
         evaluator.publishResult(testPlan);

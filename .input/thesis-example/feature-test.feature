@@ -31,19 +31,19 @@ Feature:
         Arguments: db | risk-db | $assertTableInput
         Null: False
           content
-        Bool: True | == 5
+        Bool: True | == 10
           COUNT(*)
 
         Assert: Database
         Arguments: db | risk-db | $assertTableRisk
-        Bool: True | == 5
+        Bool: True | == 10
           COUNT(*)
         Equals: true | -1
           risk
 
         Assert: Log
         Arguments: data-risk
-        Bool: False | < 299
+        Bool: True | < 299
           @status @forall
 
 
