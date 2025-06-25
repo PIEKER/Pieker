@@ -34,7 +34,7 @@ public class Request implements Template, TrafficType {
     @JsonIgnore
     private int readTimeout = 5000;
     @JsonIgnore
-    private String headers = "";
+    private String headers = "{}";
     @JsonIgnore
     private String body = "";
     @JsonIgnore
@@ -65,7 +65,7 @@ public class Request implements Template, TrafficType {
             ctx.put("requestConnTimeout", this.connectionTimeout);
             ctx.put("requestReadTimeout", this.readTimeout);
             ctx.put("requestHeaders", om.writeValueAsString(this.headers));
-            ctx.put("requestBody", (this.bodyType.equals("text"))? om.writeValueAsString(this.body): this.body);
+            ctx.put("requestBody", om.writeValueAsString(this.body));
             ctx.put("requestBodyType", this.bodyType);
         } catch(JsonProcessingException e){
             throw new PiekerProcessingException("unable escape characters for header/body: " + e.getMessage());

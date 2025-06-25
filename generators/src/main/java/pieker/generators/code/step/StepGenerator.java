@@ -1,5 +1,6 @@
 package pieker.generators.code.step;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
@@ -46,6 +47,7 @@ public class StepGenerator {
 
     public static void createScenarioJson(ScenarioTestPlan scenario) {
         ObjectMapper om = new ObjectMapper();
+        om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
             String path = OUTPUT_DIR + scenario.getName();
             Files.createDirectories(Path.of(path));
