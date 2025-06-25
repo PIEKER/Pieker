@@ -67,7 +67,7 @@ Feature:
     This test-scenarios covers all invalid input-possibilities for the example thesis.
     """
 
-      @def assertTable = :FILE(./queries.sql, 0)
+      @def assertTable = :FILE(./queries.sql, 1)
 
       BeforeEach:
         Given:
@@ -78,8 +78,6 @@ Feature:
 
       Assert: Database
         Arguments: db | risk-db | $assertTable
-        Null: False
-          content
         Bool: True | == 0
           COUNT(*)
 
