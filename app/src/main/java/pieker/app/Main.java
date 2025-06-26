@@ -10,6 +10,7 @@ import pieker.common.ScenarioTestPlan;
 import pieker.common.plugin.PluginManager;
 import pieker.dsl.architecture.Engine;
 import pieker.dsl.model.Feature;
+import pieker.dsl.util.FeatureUtil;
 import pieker.evaluator.Evaluator;
 import pieker.generators.code.multistep.MultiStepGenerator;
 import pieker.generators.code.step.StepGenerator;
@@ -144,7 +145,7 @@ public class Main {
         Engine.run(feature);
 
         // Set selected Scenario
-        String scenarioName = System.getProperty(SCENARIO_NAME, "");
+        String scenarioName = FeatureUtil.createCodeSafeString(System.getProperty(SCENARIO_NAME, ""));
         if (scenarioName.isEmpty()){
             testPlan = feature.getScenarioTestPlanList().getFirst();
         } else {
