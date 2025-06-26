@@ -132,6 +132,41 @@ Feature: Container Permutation
           Bool: True | > 30
             COUNT(*) | risk='-2'
 
+    Step: Traffic On Database
+      Given:
+        @passive @sql passive-query | db | risk-db | $joinedTable
+
+      When:
+        @duration 10
+        @retry passive-query | 10
+        @delay passive-query | 0.01
+
+      Then:
+        LogAll: passive-query
+
+
+    Step: Traffic On Both
+      Given:
+        @passive @sql passive-query | db | risk-db | $joinedTable
+        @passive @request passive-data-traffic | data-service | $postMaxInt
+        @passive @request passive-risk-traffic | risk-service | $calcRisk
+        @passive @request passive-web-traffic | web-service | $webResult
+
+      When:
+        @duration 10
+        @retry [passive-data-traffic, passive-risk-traffic, passive-web-traffic, passive-query] | 10
+        @delay [passive-data-traffic, passive-risk-traffic, passive-web-traffic, passive-query] | 0.01
+        @timeout passive-data-traffic | 4
+        @after passive-risk-traffic | 5
+        @after passive-web-traffic | 8
+
+      Then:
+        LogAll: [passive-data-traffic, passive-risk-traffic, passive-web-traffic, passive-query]
+        Assert: Database
+          Arguments: db | risk-db | $assertTableRisk
+          Bool: True | > 30
+          COUNT(*) | risk='-2'
+
     Scenario: All in All
 
       Step: Traffic Proxy Test

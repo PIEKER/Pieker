@@ -19,6 +19,7 @@ Feature:
 
     @def assertTableInput = :FILE(./queries.sql, 0)
     @def assertTableRisk = :FILE(./queries.sql, 1)
+    @def joinedTable = :FILE(./queries.sql, 2)
 
     BeforeEach:
       Given:
@@ -35,11 +36,13 @@ Feature:
           COUNT(*)
 
         Assert: Database
-        Arguments: db | risk-db | $assertTableRisk
+        Arguments: db | risk-db | $joinedTable
         Bool: True | == 10
           COUNT(*)
         Equals: true | -1
-          risk
+          risk | content='1,2'
+        Equals: true | -2
+          risk | content='2147483645,2147483647'
 
         Assert: Log
         Arguments: data-risk
