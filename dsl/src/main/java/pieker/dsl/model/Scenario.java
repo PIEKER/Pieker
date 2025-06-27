@@ -110,6 +110,7 @@ public class Scenario implements ScenarioTestPlan {
     /**
      * @return a map of components, thet require a reboot to allow assertions on data.
      */
+    @JsonIgnore
     @Override
     public Collection<String> getAssertableComponents() {
         HashSet<String> componentSet = new HashSet<>();
@@ -126,7 +127,8 @@ public class Scenario implements ScenarioTestPlan {
     public Map<String, List<Assertion>> getAssertionsMap() {
         Map<String, List<Assertion>> stepToAssertionsMap = new HashMap<>();
         for (Step step : this.stepList) {
-            List<Assertion> assertionList = this.beforeEach.getEvaluationList();
+
+            List<Assertion> assertionList = (this.beforeEach != null) ? this.beforeEach.getEvaluationList() : new ArrayList<>();
             // cast before-each assertions to step assertions
             assertionList.forEach(ass -> ass.setStepId(step.getId()));
             assertionList.addAll(step.getEvaluationList());

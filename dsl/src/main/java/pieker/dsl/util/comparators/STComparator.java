@@ -1,15 +1,15 @@
 package pieker.dsl.util.comparators;
 
-import pieker.dsl.architecture.template.traffic.SupervisorTraffic;
+import pieker.dsl.architecture.template.traffic.OrchestratorTraffic;
 
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class STComparator implements Comparator<SupervisorTraffic> {
+public class STComparator implements Comparator<OrchestratorTraffic> {
 
     @Override
-    public int compare(SupervisorTraffic s1, SupervisorTraffic s2) {
+    public int compare(OrchestratorTraffic s1, OrchestratorTraffic s2) {
         String regex = "^\\d+";
         Pattern pattern = Pattern.compile(regex);
         String s1Identifier = s1.getIdentifier();

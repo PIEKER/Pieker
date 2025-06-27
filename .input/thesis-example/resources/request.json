@@ -11,7 +11,7 @@
     "method": "POST",
     "headers": {},
     "bodyType": "text",
-    "body": "10000000000000,10000000000001"
+    "body": "2147483645,2147483647"
   },
   {
     "url": "/data",
@@ -33,5 +33,13 @@
     "headers": {},
     "bodyType": "text",
     "body": ","
+  },
+  {
+    "url": "/process",
+    "method": "GET"
+  },
+  {
+    "url": "/risk/all",
+    "method": "GET"
   }
 ]

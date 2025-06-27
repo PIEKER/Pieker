@@ -3,7 +3,11 @@ Thread $trafficIdentifier = Thread.ofVirtual().start(() -> {
 
             #if ($after != $null)
             // --after
-            Thread.sleep($after);
+            try {
+                Thread.sleep($after);
+            } catch (InterruptedException e) {
+                log(trafficIdent, e.getMessage());
+            }
             #end
 
             log(trafficIdent, trafficIdent + " started!");

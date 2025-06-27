@@ -30,7 +30,8 @@ public class Equals implements Evaluation {
     }
     @Override
     public String getAssertExpression() {
-        return "(" + this.value + ") == " + this.expected;
+        String operator = this.isEqual ? "==" : "!=";
+        return "(" + this.value + ") " + operator + " " + this.expected;
     }
 
     @Override

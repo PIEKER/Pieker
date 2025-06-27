@@ -77,7 +77,7 @@ public class Engine {
      */
     private static void createTestComponents(Scenario scenario) {
         log.debug("creating architecture draft for Scenario {}", scenario.getName());
-        createSupervisorTraffic(scenario);
+        createOrchestratorTraffic(scenario);
         createTrafficContainerList(scenario);
         createLinkProxies(scenario);
         createServiceProxies(scenario);
@@ -97,11 +97,11 @@ public class Engine {
         scenario.setLinkProxyList(createComponentList(scenario, LinkProxy.class));
     }
 
-    private static void createSupervisorTraffic(Scenario scenario) {
+    private static void createOrchestratorTraffic(Scenario scenario) {
         if (scenario.getBeforeEach() != null){
-            scenario.getBeforeEach().createSupervisorTraffic();
+            scenario.getBeforeEach().createOrchestratorTraffic();
         }
-        scenario.getStepList().forEach(Step::createSupervisorTraffic);
+        scenario.getStepList().forEach(Step::createOrchestratorTraffic);
     }
 
 

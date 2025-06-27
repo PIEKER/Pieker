@@ -41,7 +41,7 @@ public class Then {
                 try{
                     Validator.isIdentifierPresent(ass.getIdentifier());
                 } catch (ValidationException e){
-                    log.warn("unidentified assertion target. If this identifier is no storage component, refactor the configuration. Message: {}", e.getMessage());
+                    log.debug("unidentified assertion target. If this identifier is no storage component, refactor the configuration. Message: {}", e.getMessage());
                 }
             }
             ass.validate(this.line);
@@ -67,7 +67,7 @@ public class Then {
         this.assertList.forEach(ass -> {
             if (ass instanceof StubAssert) return;
             if (stepComponentMap.containsKey(ass.getIdentifier())) stepComponentMap.get(ass.getIdentifier()).enableLogging();
-            else log.warn("unknown component identifier provided. Logging could not be enabled for {}", ass.getIdentifier());
+            else log.debug("unknown component identifier provided. Logging could not be enabled for {}", ass.getIdentifier());
         });
 
         this.assertList.forEach(Assert::processAssert);

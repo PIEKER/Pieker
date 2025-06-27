@@ -7,7 +7,7 @@ import pieker.common.ConditionTemplate;
 import pieker.common.TestStep;
 import pieker.common.TrafficTemplate;
 import pieker.dsl.architecture.template.component.StepComponent;
-import pieker.dsl.architecture.template.traffic.SupervisorTraffic;
+import pieker.dsl.architecture.template.traffic.OrchestratorTraffic;
 import pieker.dsl.architecture.template.traffic.Traffic;
 import pieker.dsl.architecture.template.component.TrafficContainer;
 import pieker.dsl.util.comparators.STComparator;
@@ -38,7 +38,7 @@ public class Step implements TestStep {
     private String id;
     private Map<String, StepComponent> testComponentMap = new HashMap<>();
     private Map<String, TrafficContainer> trafficContainerMap = new HashMap<>();
-    private List<SupervisorTraffic> supervisorTrafficList = new ArrayList<>();
+    private List<OrchestratorTraffic> orchestratorTrafficList = new ArrayList<>();
 
     public Step(Feature feature, Scenario scenario, String name){
         this.feature = feature;
@@ -72,7 +72,7 @@ public class Step implements TestStep {
     public void createTrafficContainer(){
         List<Traffic> trafficList = this.filterTestComponentsByInstance(Traffic.class);
         for (Traffic traffic: trafficList){
-            if (traffic instanceof SupervisorTraffic){
+            if (traffic instanceof OrchestratorTraffic){
                 continue;
             }
             String target = traffic.getTrafficType().getTarget();
@@ -86,10 +86,10 @@ public class Step implements TestStep {
         }
     }
 
-    public void createSupervisorTraffic(){
-        List<SupervisorTraffic> trafficList = new ArrayList<>(this.filterTestComponentsByInstance(SupervisorTraffic.class));
+    public void createOrchestratorTraffic(){
+        List<OrchestratorTraffic> trafficList = new ArrayList<>(this.filterTestComponentsByInstance(OrchestratorTraffic.class));
         trafficList.sort(new STComparator());
-        this.supervisorTrafficList.addAll(trafficList);
+        this.orchestratorTrafficList.addAll(trafficList);
     }
 
     public void migrateBeforeEach(Step beforeEach) {
@@ -103,6 +103,6 @@ public class Step implements TestStep {
 
     @Override
     public List<TrafficTemplate> getSequence() {
-        return new ArrayList<>(this.supervisorTrafficList);
+        return new ArrayList<>(this.orchestratorTrafficList);
     }
 }

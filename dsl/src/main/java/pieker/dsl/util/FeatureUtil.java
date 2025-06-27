@@ -19,4 +19,14 @@ public class FeatureUtil {
 
         return node.getSymbol().getLine() + count;
     }
+
+    public static String createCodeSafeString(String s){
+
+        s = s.replace(" ", "_");
+        s = s.replace("-", "_");
+
+        // extend if necessary
+
+        return s;
+    }
 }
