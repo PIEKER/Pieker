@@ -72,7 +72,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             if (linksToUpdate.isEmpty() || scenarioComponent instanceof ScenarioTrafficComponent) {
                 if (!(scenarioComponent instanceof ScenarioTrafficComponent)) {
                     log.warn("No links found for target '{}'. Prepending proxy component to target without links leading" +
-                            "to it. Please check the test specification!", targetComponent.getName());
+                            " to it. Please check the test specification!", targetComponent.getName());
                 }
                 // Prepend component to target and add new link
                 prependComponent(newComponent, targetComponent);
