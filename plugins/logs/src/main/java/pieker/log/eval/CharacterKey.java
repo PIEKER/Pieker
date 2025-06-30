@@ -3,7 +3,7 @@ package pieker.log.eval;
 public enum CharacterKey {
     EMPTY("empty"),
     EXISTS("exists"),
-    FOR_ALL("for-all"),
+    FORALL("forall"),
     SUCCESS("success"),
     FAILURE("failure");
 

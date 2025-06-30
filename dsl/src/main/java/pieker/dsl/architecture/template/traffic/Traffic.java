@@ -101,8 +101,10 @@ public class Traffic implements StepComponent, TrafficTemplate {
             log.error("invalid traffic configuration on Traffic. No Amount or Retry Limit set.");
         } else if (this.times != null) {
             this.times.performCondition(this::runTraffic, args);
-        } else {
+        } else if (this.retry != null) {
             this.retry.performCondition(this::runTraffic, args);
+        } else {
+            this.runTraffic(args);
         }
     }
 

@@ -19,6 +19,7 @@ Feature:
 
     @def assertTableInput = :FILE(./queries.sql, 0)
     @def assertTableRisk = :FILE(./queries.sql, 1)
+    @def joinedTable = :FILE(./queries.sql, 2)
 
     BeforeEach:
       Given:
@@ -31,19 +32,21 @@ Feature:
         Arguments: db | risk-db | $assertTableInput
         Null: False
           content
-        Bool: True | == 5
+        Bool: True | == 10
           COUNT(*)
 
         Assert: Database
-        Arguments: db | risk-db | $assertTableRisk
-        Bool: True | == 5
+        Arguments: db | risk-db | $joinedTable
+        Bool: True | == 10
           COUNT(*)
         Equals: true | -1
-          risk
+          risk | content='1,2'
+        Equals: true | -2
+          risk | content='2147483645,2147483647'
 
         Assert: Log
         Arguments: data-risk
-        Bool: False | < 299
+        Bool: True | < 299
           @status @forall
 
 
@@ -67,7 +70,7 @@ Feature:
     This test-scenarios covers all invalid input-possibilities for the example thesis.
     """
 
-      @def assertTable = :FILE(./queries.sql, 0)
+      @def assertTable = :FILE(./queries.sql, 1)
 
       BeforeEach:
         Given:
@@ -78,8 +81,6 @@ Feature:
 
       Assert: Database
         Arguments: db | risk-db | $assertTable
-        Null: False
-          content
         Bool: True | == 0
           COUNT(*)
 

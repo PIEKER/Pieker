@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import static pieker.dsl.util.FeatureUtil.createCodeSafeString;
 import static pieker.dsl.util.FeatureUtil.getShiftedLineIndex;
 
 @Slf4j
@@ -102,7 +103,7 @@ public class FeatureParser extends PiekerParserBaseListener {
     @Override
     public void enterScenario(PiekerParser.ScenarioContext ctx){
         this.stepNameSet.clear(); // new scenario allows new identifier
-        String ident = ctx.line().getText();
+        String ident = createCodeSafeString(ctx.line().getText());
         log.debug("entered ScenarioContext {}", ident);
 
         Scenario scenario = new Scenario(this.feature, ident);
@@ -142,7 +143,7 @@ public class FeatureParser extends PiekerParserBaseListener {
      */
     @Override
     public void enterStep(PiekerParser.StepContext ctx){
-        String ident = ctx.line().getText();
+        String ident = createCodeSafeString(ctx.line().getText());
 
         log.debug("entered StepContext {}", ident);
         if (this.latestScenario == null) {
