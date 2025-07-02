@@ -1,6 +1,7 @@
 package pieker.api.assertions;
 
 import lombok.extern.slf4j.Slf4j;
+import pieker.api.Assertion;
 import pieker.api.Evaluation;
 
 import java.util.List;
@@ -17,6 +18,10 @@ public class StubAssert extends Assert{
 
     public StubAssert(String identifier) {
         super(ASSERT_PLUGIN, identifier);
+    }
+
+    private StubAssert(StubAssert stubAssert){
+        super(stubAssert);
     }
 
     @Override
@@ -56,6 +61,11 @@ public class StubAssert extends Assert{
     }
 
     @Override
+    public Assertion copy() {
+        return new StubAssert(this);
+    }
+
+    @Override
     public boolean requiresConnectionParam(){
         return false;
     }
@@ -63,6 +73,11 @@ public class StubAssert extends Assert{
     @Override
     public void setConnectionParam(String gatewayUrl) {
         log.debug("no setup required.");
+    }
+
+    @Override
+    public void prepare() {
+        log.debug("no preparation required.");
     }
 
     private static class StubEvaluation implements Evaluation{
@@ -91,6 +106,11 @@ public class StubAssert extends Assert{
         @Override
         public void setErrorMessage(String errorMessage){
             //no action required
+        }
+
+        @Override
+        public Evaluation copy() {
+            return new StubEvaluation();
         }
 
         @Override

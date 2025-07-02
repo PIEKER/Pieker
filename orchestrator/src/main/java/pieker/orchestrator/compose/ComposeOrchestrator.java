@@ -205,6 +205,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
         }
 
         sleep(duration); // Sleep for the duration of the test step
+        testStep.finish(); // Cleanup
     }
 
     /**

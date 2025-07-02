@@ -24,6 +24,14 @@ public class Equals implements Evaluation {
         this.value = value;
     }
 
+    private Equals(Equals equals){
+        this.isEqual = equals.isEqual;
+        this.success = equals.success;
+        this.errorMessage = equals.errorMessage;
+        this.expected = equals.expected;
+        this.value = equals.value;
+    }
+
     @Override
     public String getAssertType() {
         return "assert" + (this.isEqual? "" : "Not") + "Equals";
@@ -40,5 +48,10 @@ public class Equals implements Evaluation {
         if (!this.success){
             this.errorMessage = "Expected: " + this.expected + " but got: " + arg;
         }
+    }
+
+    @Override
+    public Evaluation copy() {
+        return new Equals(this);
     }
 }

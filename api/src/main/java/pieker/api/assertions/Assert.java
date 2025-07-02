@@ -24,6 +24,8 @@ public abstract class Assert implements Assertion {
 
     protected String identifier;
 
+    protected boolean skip;
+
     @JsonIgnore
     private boolean requiresComponent = false;
     @JsonIgnore
@@ -48,6 +50,18 @@ public abstract class Assert implements Assertion {
         this(assertPlugin, "");
     }
 
+    protected Assert(Assert ass){
+        this.assertPlugin = ass.assertPlugin;
+        this.stepId = ass.stepId;
+        this.identifier = ass.identifier;
+        this.skip = ass.skip;
+        this.requiresComponent = ass.requiresComponent;
+        this.requiredComponent = ass.requiredComponent;
+        this.fileMap = ass.getFileMap();
+        this.boolList.addAll(ass.boolList.stream().map(b -> (Bool) b.copy()).toList());
+        this.equalsList.addAll(ass.equalsList.stream().map(e -> (Equals) e.copy()).toList());
+        this.nullList.addAll(ass.nullList.stream().map(n -> (Null) n.copy()).toList());
+    }
     /**
      * Adds BoolAssertion storing DSL information.
      *
