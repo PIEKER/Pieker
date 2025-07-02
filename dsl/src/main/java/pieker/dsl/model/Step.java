@@ -95,6 +95,10 @@ public class Step implements TestStep {
     public void migrateBeforeEach(Step beforeEach) {
         if (beforeEach == null) return;
         beforeEach.testComponentMap.forEach((k,v) -> this.testComponentMap.put(k, v.copy()));
+        if (this.then == null){
+            this.then = new Then(this);
+        }
+        this.then.updateEvaluationList(beforeEach.getEvaluationList().stream().map(Assertion::copy).toList());
     }
 
     protected List<Assertion> getEvaluationList(){
@@ -104,5 +108,10 @@ public class Step implements TestStep {
     @Override
     public List<TrafficTemplate> getSequence() {
         return new ArrayList<>(this.orchestratorTrafficList);
+    }
+
+    @Override
+    public void finish(){
+        this.getEvaluationList().forEach(Assertion::prepare);
     }
 }

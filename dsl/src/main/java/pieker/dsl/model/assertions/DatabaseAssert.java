@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import pieker.api.Assertion;
 import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
 import pieker.api.assertions.Equals;
@@ -26,7 +27,7 @@ import java.util.*;
 @Getter
 @Slf4j
 public class DatabaseAssert extends Assert {
-
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String ASSERT_PLUGIN = "Database";
     private static final String SELECT = "SELECT ";
     private static final String FROM = " FROM ";
@@ -56,8 +57,20 @@ public class DatabaseAssert extends Assert {
         this.identifier = args[0];
         this.database = args[1];
         this.tableSelect = args[2];
+        this.jdbcUrl = "http://"
+                + System.getProperty("orchestratorHost", "127.0.0.1") + ":"
+                + System.getProperty("orchestratorPort", "42690");
 
         this.setRequiredComponent(this.identifier); // enable component reboot
+    }
+
+    private DatabaseAssert(DatabaseAssert databaseAssert){
+        super(databaseAssert);
+        this.database = databaseAssert.database;
+        this.tableSelect = databaseAssert.tableSelect;
+        this.jdbcUrl = databaseAssert.jdbcUrl;
+        this.username = databaseAssert.username;
+        this.password = databaseAssert.password;
     }
 
     @Override
@@ -86,18 +99,35 @@ public class DatabaseAssert extends Assert {
     }
 
     @Override
-    public void evaluate() {
+    public void prepare() {
         log.debug("creating assertable Table");
         this.tableSelect = this.getParameter(this.tableSelect);
         String response = this.sendQuery(this.assertableTableQuery + this.tableSelect);
-        log.debug(response);
+        try {
+            JsonNode rootNode = MAPPER.readTree(response);
+
+            JsonNode errorNode = rootNode.get("error");
+            if (errorNode != null){
+                String message = "unable to create temporary table: " + errorNode + ". Invalidating evaluation ...";
+                log.error(message);
+                this.invalidateAssert(message);
+                this.skip = true;
+            }
+        } catch (JsonProcessingException e){
+            log.error("unable to parse gateway-response: {}. Errors possible while evaluating due to missing table.", e.getMessage());
+        }
+    }
+
+    @Override
+    public void evaluate() {
+        if (this.skip) return;
 
         this.boolList.forEach(this::evaluateBoolNode);
         this.equalsList.forEach(this::evaluateEqualsNode);
         this.nullList.forEach(this::evaluateNullNode);
 
         log.debug("drop assertable Table");
-        response = this.sendQuery(this.dropAssertableTableQuery);
+        String response = this.sendQuery(this.dropAssertableTableQuery);
         log.debug(response);
     }
 
@@ -165,13 +195,18 @@ public class DatabaseAssert extends Assert {
     }
 
     @Override
+    public Assertion copy() {
+        return new DatabaseAssert(this);
+    }
+
+    @Override
     public boolean requiresConnectionParam(){
-        return true;
+        return false;
     }
 
     @Override
     public void setConnectionParam(String gatewayUrl) {
-        this.jdbcUrl = gatewayUrl;
+        // GATEWAY is a global property -> assigned during constructor call.
     }
 
     private String sendQuery(String query){
@@ -182,8 +217,8 @@ public class DatabaseAssert extends Assert {
 
     private void evaluateQueryResponse(Evaluation evaluation, String response){
         try{
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(response);
+
+            JsonNode rootNode = MAPPER.readTree(response);
 
             JsonNode errorNode = rootNode.get("error");
             if (errorNode != null){

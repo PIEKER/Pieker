@@ -1,9 +1,7 @@
 package pieker.dsl;
 
 import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
 import pieker.common.plugin.PluginManager;
-import pieker.dsl.architecture.Engine;
 import pieker.dsl.parser.FeatureParser;
 import pieker.dsl.model.Feature;
 
@@ -12,19 +10,7 @@ import java.io.IOException;
 @Slf4j
 public class Main {
 
-    public static void main(String[] args) {
-
-        try{
-            ArgumentHandler argumentHandler = new ArgumentHandler();
-            new CommandLine(argumentHandler).parseArgs(args);
-            Feature feature = new Feature(argumentHandler.inputFile, argumentHandler.resourceDirectory);
-            FeatureParser.parse(feature, true);
-            runFeature(feature);
-
-        } catch (IOException e) {
-            throw new PiekerDslException("Error occurred during initialisation of reader object: " + e.getMessage());
-        }
-    }
+    private Main(){}
 
     /**
      * API Method to read in a Feature file and create a list of ScenarioTestPlans
@@ -53,11 +39,5 @@ public class Main {
         Feature feature = new Feature(inputFile, resourceDirectory);
         FeatureParser.parse(feature, false, pm);
         return feature;
-    }
-
-    private static void runFeature(Feature feature){
-        log.debug("starting code generation...");
-        Engine.run(feature);
-        log.debug("dsl task finished.");
     }
 }

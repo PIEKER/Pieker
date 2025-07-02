@@ -116,7 +116,7 @@ public class Scenario implements ScenarioTestPlan {
         HashSet<String> componentSet = new HashSet<>();
         this.getAssertionsMap().values().forEach(assertions ->
                 assertions.forEach(assertion -> {
-                    if (assertion.requiresConnectionParam()) componentSet.add(assertion.getIdentifier());
+                    if (assertion.isRequiresComponent()) componentSet.add(assertion.getIdentifier());
                 })
         );
         return componentSet.stream().toList();
@@ -127,11 +127,8 @@ public class Scenario implements ScenarioTestPlan {
     public Map<String, List<Assertion>> getAssertionsMap() {
         Map<String, List<Assertion>> stepToAssertionsMap = new HashMap<>();
         for (Step step : this.stepList) {
-
-            List<Assertion> assertionList = (this.beforeEach != null) ? this.beforeEach.getEvaluationList() : new ArrayList<>();
-            // cast before-each assertions to step assertions
-            assertionList.forEach(ass -> ass.setStepId(step.getId()));
-            assertionList.addAll(step.getEvaluationList());
+            // BeforeEach assertions are copied while processing
+            List<Assertion> assertionList = step.getEvaluationList() ;
             stepToAssertionsMap.put(step.getId(), assertionList);
         }
         return stepToAssertionsMap;

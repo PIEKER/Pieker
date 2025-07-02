@@ -22,6 +22,13 @@ public class Null implements Evaluation {
 
     }
 
+    private Null(Null nuLL){
+        this.isNull = nuLL.isNull;
+        this.success = nuLL.success;
+        this.errorMessage = nuLL.errorMessage;
+        this.value = nuLL.value;
+    }
+
     @Override
     public String getAssertType() {
         return "assert" + (this.isNull? "" : "Not") + "Equals";
@@ -38,5 +45,10 @@ public class Null implements Evaluation {
         if (!this.success){
             this.errorMessage = "Expected: " + (isNull ? "null" : "not null") + " but got: " + arg;
         }
+    }
+
+    @Override
+    public Evaluation copy() {
+        return new Null(this);
     }
 }

@@ -29,6 +29,14 @@ public class Bool implements Evaluation {
         this.value = value;
     }
 
+    private Bool(Bool bool){
+        this.boolType = bool.boolType;
+        this.expression = bool.expression;
+        this.value = bool.value;
+        this.success = bool.success;
+        this.errorMessage = bool.errorMessage;
+    }
+
     public void validate(int line) throws ValidationException {
         String[] args = Util.getArgumentsFromString(this.expression);
         if (args.length != 1){
@@ -64,6 +72,11 @@ public class Bool implements Evaluation {
         } catch (JexlException e){
             this.errorMessage = "Unable to evaluate boolean because of JexlException: " + e.getMessage();
         }
+    }
+
+    @Override
+    public Evaluation copy() {
+        return new Bool(this);
     }
 
     /**
