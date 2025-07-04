@@ -1,0 +1,40 @@
+
+services:
+
+  service-a:
+    image: example-system-service-a
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/testdb
+      SPRING_DATASOURCE_USERNAME: testuser
+      SPRING_DATASOURCE_PASSWORD: testpass
+      COUNTER_URL: http://service-c:8080/serviceC/counter/increment
+    depends_on:
+      - db
+
+  service-b:
+    image: example-system-service-b
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/testdb
+      SPRING_DATASOURCE_USERNAME: testuser
+      SPRING_DATASOURCE_PASSWORD: testpass
+    depends_on:
+      - db
+
+  service-c:
+    image: example-system-service-c
+    ports:
+      - "8083:8080"
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
