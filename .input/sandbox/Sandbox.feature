@@ -6,4 +6,3 @@ Feature: Sandbox Tutorial
 """
 
   Scenario: Tutorial-A
-  
