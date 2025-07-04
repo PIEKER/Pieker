@@ -6,3 +6,16 @@ Feature: Sandbox Tutorial
 """
 
   Scenario: Tutorial-A
+  
+      Step: Ping Test
+      Given:
+        @service service-a
+        
+      When:
+        @def ping = {"url": "/", "method": "GET"}  
+        @request service-a-test | service-a | $ping        
+
+        
+        
+      
+
