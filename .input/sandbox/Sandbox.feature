@@ -28,6 +28,8 @@ Feature: Sandbox Tutorial
         
       Step: Increment Counter Test        
       Given:
+        @service service-a
+        @service service-b
         @link network-a-b | service-a | service-b
         
       Then:
