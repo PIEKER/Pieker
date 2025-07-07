@@ -129,8 +129,9 @@ public class LogAssert extends Assert {
         if (file == null || !file.isFile()) {
             file = this.getFileMap().get(FILE_SUFFIX).get(filenameBackup);
             if (file == null || !file.isFile()) {
-                log.error("No file found for name {}", filename);
-                this.invalidateAssert("File does not match file: " + filename);
+                String message = "No file found for name " + filename;
+                log.error(message);
+                this.invalidateAssert(message);
                 return;
             }
         }
