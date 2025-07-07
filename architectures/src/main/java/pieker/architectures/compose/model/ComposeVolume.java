@@ -38,6 +38,6 @@ public class ComposeVolume extends Storage implements ComposeComponent {
         putIfNotNullOrEmpty(attributeMap, "external", this.isExternal());
         putIfNotNullOrEmpty(attributeMap, "labels", mapToList(this.getLabels()));
         putIfNotNullOrEmpty(attributeMap, "name", this.getName());
-        return attributeMap;
+        return Map.of(this.getComponentName(), attributeMap);
     }
 }

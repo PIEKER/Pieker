@@ -50,6 +50,6 @@ public class ComposeNetwork extends Network implements ComposeComponent {
         putIfNotNullOrEmpty(attributeMap, "internal", this.isInternal());
         putIfNotNullOrEmpty(attributeMap, "labels", this.getLabels());
         putIfNotNullOrEmpty(attributeMap, "name", this.getName());
-        return attributeMap;
+        return Map.of(this.getComponentName(), attributeMap);
     }
 }
