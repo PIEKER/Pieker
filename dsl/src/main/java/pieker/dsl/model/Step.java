@@ -2,6 +2,7 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import pieker.api.Assertion;
 import pieker.common.ConditionTemplate;
 import pieker.common.TestStep;
@@ -12,10 +13,16 @@ import pieker.dsl.architecture.template.traffic.Traffic;
 import pieker.dsl.architecture.template.component.TrafficContainer;
 import pieker.dsl.util.comparators.STComparator;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 @Getter
 @Setter
+@Slf4j
 public class Step implements TestStep {
     // -- PIEKER model attributes
     private final Feature feature;
@@ -113,5 +120,17 @@ public class Step implements TestStep {
     @Override
     public void finish(){
         this.getEvaluationList().forEach(Assertion::prepare);
+        this.getSequence().forEach(traffic -> this.dumpTrafficLogs(traffic.getIdentifier(), traffic.getLogs()));
+    }
+
+    private void dumpTrafficLogs(String traffic, Collection<String> logs){
+        String outputDir = System.getProperty("genDir", "./gen");
+        Path path = Paths.get(outputDir, this.scenario.getName(), "logs", traffic + ".log");
+        try {
+            Files.write(path, logs, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            log.debug("dumping logs for traffic {}", traffic);
+        } catch (IOException e) {
+            log.error("Unable to dump traffic logs for {} due to IOException: {}", traffic, e.getMessage());
+        }
     }
 }

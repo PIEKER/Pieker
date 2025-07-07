@@ -10,10 +10,9 @@ import pieker.common.TrafficTemplate;
 import pieker.dsl.architecture.template.component.StepComponent;
 import pieker.dsl.architecture.template.condition.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
@@ -26,6 +25,7 @@ public class Traffic implements StepComponent, TrafficTemplate {
     private Map<String, List<ConditionTemplate>> stepToConditionMap = new HashMap<>();
     private List<ConditionTemplate> conditionList = new ArrayList<>();
     private boolean enableLogs;
+    private Collection<String> logs = List.of();
 
     @JsonIgnore
     private After after;
@@ -136,6 +136,8 @@ public class Traffic implements StepComponent, TrafficTemplate {
             return;
         }
         String response = this.trafficType.sendTraffic(args);
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.logs.add(timestamp + " - " +response);
         log.info("[RESULT] {}", response);
     }
 }
