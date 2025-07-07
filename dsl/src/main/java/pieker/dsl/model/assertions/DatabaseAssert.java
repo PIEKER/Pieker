@@ -212,7 +212,7 @@ public class DatabaseAssert extends Assert {
     private String sendQuery(String query){
         String endpointUrl = "/db/" + this.database + "/query";
         String body = "{\"query\":\"" + query + "\"}";
-        return Http.send(this.identifier, this.jdbcUrl + endpointUrl, "POST", 3000, 30000, "", body, "json");
+        return Http.send(this.identifier, this.jdbcUrl + endpointUrl, "POST", 3000, 30000, "", body, "json").response();
     }
 
     private void evaluateQueryResponse(Evaluation evaluation, String response){

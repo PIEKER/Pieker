@@ -11,6 +11,7 @@ import pieker.dsl.architecture.template.component.StepComponent;
 import pieker.dsl.architecture.template.traffic.OrchestratorTraffic;
 import pieker.dsl.architecture.template.traffic.Traffic;
 import pieker.dsl.architecture.template.component.TrafficContainer;
+import pieker.dsl.util.FeatureUtil;
 import pieker.dsl.util.comparators.STComparator;
 
 import java.io.IOException;
@@ -125,7 +126,7 @@ public class Step implements TestStep {
 
     private void dumpTrafficLogs(String traffic, Collection<String> logs){
         String outputDir = System.getProperty("genDir", "./gen");
-        Path path = Paths.get(outputDir, this.scenario.getName(), "logs", traffic + ".log");
+        Path path = Paths.get(outputDir, this.scenario.getName(), "logs", this.name + FeatureUtil.createCodeSafeString(traffic) + ".log");
         try {
             Files.write(path, logs, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             log.debug("dumping logs for traffic {}", traffic);

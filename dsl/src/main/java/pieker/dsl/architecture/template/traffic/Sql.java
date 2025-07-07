@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.Template;
 import pieker.common.connection.Http;
+import pieker.common.connection.ResponseTuple;
 import pieker.dsl.architecture.Engine;
 import pieker.dsl.architecture.preprocessor.FileManager;
 
@@ -36,12 +37,13 @@ public class Sql implements Template, TrafficType {
      * @return String of response.
      */
     @Override
-    public String sendTraffic(String[] args) {
+    public ResponseTuple sendTraffic(String[] args) {
         this.translateParameters();
 
         if (args.length < 1){
-            log.error("unable to send SQL query du to missing parameters: 1 required");
-            return "ERROR ON SQL";
+            String message = "unable to send SQL query du to missing parameters: 1 required";
+            log.error(message);
+            return new ResponseTuple(message, 500);
         }
         String endpointUrl = "/" + this.database + "/query";
         String body = "{\"query\":\"" + this.query + "\"}";
