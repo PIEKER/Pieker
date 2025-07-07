@@ -85,7 +85,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
                         .map(architectureModel::getComponent)
                         .map(Optional::orElseThrow)
                         .map(ComposeService.class::cast)
-                        .map(ComposeService::getName)
+                        .map(ComposeService::getComponentName)
                         .toList()
         );
 

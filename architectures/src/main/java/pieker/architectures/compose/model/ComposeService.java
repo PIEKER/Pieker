@@ -3,7 +3,6 @@ package pieker.architectures.compose.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import pieker.architectures.model.CompositeService;
 import pieker.architectures.model.Service;
 import pieker.architectures.model.util.EnvironmentVariables;
 
@@ -28,7 +27,7 @@ public class ComposeService extends Service implements ComposeComponent, Environ
     /* ---- Relationships ---- */
     private List<String> dependsOn;
     private Map<String, String> ports = new HashMap<>();
-    private Map<String, String> volumes = new HashMap<>(); // TODO: Implement as ComposeVolume
+    private List<String> volumes = new ArrayList<>();
 
     /* ---- Core Runtime ---- */
     private String image;
@@ -53,11 +52,11 @@ public class ComposeService extends Service implements ComposeComponent, Environ
 
 
     public ComposeService(String name) {
-        this.setName(name);
+        this.setComponentName(name);
     }
 
     public ComposeService(String name, String image, Map<String, String> environment) {
-        this.setName(name);
+        this.setComponentName(name);
         this.setImage(image);
         this.setEnvironment(environment);
     }
@@ -80,11 +79,11 @@ public class ComposeService extends Service implements ComposeComponent, Environ
 
         putIfNotNullOrEmpty(attributeMap, "depends_on", this.dependsOn);
         putIfNotNullOrEmpty(attributeMap, "ports", mapToList(this.ports));
-        putIfNotNullOrEmpty(attributeMap, "volumes", mapToList(this.volumes));
+        putIfNotNullOrEmpty(attributeMap, "volumes", this.volumes);
         putIfNotNullOrEmpty(attributeMap, "networks", this.networks);
         putIfNotNullOrEmpty(attributeMap, "environment", this.getEnvironment());
 
-        return Map.of(this.getName(), attributeMap);
+        return Map.of(this.getComponentName(), attributeMap);
     }
 
     public void addPortMapping(String port, String targetPort) {
@@ -95,7 +94,20 @@ public class ComposeService extends Service implements ComposeComponent, Environ
         this.ports.putAll(mappings);
     }
 
+    /**
+     * Adds a volume to the service. Only supports short syntax for volumes.
+     *
+     * @param volumeString the volume string in the format "localDir:containerDir[:accessMode]"
+     */
+    public void addVolume(String volumeString) {
+        this.volumes.add(volumeString);
+    }
+
     public void addVolume(String localDir, String containerDir) {
-        this.volumes.put(localDir, containerDir);
+        this.volumes.add(localDir + ":" + containerDir);
+    }
+
+    public void addVolume(String localDir, String containerDir, String accessMode) {
+        this.volumes.add(localDir + ":" + containerDir + ":" + accessMode);
     }
 }

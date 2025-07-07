@@ -20,7 +20,7 @@ public class ComposeVolume extends Storage implements ComposeComponent {
 
     @Builder
     public ComposeVolume(String name) {
-        this.setName(name);
+        this.setComponentName(name);
         this.setType(StorageType.FILE_SYSTEM);
     }
 

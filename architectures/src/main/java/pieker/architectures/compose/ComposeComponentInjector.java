@@ -72,7 +72,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             if (linksToUpdate.isEmpty() || scenarioComponent instanceof ScenarioTrafficComponent) {
                 if (!(scenarioComponent instanceof ScenarioTrafficComponent)) {
                     log.warn("No links found for target '{}'. Prepending proxy component to target without links leading" +
-                            " to it. Please check the test specification!", targetComponent.getName());
+                            " to it. Please check the test specification!", targetComponent.getComponentName());
                 }
                 // Prepend component to target and add new link
                 prependComponent(newComponent, targetComponent);
@@ -112,14 +112,14 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
     public <T extends ComposeComponent> void prependComponent(T proxy, ComposeComponent targetComponent) throws ComponentInjectionException {
         Link.LinkType interfaceType = targetComponent.getProvidedInterfaceType();
         if (interfaceType == null) {
-            throw new ComponentInjectionException("Provided component type is null for target component: %s".formatted(targetComponent.getName()));
+            throw new ComponentInjectionException("Provided component type is null for target component: %s".formatted(targetComponent.getComponentName()));
         }
         switch (interfaceType) {
             case HTTP -> {
                 ComposeService targetService = (ComposeService) targetComponent;
-                ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
+                ((ComposeService) proxy).setImage(proxy.getComponentName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
                 ((ComposeService) proxy).setEnvironment(Map.of(
-                        "SERVICE_BASE_URL", "http://" + targetComponent.getName() + ":" + targetService.getPorts().values().iterator().next()
+                        "SERVICE_BASE_URL", "http://" + targetComponent.getComponentName() + ":" + targetService.getPorts().values().iterator().next()
                 ));
                 this.model.addLink(HttpLink.createForProxy(proxy, targetComponent));
             }
@@ -127,10 +127,10 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
                 // TODO: Handle different protocols for link-supertypes independently
                 List<Link<ComposeComponent>> links = this.model.getLinksForTarget(targetComponent);
                 if (links.isEmpty()) {
-                    throw new ComponentInjectionException("No links found for target component: %s".formatted(targetComponent.getName()));
+                    throw new ComponentInjectionException("No links found for target component: %s".formatted(targetComponent.getComponentName()));
                 }
                 JdbcLink<ComposeComponent> existingLink = (JdbcLink<ComposeComponent>) links.getFirst();
-                ((ComposeService) proxy).setImage(proxy.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
+                ((ComposeService) proxy).setImage(proxy.getComponentName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
                 ((ComposeService) proxy).setEnvironment(Map.of(
                         "DB_URL", getJdbcBaseUrl(existingLink.getJdbcUrl()),
                         "DB_USER", existingLink.getUsername(),
@@ -151,7 +151,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
      */
     private void connectHttpApiProxyToTarget(ComposeService proxyComponent, ComposeService targetComponent,
                                              HttpLink<ComposeComponent> existingLink) {
-        proxyComponent.setImage(proxyComponent.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
+        proxyComponent.setImage(proxyComponent.getComponentName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
         HttpLink<ComposeComponent> proxyToTargetLink = HttpLink.createForProxy(proxyComponent, targetComponent);
         this.model.addLink(proxyToTargetLink);
         String sourcePortVarValue = ((ComposeService) existingLink.getSourceComponent()).getEnvironmentValue(existingLink.getPortVarName());
@@ -161,7 +161,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
             sourcePortVarValue = getHostAndPort(targetUrlValue)[1];
         }
         proxyComponent.updateEnvironment(Map.of(
-                "TARGET-PROXY-HOST", targetComponent.getName(),
+                "TARGET-PROXY-HOST", targetComponent.getComponentName(),
                 "TARGET-PROXY-PORT", String.valueOf(sourcePortVarValue)
         ));
     }
@@ -175,7 +175,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
      */
     private void connectJdbcProxyToTarget(ComposeService proxyComponent, ComposeService targetComponent,
                                           JdbcLink<ComposeComponent> existingLink) {
-        proxyComponent.setImage(proxyComponent.getName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
+        proxyComponent.setImage(proxyComponent.getComponentName().toLowerCase() + ":" + System.getProperty("scenarioName", "latest").toLowerCase());
         JdbcLink<ComposeComponent> proxyToTargetLink = JdbcLink.createForProxy(proxyComponent, targetComponent);
         proxyToTargetLink.setJdbcUrl(existingLink.getJdbcUrl());
         proxyToTargetLink.setUsername(existingLink.getUsername());
@@ -196,14 +196,14 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
     private void injectHttpApiProxy(ComposeService proxyComponent, HttpLink<ComposeComponent> existingLink) {
         ComposeService sourceComponent = (ComposeService) existingLink.getSourceComponent();
         if (existingLink.getHostVarName() != null && existingLink.getPortVarName() != null) {
-            sourceComponent.updateEnvironment(Map.of(existingLink.getHostVarName(), proxyComponent.getName()));
+            sourceComponent.updateEnvironment(Map.of(existingLink.getHostVarName(), proxyComponent.getComponentName()));
         }
         if (existingLink.getPortVarName() != null) {
             sourceComponent.updateEnvironment(Map.of(existingLink.getPortVarName(), "80"));
         }
         if (existingLink.getUrlVarName() != null) {
             sourceComponent.updateEnvironment(Map.of(
-                            existingLink.getUrlVarName(), "http://" + proxyComponent.getName() + ":80" + getUrlPath(sourceComponent.getEnvironmentValue(existingLink.getUrlVarName()))
+                            existingLink.getUrlVarName(), "http://" + proxyComponent.getComponentName() + ":80" + getUrlPath(sourceComponent.getEnvironmentValue(existingLink.getUrlVarName()))
                     )
             );
         }
@@ -220,7 +220,7 @@ public class ComposeComponentInjector extends AbstractComponentInjector<ComposeA
         ComposeService sourceComponent = (ComposeService) existingLink.getSourceComponent();
         if (existingLink.getUrlVarName() != null) {
             sourceComponent.updateEnvironment(Map.of(
-                    existingLink.getUrlVarName(), updateJdbcUrl(existingLink.getJdbcUrl(), existingLink.getJdbcHost(), existingLink.getJdbcPort(), proxyComponent.getName())
+                    existingLink.getUrlVarName(), updateJdbcUrl(existingLink.getJdbcUrl(), existingLink.getJdbcHost(), existingLink.getJdbcPort(), proxyComponent.getComponentName())
             ));
         }
         existingLink.setTargetComponent(proxyComponent);

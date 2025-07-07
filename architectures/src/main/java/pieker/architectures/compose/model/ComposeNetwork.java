@@ -19,11 +19,11 @@ public class ComposeNetwork extends Network implements ComposeComponent {
     private String driver;
 
     public ComposeNetwork(String name) {
-        this.setName(name);
+        this.setComponentName(name);
     }
 
     public ComposeNetwork(String name, String driver) {
-        this.setName(name);
+        this.setComponentName(name);
         this.driver = driver;
     }
 

@@ -54,7 +54,7 @@ public interface Component {
      *
      * @return name of the component
      */
-    String getName();
+    String getComponentName();
 
     /**
      * Retrieves the type of the interface the component provides.
