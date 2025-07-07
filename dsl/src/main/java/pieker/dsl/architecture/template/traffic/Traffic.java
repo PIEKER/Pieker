@@ -25,7 +25,7 @@ public class Traffic implements StepComponent, TrafficTemplate {
     private Map<String, List<ConditionTemplate>> stepToConditionMap = new HashMap<>();
     private List<ConditionTemplate> conditionList = new ArrayList<>();
     private boolean enableLogs;
-    private Collection<String> logs = List.of();
+    private Collection<String> logs = new LinkedList<>();
 
     @JsonIgnore
     private After after;
