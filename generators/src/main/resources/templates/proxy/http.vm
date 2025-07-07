@@ -96,7 +96,21 @@ public class $className {
 
             #if($dropout != $null)
             // --dropout
-            if (dropout($dropout)) return;
+            if (dropout($dropout)) {
+                log("Simulating socket disconnect (dropout)");
+
+                // Close the socket without sending any response headers
+                try {
+                    exchange.getRequestBody().close();
+                    exchange.getResponseBody().close();
+                    exchange.close();
+                } catch (Exception ignored) {
+                    // We expect exceptions here since we’re forcefully dropping connection
+                }
+                return;
+            } else {
+                log("Dropout skipped... proxying message");
+            }
             #end
 
             /*
