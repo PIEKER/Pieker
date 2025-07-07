@@ -58,7 +58,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
             Thread.currentThread().interrupt();
             log.error("Start command interrupted: {}", e.getMessage());
         }
-        sleep(20000); // Sleep for 20 seconds to allow the system to start
+        sleep(10000); // Sleep for 10 seconds to allow the system to start
     }
 
     @Override
@@ -178,7 +178,7 @@ public class ComposeOrchestrator extends AbstractOrchestrator<ComposeArchitectur
 
         log.info("Changing PIEKER component behavior...");
         setComponentBehaviorForTestStep(testStepId);
-        log.info("Executing test step: {}", testStepId);
+        log.info("Executing test step:\u001B[1;35m {}\u001b[0m", testStepId);
 
         // Execute Before-Each
         TestStep beforeEachStep = getTestPlan().getBeforeEachStep();

@@ -70,8 +70,8 @@ public class Main {
                              Architecture file:          {}
                              Interface description file: {}
                              Installed Plugins:          {}
-                             Default Test Duration:      {}
-                             assertTimeout:              {} \u001b[0m
+                             Default Test Duration:      {} s
+                             assertTimeout:              {} s\u001b[0m
                         """,
                 PIEKER_LOGO,
                 Paths.get(DSL_FILE_PATH).normalize(),
