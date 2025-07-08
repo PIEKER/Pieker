@@ -2,7 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 
 // Create the Axios instance
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080', // fallback base URL
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8079', // fallback base URL
   timeout: 10000, // 10 seconds timeout
   headers: {
     'Content-Type': 'application/json',
