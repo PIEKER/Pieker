@@ -73,6 +73,10 @@ public class Then {
         this.assertList.forEach(Assert::processAssert);
     }
 
+    protected void updateEvaluationList(List<Assertion> extra){
+        extra.forEach(e -> e.setStepId(this.getStep().getId()));
+        this.assertList.addAll(extra.stream().map(e -> (Assert) e).toList());
+    }
     protected List<Assertion> getEvaluationList(){
         return new ArrayList<>(this.assertList);
     }

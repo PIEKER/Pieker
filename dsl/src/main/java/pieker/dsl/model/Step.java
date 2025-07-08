@@ -2,6 +2,7 @@ package pieker.dsl.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import pieker.api.Assertion;
 import pieker.common.ConditionTemplate;
 import pieker.common.TestStep;
@@ -10,12 +11,19 @@ import pieker.dsl.architecture.template.component.StepComponent;
 import pieker.dsl.architecture.template.traffic.OrchestratorTraffic;
 import pieker.dsl.architecture.template.traffic.Traffic;
 import pieker.dsl.architecture.template.component.TrafficContainer;
+import pieker.dsl.util.FeatureUtil;
 import pieker.dsl.util.comparators.STComparator;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 @Getter
 @Setter
+@Slf4j
 public class Step implements TestStep {
     // -- PIEKER model attributes
     private final Feature feature;
@@ -95,6 +103,10 @@ public class Step implements TestStep {
     public void migrateBeforeEach(Step beforeEach) {
         if (beforeEach == null) return;
         beforeEach.testComponentMap.forEach((k,v) -> this.testComponentMap.put(k, v.copy()));
+        if (this.then == null){
+            this.then = new Then(this);
+        }
+        this.then.updateEvaluationList(beforeEach.getEvaluationList().stream().map(Assertion::copy).toList());
     }
 
     protected List<Assertion> getEvaluationList(){
@@ -104,5 +116,22 @@ public class Step implements TestStep {
     @Override
     public List<TrafficTemplate> getSequence() {
         return new ArrayList<>(this.orchestratorTrafficList);
+    }
+
+    @Override
+    public void finish(){
+        this.getEvaluationList().forEach(Assertion::prepare);
+        this.getSequence().forEach(traffic -> this.dumpTrafficLogs(traffic.getIdentifier(), traffic.getLogs()));
+    }
+
+    private void dumpTrafficLogs(String traffic, Collection<String> logs){
+        String outputDir = System.getProperty("genDir", "./gen");
+        Path path = Paths.get(outputDir, this.scenario.getName(), "logs", this.name + "_" + FeatureUtil.createCodeSafeString(traffic) + ".log");
+        try {
+            Files.write(path, logs, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            log.debug("dumping logs for traffic {}", traffic);
+        } catch (IOException e) {
+            log.error("Unable to dump traffic logs for {} due to IOException: {}", traffic, e.getMessage());
+        }
     }
 }

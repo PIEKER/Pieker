@@ -1,6 +1,7 @@
 package pieker.log.eval;
 
 import lombok.extern.slf4j.Slf4j;
+import pieker.api.Assertion;
 import pieker.api.Evaluation;
 import pieker.api.assertions.Assert;
 import pieker.api.assertions.Bool;
@@ -21,6 +22,7 @@ public class LogAssert extends Assert {
 
     private static final String ASSERT_PLUGIN = "Log";
     private List<String> logLines = new LinkedList<>();
+    private long finishedAt = 0L;
 
     private static final String VALIDATION_ERROR_PREFIX = "invalid valueLine detected: ";
     private static final String FILE_SUFFIX = ".log";
@@ -31,6 +33,12 @@ public class LogAssert extends Assert {
 
     public LogAssert(String identifier) {
         super(ASSERT_PLUGIN, identifier);
+    }
+
+    private LogAssert(LogAssert logAssert){
+        super(logAssert);
+        this.logLines = logAssert.logLines;
+        this.finishedAt = logAssert.finishedAt;
     }
 
     @Override
@@ -121,8 +129,9 @@ public class LogAssert extends Assert {
         if (file == null || !file.isFile()) {
             file = this.getFileMap().get(FILE_SUFFIX).get(filenameBackup);
             if (file == null || !file.isFile()) {
-                log.error("No file found for name {}", filename);
-                this.invalidateAssert("File does not match file: " + filename);
+                String message = "No file found for name " + filename;
+                log.error(message);
+                this.invalidateAssert(message);
                 return;
             }
         }
@@ -149,6 +158,11 @@ public class LogAssert extends Assert {
     }
 
     @Override
+    public Assertion copy() {
+        return new LogAssert(this);
+    }
+
+    @Override
     public boolean requiresConnectionParam(){
         return false;
     }
@@ -156,6 +170,11 @@ public class LogAssert extends Assert {
     @Override
     public void setConnectionParam(String gatewayUrl) {
         log.info("setup ConnectionParam in LogEvaluation");
+    }
+
+    @Override
+    public void prepare() {
+        this.finishedAt = System.currentTimeMillis();
     }
 
     private void validateKeyword(String[] valueLine){

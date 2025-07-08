@@ -11,7 +11,7 @@ app = FastAPI()
 
 
 #
-# --- HTTP Proxy ---
+# --- HTTP Gateway ---
 #
 
 @app.api_route("/http/{target}/{port}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
@@ -44,7 +44,7 @@ async def proxy_http_get(target: str, port: str, path: str, request: Request):
 
 
 #
-# --- Database Proxy ---
+# --- Database Gateway ---
 #
 
 DB_USER = os.getenv("DB_USER", "testuser")

@@ -13,14 +13,14 @@ public interface Evaluation {
     String getAssertExpression();
 
     /**
-     * @return true if evaluation was successful, false otherwise
-     */
-    boolean isSuccess();
-
-    /**
      * @return error message, if evaluation fails
      */
     String getErrorMessage();
+
+    /**
+     * @return true if evaluation was successful, false otherwise
+     */
+    boolean isSuccess();
 
     /**
      * Entrypoint for triggering an evaluation.
@@ -33,4 +33,9 @@ public interface Evaluation {
      * @param errorMessage string
      */
     void setErrorMessage(String errorMessage);
+
+    /**
+     * @return  a new Evaluation instance with different object reference.
+     */
+    Evaluation copy();
 }

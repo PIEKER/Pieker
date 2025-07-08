@@ -15,7 +15,7 @@ public class Http {
 
     private Http(){}
 
-    public static String send(String service, String url, String method, int connectionTimeout, int readTimeout,
+    public static ResponseTuple send(String service, String url, String method, int connectionTimeout, int readTimeout,
                        String jsonHeaders, String requestBody, String bodyType) {
         try {
             OkHttpClient client = new OkHttpClient.Builder()
@@ -73,13 +73,14 @@ public class Http {
             Response response = client.newCall(requestBuilder.build()).execute();
 
             if (response.body() != null) {
-                return response.body().string();
+                return new ResponseTuple(response.body().string(), response.code());
             } else {
-                return "";
+                return new ResponseTuple("", response.code());
             }
         } catch (Exception e) {
-            log.error("Exception occurred while sending request to service {}. Exception: {}", service, e.getMessage());
-            return "ERROR ON REQUEST";
+            String message = "Exception occurred while sending request to service " + service + ". Exception: " + e.getMessage();
+            log.error(message);
+            return new ResponseTuple(message, 500);
         }
     }
 

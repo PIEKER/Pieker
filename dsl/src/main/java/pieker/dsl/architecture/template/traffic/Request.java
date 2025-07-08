@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import pieker.common.Template;
 import pieker.common.connection.Http;
+import pieker.common.connection.ResponseTuple;
 import pieker.dsl.architecture.Engine;
 import pieker.dsl.architecture.exception.PiekerProcessingException;
 import pieker.dsl.architecture.preprocessor.FileManager;
@@ -47,7 +48,7 @@ public class Request implements Template, TrafficType {
     }
 
     @Override
-    public String sendTraffic(String[] args) {
+    public ResponseTuple sendTraffic(String[] args) {
         if (args.length == 0){
             throw new IllegalArgumentException("no arguments provided for request traffic");
         }

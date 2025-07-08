@@ -11,7 +11,7 @@ class HttpTest {
     @Test
     void testSend(){
         String result = Http.send("HttpTest","https://github.com/PIEKER/Pieker","GET",
-                0,0,"","", "json");
+                0,0,"","", "json").response();
         assertNotEquals("ERROR ON REQUEST", result);
     }
 }

@@ -24,7 +24,7 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
 
     @Override
     public Optional<C> getComponent(String name) {
-        return this.components.stream().filter(component -> component.getName().equals(name)).findFirst();
+        return this.components.stream().filter(component -> component.getComponentName().equals(name)).findFirst();
     }
 
     @Override
@@ -120,6 +120,6 @@ public abstract class AbstractArchitectureModel<C extends Component> implements 
     }
 
     private boolean validateComponentName(String name) {
-        return this.components.stream().noneMatch(component -> component.getName().equals(name));
+        return this.components.stream().noneMatch(component -> component.getComponentName().equals(name));
     }
 }

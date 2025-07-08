@@ -9,5 +9,6 @@ public interface TrafficTemplate extends Template{
     String getTarget();
     boolean isEnableLogs();
     Collection<ConditionTemplate> getConditionList();
+    Collection<String> getLogs();
     void startTraffic(String[] args);
 }

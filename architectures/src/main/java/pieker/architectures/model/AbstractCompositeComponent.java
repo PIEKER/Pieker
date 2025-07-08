@@ -12,7 +12,7 @@ import java.util.*;
 @Setter
 public abstract class AbstractCompositeComponent implements Component {
 
-    private String name;
+    private String componentName;
     private boolean isGenerated = false;
     private Link.LinkType providedInterfaceType;
     private List<Component> containedComponents = new ArrayList<>();
@@ -73,7 +73,7 @@ public abstract class AbstractCompositeComponent implements Component {
      * @return true if all attributes are valid, false otherwise
      */
     private boolean attributesAreValid() {
-        return this.name != null && !this.name.isBlank();
+        return this.componentName != null && !this.componentName.isBlank();
     }
 
     /**

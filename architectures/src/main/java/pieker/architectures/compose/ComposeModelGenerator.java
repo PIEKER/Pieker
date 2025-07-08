@@ -100,9 +100,9 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
     @SuppressWarnings("unchecked")
     private void constructModelEntities(Map<String, Object> data) {
         this.constructServices((Map<String, Object>) data.getOrDefault("services", Map.of()));
-        // TODO: Expand support for storages, networks, etc.
         this.constructStorages((Map<String, Object>) data.getOrDefault("volumes", Map.of()));
-        this.modelNetworks = new ArrayList<>();
+        this.constructNetworks((Map<String, Object>) data.getOrDefault("networks", Map.of()));
+        // TODO: Expand support for other entities like Configs or Secrets
         // ...
 
     }
@@ -112,8 +112,8 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
         this.modelServices = new HashMap<>();
         data.forEach((serviceName, rawServiceData) -> {
             Map<String, Object> serviceData = (Map<String, Object>) rawServiceData;
-
             ComposeService service = new ComposeService(serviceName);
+
             service.setImage((String) serviceData.getOrDefault("image", null));
             service.setBuild((String) serviceData.getOrDefault("build", null));
             service.setEnvironment((Map<String, String>) serviceData.getOrDefault("environment", new HashMap<>()));
@@ -129,7 +129,11 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
             service.setStdinOpen((Boolean) serviceData.getOrDefault("stdin_open", null));
             service.setPrivileged((Boolean) serviceData.getOrDefault("privileged", null));
 
-            // TODO: Construct networks as ComposeNetwork objects and volumes as ComposeVolume objects
+            try {
+                service.setVolumes((List<String>) serviceData.getOrDefault("volumes", new ArrayList<>()));
+            } catch (Exception e) {
+                log.warn("One or more volumes for service '{}' are not in short syntax, ignoring all.", serviceName);
+            }
 
             HashMap<String, String> ports = new HashMap<>();
             ((ArrayList<String>) serviceData.getOrDefault("ports", List.of())).forEach(port -> {
@@ -145,10 +149,39 @@ public class ComposeModelGenerator extends AbstractModelGenerator<ComposeArchite
     @SuppressWarnings("unchecked")
     private void constructStorages(Map<String, Object> data) {
         this.modelStorages = new HashMap<>();
-        data.forEach((storageName, rawStorageData) -> {
-            Map<String, Object> storageData = (Map<String, Object>) rawStorageData;
+        data.forEach((volumeName, rawStorageData) -> {
+            Map<String, Object> volumeData = (Map<String, Object>) rawStorageData;
+            ComposeVolume volume = new ComposeVolume(volumeName);
 
-            // TODO: Implement storage construction
+            volume.setDriver((String) volumeData.getOrDefault("driver", null));
+            volume.setDriverOpts((Map<String, String>) volumeData.getOrDefault("driver_opts", new HashMap<>()));
+            volume.setExternal((Boolean) volumeData.getOrDefault("external", false));
+            volume.setLabels((Map<String, String>) volumeData.getOrDefault("labels", new HashMap<>()));
+            volume.setName((String) volumeData.getOrDefault("name", null));
+
+            this.modelStorages.put(volumeName, volume);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void constructNetworks(Map<String, Object> data) {
+        this.modelNetworks = new ArrayList<>();
+        data.forEach((networkName, rawNetworkData) -> {
+            Map<String, Object> networkData = (Map<String, Object>) rawNetworkData;
+            ComposeNetwork network = new ComposeNetwork(networkName);
+
+            network.setDriver((String) networkData.getOrDefault("driver", null));
+            network.setDriverOpts(networkData.getOrDefault("driver_opts", new HashMap<>()));
+            network.setAttachable((Boolean) networkData.getOrDefault("attachable", false));
+            network.setEnableIpv4((Boolean) networkData.getOrDefault("enable_ipv4", false));
+            network.setEnableIpv6((Boolean) networkData.getOrDefault("enable_ipv6", false));
+            network.setExternal((Boolean) networkData.getOrDefault("external", false));
+            network.setIpam(networkData.getOrDefault("ipam", new HashMap<>()));
+            network.setInternal((Boolean) networkData.getOrDefault("internal", false));
+            network.setLabels(networkData.getOrDefault("labels", new HashMap<>()));
+            network.setName((String) networkData.getOrDefault("name", null));
+
+            this.modelNetworks.add(network);
         });
     }
 
