@@ -59,3 +59,17 @@ Feature:
             Arguments: db | risk-db | $assertTableInput
             Equals: True | 10
               COUNT(*)
+
+      Step: Database Unavailable
+        """ Given the database is unavailable, when a valid request to the Web-Service is sent, then
+            the Web-Service returns an error. """
+        Given:
+          @request get-result | web-service | $getResult
+          @link web-db | web-service | db
+        When:
+          @after web-db | 99999
+        Then:
+          Assert: Log
+            Arguments: get-result
+            Equals: False | 200
+              @status @exists
