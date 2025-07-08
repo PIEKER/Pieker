@@ -8,7 +8,7 @@ Feature: All Valid Feature File
     @def get-counter = :FILE(/example-request.json, 1)
     @def increment-counter = :FILE(/example-request.json, 2)
 
-  Scenario: All Proxy Container No Before Each
+  Scenario: All Proxy Container No BeforeEach
 
 
     Step: No Condition No Log
@@ -51,7 +51,7 @@ Feature: All Valid Feature File
       Then:
         LogAll: [service-a, service-b, service-c, sA-sC]
 
-  Scenario: All Proxy Container With Before Each A
+  Scenario: All Proxy Container With BeforeEach A
 
     BeforeEach:
       Given:
@@ -81,7 +81,7 @@ Feature: All Valid Feature File
       Then:
         LogAll: [service-a, service-b, service-c, sA-sC]
 
-  Scenario: All Proxy Container With Before Each B
+  Scenario: All Proxy Container With BeforeEach B
 
     BeforeEach:
       Given:
@@ -103,7 +103,7 @@ Feature: All Valid Feature File
       Then:
         LogAll: [service-a, service-b, service-c, sA-sC]
 
-  Scenario: All Proxy Container With Before Each C
+  Scenario: All Proxy Container With BeforeEach C
 
     BeforeEach:
       Given:
