@@ -13,6 +13,9 @@ services:
       COUNTER_URL: http://service-c:8080/serviceC/counter/increment
     depends_on:
       - db
+    volumes:
+      - C:\some\win\path:/tmp/logs
+      - /some/lnx/path:/tmp/logs
 
   service-b:
     image: service_b
@@ -24,6 +27,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: testpass
     depends_on:
       - db
+    volumes:
+      - C:\some\win\path:/tmp/logs
+      - type: bind
+        source: /some/lnx/path:/tmp/logs
+        target: /tmp/logs
 
   service-c:
     image: service_c
@@ -39,3 +47,15 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
+
+networks:
+  network1:
+    name: my-app-net
+
+volumes:
+  test-volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /some/lnx/path:/tmp/logs
+      o: bind
