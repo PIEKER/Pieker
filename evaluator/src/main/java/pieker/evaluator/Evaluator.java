@@ -66,7 +66,7 @@ public class Evaluator {
         new Thread(() -> {
             try {
                 latch.await(); // Blocks until all tasks finish
-                log.info("All tasks completed. Shutting down.");
+                log.debug("All tasks completed. Shutting down.");
                 threadPool.shutdown();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -91,7 +91,7 @@ public class Evaluator {
             // Convert an object to a JSON file
             om.writerWithDefaultPrettyPrinter().writeValue(
                     new File(path, "result.json"), result);
-            log.info("JSON file created successfully for {}!", scenario.getName());
+            log.info("Result JSON file created successfully for {}: {}", scenario.getName(), path + "/result.json");
 
             boolean publishToServer = Boolean.parseBoolean(System.getProperty("publishToServer", "false"));
             if (publishToServer){

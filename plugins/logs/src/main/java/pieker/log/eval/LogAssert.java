@@ -70,7 +70,7 @@ public class LogAssert extends Assert {
 
     @Override
     public void processAssert() {
-        log.info("process LogEvaluation");
+        log.debug("process LogEvaluation");
     }
 
     @Override

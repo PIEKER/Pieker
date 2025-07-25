@@ -15,12 +15,12 @@
     </root>
 
     <!-- Logger for Submodules -->
-    <logger name="pieker.app" level="debug" />
-    <logger name="pieker.architectures" level="debug" />
-    <logger name="pieker.common" level="debug" />
+    <logger name="pieker.app" level="info" />
+    <logger name="pieker.architectures" level="info" />
+    <logger name="pieker.common" level="info" />
     <logger name="pieker.dsl" level="info" />
-    <logger name="pieker.evaluator" level="debug" />
+    <logger name="pieker.evaluator" level="info" />
     <logger name="pieker.generators" level="info" />
-    <logger name="pieker.orchestrator" level="debug" />
+    <logger name="pieker.orchestrator" level="info" />
 
 </configuration>
