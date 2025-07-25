@@ -102,6 +102,10 @@ are at least:
 - [PIEKER Interface Description](architectures/src/main/java/pieker/architectures/description/README.md) file
 - [PIEKER DSL](./dsl/README.md) file with the test specification
 
+If LogAsserts are required in the input DSL, make sure to [install](./api/README.md) (Getting Started 5. & 6.) 
+the [plugin](./plugins/logs) before running the testing tool. An individual installation directory can be set in the 
+[`gradle.properties`](./gradle.properties) using `pluginDir`.
+
 You can run PIEKER with the following command:
 
 `./gradlew :app:run`
