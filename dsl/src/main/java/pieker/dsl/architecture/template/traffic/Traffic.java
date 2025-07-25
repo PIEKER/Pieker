@@ -139,6 +139,6 @@ public class Traffic implements StepComponent, TrafficTemplate {
         ResponseTuple response = this.trafficType.sendTraffic(args);
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.logs.add(timestamp + " - " + response);
-        log.info("[RESULT] {}", response);
+        log.debug("[RESULT] {}", response);
     }
 }

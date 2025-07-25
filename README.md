@@ -38,7 +38,7 @@ This project is managed here: [![GitHub](https://img.shields.io/badge/GitHub-PIE
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
-    - [Test and Build](#test-and-build)
+    - [Test and Build](#test-build-and-run)
 - [Usage](#usage)
 - [Modules](#modules)
     - [App-Module](#app-module)
