@@ -166,7 +166,7 @@ environment.
 This module contains the web application for PIEKER.
 
 - Directory: [`web/`](./web)
-- Documentation: TODO
+- Documentation: [Webserver-README](./web/README.md)
 - Maintainer: [@YIllmann](https://github.com/YIllmann)
 
 ## Roadmap
