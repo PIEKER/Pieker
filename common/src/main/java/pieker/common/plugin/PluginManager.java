@@ -22,10 +22,12 @@ import java.util.ServiceLoader;
 @NoArgsConstructor
 public class PluginManager {
 
+    private static final String PROJECT_ROOT = System.getProperty("projectRoot");
+
     private boolean ignoreUnknownPluginReferences = true;
 
-    public PluginManager(String pluginDir){
-        loadPluginsFromDir(Path.of(pluginDir));
+    public PluginManager(String pluginDir) {
+        loadPluginsFromDir(Path.of(PROJECT_ROOT + File.separator + pluginDir));
         this.ignoreUnknownPluginReferences = Boolean.parseBoolean(System.getProperty("ignoreMissingPluginReferences", "true"));
 
         if (this.ignoreUnknownPluginReferences) log.info("ignoring unknown plugin-references.");
@@ -74,7 +76,7 @@ public class PluginManager {
         if (this.pluginRegistry.isEmpty()) return "None";
 
         StringBuilder s = new StringBuilder();
-        this.pluginRegistry.forEach((k,v) -> s.append(k).append("::").append(v).append(" || "));
-        return s.substring(0, s.length()-4);
+        this.pluginRegistry.forEach((k, v) -> s.append(k).append("::").append(v).append(" || "));
+        return s.substring(0, s.length() - 4);
     }
 }
