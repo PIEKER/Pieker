@@ -48,14 +48,14 @@ public class Step implements TestStep {
     private Map<String, TrafficContainer> trafficContainerMap = new HashMap<>();
     private List<OrchestratorTraffic> orchestratorTrafficList = new ArrayList<>();
 
-    public Step(Feature feature, Scenario scenario, String name){
+    public Step(Feature feature, Scenario scenario, String name) {
         this.feature = feature;
         this.scenario = scenario;
         this.name = name.replace(" ", "_");
         this.id = this.name.isEmpty() ? UUID.randomUUID().toString().replace("-", "_") : this.name;
     }
 
-    public Step(Feature feature, Scenario scenario){
+    public Step(Feature feature, Scenario scenario) {
         this.feature = feature;
         this.scenario = scenario;
         this.name = "beforeEach";
@@ -63,28 +63,28 @@ public class Step implements TestStep {
     }
 
     // -- update PIEKER architecture attributes
-    public void addStepComponent(String identifier, StepComponent stepComponent){
+    public void addStepComponent(String identifier, StepComponent stepComponent) {
         this.testComponentMap.put(identifier, stepComponent);
     }
 
-    public void addConditionTemplate(String[] identifiers, ConditionTemplate template){
-        for (String identifier : identifiers){
+    public void addConditionTemplate(String[] identifiers, ConditionTemplate template) {
+        for (String identifier : identifiers) {
             this.testComponentMap.get(identifier).addCondition(template);
         }
     }
 
-    public <T> List<T> filterTestComponentsByInstance(Class<T> type){
+    public <T> List<T> filterTestComponentsByInstance(Class<T> type) {
         return this.testComponentMap.values().stream().filter(type::isInstance).map(type::cast).toList();
     }
 
-    public void createTrafficContainer(){
+    public void createTrafficContainer() {
         List<Traffic> trafficList = this.filterTestComponentsByInstance(Traffic.class);
-        for (Traffic traffic: trafficList){
-            if (traffic instanceof OrchestratorTraffic){
+        for (Traffic traffic : trafficList) {
+            if (traffic instanceof OrchestratorTraffic) {
                 continue;
             }
             String target = traffic.getTrafficType().getTarget();
-            if (!this.trafficContainerMap.containsKey(target)){
+            if (!this.trafficContainerMap.containsKey(target)) {
                 TrafficContainer trafficContainer = new TrafficContainer(target);
                 trafficContainer.addTraffic(traffic);
                 this.trafficContainerMap.put(target, trafficContainer);
@@ -94,7 +94,7 @@ public class Step implements TestStep {
         }
     }
 
-    public void createOrchestratorTraffic(){
+    public void createOrchestratorTraffic() {
         List<OrchestratorTraffic> trafficList = new ArrayList<>(this.filterTestComponentsByInstance(OrchestratorTraffic.class));
         trafficList.sort(new STComparator());
         this.orchestratorTrafficList.addAll(trafficList);
@@ -102,14 +102,14 @@ public class Step implements TestStep {
 
     public void migrateBeforeEach(Step beforeEach) {
         if (beforeEach == null) return;
-        beforeEach.testComponentMap.forEach((k,v) -> this.testComponentMap.put(k, v.copy()));
-        if (this.then == null){
+        beforeEach.testComponentMap.forEach((k, v) -> this.testComponentMap.put(k, v.copy()));
+        if (this.then == null) {
             this.then = new Then(this);
         }
         this.then.updateEvaluationList(beforeEach.getEvaluationList().stream().map(Assertion::copy).toList());
     }
 
-    protected List<Assertion> getEvaluationList(){
+    protected List<Assertion> getEvaluationList() {
         return (this.then != null) ? this.then.getEvaluationList() : new ArrayList<>();
     }
 
@@ -119,14 +119,15 @@ public class Step implements TestStep {
     }
 
     @Override
-    public void finish(){
+    public void finish() {
         this.getEvaluationList().forEach(Assertion::prepare);
         this.getSequence().forEach(traffic -> this.dumpTrafficLogs(traffic.getIdentifier(), traffic.getLogs()));
     }
 
-    private void dumpTrafficLogs(String traffic, Collection<String> logs){
+    private void dumpTrafficLogs(String traffic, Collection<String> logs) {
+        final String PROJECT_ROOT = System.getProperty("projectRoot");
         String outputDir = System.getProperty("genDir", "./gen");
-        Path path = Paths.get(outputDir, this.scenario.getName(), "logs", this.name + "_" + FeatureUtil.createCodeSafeString(traffic) + ".log");
+        Path path = Paths.get(PROJECT_ROOT, outputDir, this.scenario.getName(), "logs", this.name + "_" + FeatureUtil.createCodeSafeString(traffic) + ".log");
         try {
             Files.write(path, logs, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             log.debug("dumping logs for traffic {}", traffic);

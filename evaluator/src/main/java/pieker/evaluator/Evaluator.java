@@ -18,18 +18,18 @@ import java.util.concurrent.*;
 @Setter
 @Slf4j
 public class Evaluator {
-
+    private static final String PROJECT_ROOT = System.getProperty("projectRoot");
     private static final String OUTPUT_DIR = System.getProperty("genDir", ".gen/");
     private String gatewayUrl;
     private Map<String, Map<String, File>> fileMap = new HashMap<>();
 
-    public Evaluator(){
+    public Evaluator() {
         this.gatewayUrl = "http://"
                 + System.getProperty("orchestratorHost", "127.0.0.1") + ":"
                 + System.getProperty("orchestratorPort", "42690");
     }
 
-    public void preprocessFiles(String path, String fileSuffix){
+    public void preprocessFiles(String path, String fileSuffix) {
         this.fileMap.put(fileSuffix, this.collectFiles(new File(path), fileSuffix));
     }
 
@@ -38,9 +38,9 @@ public class Evaluator {
      * the evaluator addresses timing challenges of assertAfter configuration.
      *
      * @param assertionList list of assertion objects
-     * @param timeout maximum evaluation time.
+     * @param timeout       maximum evaluation time.
      */
-    public void run(List<Assertion> assertionList, long timeout){
+    public void run(List<Assertion> assertionList, long timeout) {
         int maxThreads = Runtime.getRuntime().availableProcessors();
         log.debug("Thread limit: {}", maxThreads);
 
@@ -82,11 +82,11 @@ public class Evaluator {
         }
     }
 
-    public void publishResult(ScenarioTestPlan scenario){
+    public void publishResult(ScenarioTestPlan scenario) {
         RunDto result = scenario.createTestRunDto();
         ObjectMapper om = new ObjectMapper();
         try {
-            String path = OUTPUT_DIR + scenario.getName();
+            final String path = PROJECT_ROOT + File.separator + OUTPUT_DIR + scenario.getName();
             Files.createDirectories(Path.of(path));
             // Convert an object to a JSON file
             om.writerWithDefaultPrettyPrinter().writeValue(
@@ -94,7 +94,7 @@ public class Evaluator {
             log.info("Result JSON file created successfully for {}: {}", scenario.getName(), path + "/result.json");
 
             boolean publishToServer = Boolean.parseBoolean(System.getProperty("publishToServer", "false"));
-            if (publishToServer){
+            if (publishToServer) {
                 String resultJson = om.writeValueAsString(result);
                 String header = "{ \"Content-Type\": \"application/json\", \"Accept\": \"application/json\" }";
                 String url = System.getProperty("publishUrl", "http://localhost:8080/runs/create");
@@ -108,7 +108,7 @@ public class Evaluator {
 
     }
 
-    private Map<String, File> collectFiles(File directory, String fileSuffix){
+    private Map<String, File> collectFiles(File directory, String fileSuffix) {
         Map<String, File> logFiles = new HashMap<>();
         if (directory == null || !directory.exists()) {
             log.info("Directory does not exist.");
@@ -129,7 +129,7 @@ public class Evaluator {
         return logFiles;
     }
 
-    private void evaluateStep(Assertion ass){
+    private void evaluateStep(Assertion ass) {
 
         if (ass.requiresConnectionParam()) {
             ass.setConnectionParam(this.gatewayUrl);
