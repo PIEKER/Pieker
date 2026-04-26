@@ -16,23 +16,26 @@ subprojects {
     apply(plugin = "java")
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_24
-        targetCompatibility = JavaVersion.VERSION_24
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     dependencies {
         // Common-Dependencies
         implementation("org.slf4j:slf4j-api:2.0.17")
-        implementation("ch.qos.logback:logback-classic:1.5.18")
-        compileOnly("org.projectlombok:lombok:1.18.38")
-        annotationProcessor("org.projectlombok:lombok:1.18.38")
+        implementation("ch.qos.logback:logback-classic:1.5.32")
+        compileOnly("org.projectlombok:lombok:1.18.46")
+        annotationProcessor("org.projectlombok:lombok:1.18.46")
 
         // Test-Dependencies
-        testImplementation(platform("org.junit:junit-bom:5.13.4"))
-        testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.4")
-        testCompileOnly("org.projectlombok:lombok:1.18.38")
-        testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+        testImplementation(platform("org.junit:junit-bom:6.0.3"))
+        testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
+        testCompileOnly("org.projectlombok:lombok:1.18.46")
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
     }
 
     tasks.processResources {
